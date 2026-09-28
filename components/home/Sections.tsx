@@ -1,0 +1,218 @@
+import Link from "next/link";
+import { getCatalog, getCategories, bestSellers, summarize } from "../../lib/catalog";
+import { COAS, QC_PILLARS, QC_STATS, TICKER, WHY_US } from "../../data/content";
+import { RUO_SHORT } from "../../lib/site";
+import { Icon } from "../Icon";
+import { Vial } from "../Vial";
+import { SectionHead } from "../ui";
+import { ProductCard } from "../product/ProductCard";
+
+export function Hero() {
+  const heroVials = ["bpc-157", "ghk-cu", "tb-500"]
+    .map((s) => getCatalog().find((p) => p.slug === s))
+    .filter(Boolean) as ReturnType<typeof getCatalog>;
+  return (
+    <section className="hero">
+      <div className="container hero-grid">
+        <div>
+          <p className="eyebrow" data-reveal="">Research Compounds · Verified by Lot</p>
+          <h1 className="h1" data-reveal="" data-reveal-delay="60">
+            Research, <em>revised.</em>
+          </h1>
+          <p className="lead" data-reveal="" data-reveal-delay="120">
+            High-purity research compounds with an independent certificate of analysis published for every lot — before it ships.
+          </p>
+          <div className="hero-ctas" data-reveal="" data-reveal-delay="180">
+            <Link href="/shop" className="btn btn--primary">Shop Compounds <Icon name="arrow" /></Link>
+            <Link href="/coas" className="btn btn--ghost">View COAs</Link>
+          </div>
+          <div className="hero-proof" data-reveal="" data-reveal-delay="240">
+            <span><Icon name="shield" /> ≥99% purity</span>
+            <span><Icon name="cert" /> Third-party tested</span>
+            <span><Icon name="truck" /> Ships in 1 business day</span>
+          </div>
+        </div>
+        <div className="hero-art" aria-hidden="true">
+          {heroVials.map((p) => (
+            <Vial key={p.slug} name={p.name} option={p.variants[p.variants.length - 1].option} accent={p.accent} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function Ticker() {
+  const items = [...TICKER, ...TICKER];
+  return (
+    <section className="ticker" aria-label="Revised Research at a glance">
+      <p className="sr-only">{TICKER.join(" · ")}</p>
+      <div className="ticker-track" aria-hidden="true">
+        {items.map((t, i) => <span className="ticker-item" key={i}>{t}</span>)}
+      </div>
+    </section>
+  );
+}
+
+export function Categories() {
+  const cats = getCategories();
+  const catalog = getCatalog();
+  return (
+    <section className="section">
+      <div className="container cats">
+        <div className="cats-intro">
+          <p className="eyebrow" data-reveal="">Explore Research Categories</p>
+          <h2 className="h2" data-reveal="" data-reveal-delay="60">Explore.<br />Research.<br /><em>Advance.</em></h2>
+          <p className="lead" data-reveal="" data-reveal-delay="100">Clean, premium research compounds at ≥99% purity.</p>
+          <Link href="/shop" className="btn btn--navy" data-reveal="" data-reveal-delay="140">Browse All Compounds <Icon name="arrow" /></Link>
+        </div>
+        <div className="cats-grid">
+          {cats.map((c, i) => {
+            const sample = catalog.find((p) => p.category === c.slug);
+            return (
+              <Link key={c.slug} href={`/product-category/${c.slug}`} className="cat-card" data-reveal="" data-reveal-delay={String(i * 70)}>
+                <span className="cat-art">
+                  <Vial name={sample?.name ?? c.name} accent={sample?.accent} />
+                </span>
+                <span>
+                  <h3>{c.name}</h3>
+                  <p>{c.blurb}</p>
+                  <span className="cat-go">View {c.name.split(" ")[0]} <Icon name="arrow" /></span>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function CoaBand() {
+  const c = COAS[0];
+  return (
+    <section className="section section--navy coa-band">
+      <div className="container coa-band-grid">
+        <div>
+          <p className="eyebrow" data-reveal="">Certificate of Analysis</p>
+          <h2 className="h2" data-reveal="" data-reveal-delay="60">COAs on every <em>batch.</em></h2>
+          <p className="lead" data-reveal="" data-reveal-delay="100">Independent laboratory results, published by lot. Open in full — no login, no request form.</p>
+          <p style={{ marginTop: 28 }} data-reveal="" data-reveal-delay="140">
+            <Link href="/coas" className="btn btn--primary">View COAs <Icon name="arrow" /></Link>
+          </p>
+        </div>
+        <div className="coa-doc" data-reveal="" data-reveal-delay="120" aria-hidden="true">
+          <div className="coa-doc-head">
+            <b>Certificate of Analysis</b>
+            <span className="badge">Pass</span>
+          </div>
+          <dl>
+            <dt>Compound</dt><dd>{c.productName}</dd>
+            <dt>Lot</dt><dd className="mono">{c.lot}</dd>
+            <dt>Strength</dt><dd>{c.strength}</dd>
+            <dt>Purity (HPLC)</dt><dd>{c.purity}</dd>
+            <dt>Identity (MS)</dt><dd>Confirmed</dd>
+          </dl>
+          <div className="coa-doc-bar">
+            <svg viewBox="0 0 300 70" preserveAspectRatio="none">
+              <path d="M0 66 L60 65 L90 63 L110 60 L125 8 L140 58 L170 63 L220 64 L240 60 L250 52 L260 61 L300 65" fill="none" stroke="var(--mint-dark)" strokeWidth="2" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function BestSellers() {
+  const list = bestSellers(8).map(summarize);
+  return (
+    <section className="section">
+      <div className="container">
+        <SectionHead eyebrow="Shop Best Sellers" title={<>Trusted by <em>Researchers.</em></>} action={{ href: "/shop", label: "Shop All" }} />
+        <div className="grid-products">
+          {list.map((p, i) => <ProductCard key={p.slug} p={p} delay={(i % 4) * 60} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function QualityControl() {
+  return (
+    <section className="section section--alt">
+      <div className="container">
+        <SectionHead
+          eyebrow="Quality Control"
+          title={<>Every lot, <em>tested.</em></>}
+          lead="What happens to a batch between synthesis and your bench."
+        />
+        <div className="qc-stats">
+          {QC_STATS.map((s, i) => (
+            <div className="qc-stat" key={s.label} data-reveal="" data-reveal-delay={String(i * 70)}>
+              <b>{s.value}</b><span>{s.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="qc-pillars">
+          {QC_PILLARS.map((p, i) => (
+            <div className="qc-pillar" key={p.label} data-reveal="" data-reveal-delay={String(i * 70)}>
+              <span className="ic-tile"><Icon name={p.icon} /></span>
+              <h3>{p.label}</h3>
+              <p>{p.blurb}</p>
+            </div>
+          ))}
+        </div>
+        <div className="qc-cta" data-reveal="">
+          <p><small>Proof on demand</small>Read the certificate before you buy, not after.</p>
+          <Link href="/coas" className="btn btn--primary">View COAs <Icon name="arrow" /></Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Reviews slot. Empty on purpose: only publish reviews from verified orders.
+ * Wire a review source here later; never seed it with invented quotes.
+ */
+export function Reviews() {
+  return (
+    <section className="section">
+      <div className="container">
+        <SectionHead eyebrow="Reviews" title={<>Real Researchers, Real <em>Reviews.</em></>} lead="Published exactly as given, by researchers who ordered." />
+        <div className="reviews-empty" data-reveal="">
+          <div className="stars" aria-hidden="true">
+            {Array.from({ length: 5 }).map((_, i) => <Icon key={i} name="star" />)}
+          </div>
+          <p>Verified reviews will appear here once orders begin.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function WhyUs() {
+  return (
+    <section className="section section--alt">
+      <div className="container">
+        <SectionHead
+          eyebrow="Why Revised"
+          title={<>Built in Labs.<br />Backed by <em>Science.</em></>}
+          lead="The standards behind every order, in plain terms."
+          action={{ href: "/about", label: "Our Standards" }}
+        />
+        <div className="why-grid">
+          {WHY_US.map((w) => (
+            <div className="why-item" key={w.title}>
+              <span className="ic-tile"><Icon name={w.icon} /></span>
+              <h3>{w.title}</h3>
+              <p>{w.body}</p>
+            </div>
+          ))}
+        </div>
+        <p className="ruo-line">{RUO_SHORT}</p>
+      </div>
+    </section>
+  );
+}

@@ -1,0 +1,23 @@
+# deps
+node_modules/
+
+# next
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# env — never commit real keys
+.env
+.env.local
+.env.*.local
+
+# vercel
+.vercel/
+
+# os / editor
+.DS_Store
+*.log
+# iCloud / Finder duplicates ("page 2.tsx") — these took Ventra down once
+* 2.*
+* 3.*

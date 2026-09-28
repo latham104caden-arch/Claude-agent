@@ -1,0 +1,12 @@
+# Revised Research storefront: working rules
+
+- This is Caden Latham's project, deployed on **his own** Vercel account. It is separate from Ventra Sciences. Never push to or deploy under the Ventra repo or Kaseton's Vercel team.
+- Stack: Next.js 15 App Router, React 19, TypeScript, plain CSS. Don't add Tailwind or a UI kit without asking.
+- Colors come only from `styles/tokens.css`. No hard-coded hex values in components.
+- Products are read only through `lib/catalog.ts`. `data/products.ts` is placeholder data.
+- **Do not connect email marketing, SMS, or any messaging provider** until the owner approves it. The form API routes are intentional 501 stubs (`lib/api/stub.ts`).
+- Never commit `.env*`, `.vercel/`, or keys. Stage explicit paths. Never use `git add -A`, because iCloud "name 2" duplicates can sneak in.
+- Before pushing: `npm run check && npm run build`.
+- RUO: every customer-facing surface is "research use only". `lib/ruo.ts` and `scripts/check-ruo.mjs` block the names in `data/ruo-banned.json`. Never weaken either one.
+- Reviews: publish only real, verified reviews. Never seed invented quotes.
+- Legal pages are drafts until counsel-reviewed text replaces them.

@@ -1,0 +1,47 @@
+/* ─────────────────────────────────────────────────────────────
+   Revised Research — brand tokens
+   Every color on the site resolves to one of these. Do not hard-code hex
+   values in components; add a token here instead.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Brand palette */
+  --bg: #F7F7F4;          /* semi off-white page background */
+  --surface: #FFFFFF;     /* cards, product tiles */
+  --surface-alt: #EEEFEA; /* alternate sections */
+  --navy: #2B3044;        /* primary: headings, nav, footer, body text */
+  --mint: #6CC89A;        /* accent: buttons, badges, icons */
+  --mint-dark: #1F7A4D;   /* mint for text on light backgrounds */
+  --mint-light: #E3F4EA;  /* badge and callout backgrounds */
+  --text-muted: #5B6072;  /* secondary text */
+  --border: #DCDDD6;      /* dividers, card borders */
+
+  /* Derived */
+  --text: var(--navy);
+  --navy-soft: #3A405A;
+  --on-navy: #F7F7F4;
+  --on-navy-muted: #B9BDCB;
+  --danger: #B3261E;
+  --danger-light: #FBE9E7;
+  --focus: var(--mint-dark);
+
+  /* Type */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Manrope Variable", var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Scale */
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(43, 48, 68, 0.06);
+  --shadow: 0 6px 24px -8px rgba(43, 48, 68, 0.14);
+  --shadow-lg: 0 24px 60px -20px rgba(43, 48, 68, 0.28);
+
+  --container: 1240px;
+  --gutter: clamp(16px, 4vw, 32px);
+  --section-y: clamp(64px, 9vw, 120px);
+  --header-h: 72px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
