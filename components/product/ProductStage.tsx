@@ -40,7 +40,7 @@ export function ProductStage({
     setPicked((cur) => (cur.includes(slug) ? cur.filter((s) => s !== slug) : [...cur, slug]));
 
   const stackTotal = useMemo(
-    () => v.price * qty + pairs.filter((p) => picked.includes(p.slug)).reduce((n, p) => n + p.price, 0),
+    () => v.price * qty + pairs.filter((p) => picked.includes(p.slug)).reduce((n, p) => n + p.firstPrice, 0),
     [v.price, qty, pairs, picked]
   );
 
@@ -50,7 +50,7 @@ export function ProductStage({
   const addStack = () => {
     if (v.inStock) addMain();
     for (const p of pairs) {
-      if (picked.includes(p.slug)) add({ sku: p.firstSku, slug: p.slug, name: p.name, option: p.firstOption, price: p.price });
+      if (picked.includes(p.slug)) add({ sku: p.firstSku, slug: p.slug, name: p.name, option: p.firstOption, price: p.firstPrice });
     }
     setPicked([]);
     setOpen(true);
@@ -144,7 +144,7 @@ export function ProductStage({
                     <button key={p.slug} type="button" className="pair-tile" aria-pressed={on} onClick={() => togglePick(p.slug)}>
                       <span className="pair-art"><Vial name={p.name} accent={p.accent} className="tile-vial" /></span>
                       <span className="pair-name">{p.name}</span>
-                      <span className="pair-sub">{p.firstOption} · {money(p.price)}</span>
+                      <span className="pair-sub">{p.firstOption} · {money(p.firstPrice)}</span>
                       <span className="tile-check" aria-hidden="true"><Icon name="check" strokeWidth={2.6} /></span>
                     </button>
                   );

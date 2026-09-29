@@ -63,7 +63,13 @@ export type ProductSummary = {
   accent?: string;
   firstSku: string;
   firstOption: string;
+  /** Price of the first in-stock variant (what a quick-add actually adds). */
+  firstPrice: number;
   singleVariant: boolean;
+  /** Every size label, in catalog order (e.g. ["5 mg", "10 mg"]). */
+  options: string[];
+  description: string;
+  coaLot?: string;
 };
 
 export function summarize(p: Product): ProductSummary {
@@ -83,6 +89,10 @@ export function summarize(p: Product): ProductSummary {
     accent: p.accent,
     firstSku: first.sku,
     firstOption: first.option,
+    firstPrice: first.price,
     singleVariant: p.variants.length === 1,
+    options: p.variants.map((v) => v.option),
+    description: p.description,
+    coaLot: p.coaLot,
   };
 }

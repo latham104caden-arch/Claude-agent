@@ -21,8 +21,8 @@ export function Hero() {
         <div className="hero-copy">
           <p className="eyebrow" data-reveal="">Third-party tested · COA every lot</p>
           <h1 className="h1" data-reveal="" data-reveal-delay="60">
-            Premium research<br />
-            <em className="underline-accent">compounds, verified.</em>
+            The research market<br />
+            <em className="underline-accent">like you&apos;ve never seen.</em>
           </h1>
           <div className="hero-stats" data-reveal="" data-reveal-delay="120">
             <div><b>≥99%</b><span>HPLC purity target</span></div>
