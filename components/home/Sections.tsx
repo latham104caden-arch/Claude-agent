@@ -7,14 +7,18 @@ import { Vial } from "../Vial";
 import { SectionHead } from "../ui";
 import { ProductCard } from "../product/ProductCard";
 
+/**
+ * Poster-style hero: headline on the left; on the right a giant blurred
+ * "REVISED" wordmark behind one floating hero vial, two small glass callouts
+ * and two out-of-focus vials for depth. Deliberately sparse — on phones only
+ * the wordmark and vial remain.
+ */
 export function Hero() {
   const catalog = getCatalog();
-  const pick = (slug: string) => catalog.find((p) => p.slug === slug);
-  // Two staggered columns of product tiles (Biologix-style wall).
-  const cols = [
-    ["mots-c", "bpc-157", "nad-plus"],
-    ["ghk-cu", "tb-500", "epitalon"],
-  ].map((c) => c.map(pick).filter(Boolean) as ReturnType<typeof getCatalog>);
+  const star = catalog.find((p) => p.slug === "bpc-157") ?? catalog[0];
+  const starOption = star.variants[star.variants.length - 1].option;
+  const back = catalog.find((p) => p.slug === "tb-500") ?? catalog[1] ?? star;
+  const back2 = catalog.find((p) => p.slug === "ghk-cu") ?? catalog[2] ?? star;
   return (
     <section className="hero">
       <div className="container hero-grid">
@@ -24,35 +28,25 @@ export function Hero() {
             The research market<br />
             <em className="underline-accent">like you&apos;ve never seen.</em>
           </h1>
-          <div className="hero-stats" data-reveal="" data-reveal-delay="120">
-            <div><b>≥99%</b><span>HPLC purity target</span></div>
-            <div><b>100%</b><span>Lots with a public COA</span></div>
-            <div><b>1 day</b><span>Order to carrier</span></div>
-          </div>
-          <p className="lead" data-reveal="" data-reveal-delay="160">
-            Every lot is independently tested and its certificate published before it ships — so you can read the result before you order.
+          <p className="lead" data-reveal="" data-reveal-delay="120">
+            Independently tested compounds, with the certificate published before every lot ships.
           </p>
-          <div className="hero-ctas" data-reveal="" data-reveal-delay="200">
+          <div className="hero-ctas" data-reveal="" data-reveal-delay="180">
             <Link href="/shop" className="btn btn--dark">Shop Compounds <Icon name="arrow" /></Link>
-            <Link href="/coas" className="btn btn--ghost">View COA Library</Link>
-          </div>
-          <div className="hero-chips" data-reveal="" data-reveal-delay="240">
-            <span className="chip"><Icon name="shield" /> ≥99% HPLC purity</span>
-            <span className="chip"><Icon name="flask" /> Third-party tested</span>
-            <span className="chip"><Icon name="coa" /> COA every batch</span>
-            <span className="chip"><Icon name="truck" /> Ships in 1 business day</span>
+            <Link href="/coas" className="btn btn--ghost">View COAs</Link>
           </div>
         </div>
-        <div className="hero-wall" aria-hidden="true">
-          {cols.map((col, ci) => (
-            <div className={"hero-col hero-col--" + ci} key={ci}>
-              {col.map((p) => (
-                <Link key={p.slug} href={`/product/${p.slug}`} className="hero-tile" tabIndex={-1}>
-                  <Vial name={p.name} option={p.variants[p.variants.length - 1].option} accent={p.accent} />
-                </Link>
-              ))}
-            </div>
-          ))}
+
+        <div className="hero-show" aria-hidden="true">
+          <span className="hero-word">REVISED</span>
+          <span className="hero-ghost hero-ghost--a"><Vial name={back.name} option={back.variants[0].option} /></span>
+          <span className="hero-ghost hero-ghost--b"><Vial name={back2.name} option={back2.variants[0].option} /></span>
+          <Link href={`/product/${star.slug}`} className="hero-star" tabIndex={-1}>
+            <Vial name={star.name} option={starOption} className="vial hero-star-vial" />
+          </Link>
+          <span className="hero-floor" />
+          <span className="hero-callout hero-callout--a"><i />≥99% HPLC purity</span>
+          <span className="hero-callout hero-callout--b"><i />COA on every lot</span>
         </div>
       </div>
     </section>
