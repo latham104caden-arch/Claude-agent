@@ -210,11 +210,9 @@
 .cat-index-item > svg { width: 18px; height: 18px; color: var(--accent-ink); transition: transform 0.25s var(--ease); }
 .cat-index-item:hover > svg { transform: translateX(3px); }
 @media (max-width: 900px) { .shop-hero-grid { grid-template-columns: 1fr; align-items: start; } }
-@media (max-width: 560px) {
-  .cat-index { grid-template-columns: 1fr 1fr; }
-  .cat-index-item { grid-template-columns: 1fr; gap: 6px; padding: 12px; }
-  .cat-index-art, .cat-index-item > svg { display: none; }
-  .cat-index-text b { font-size: 18px; }
+/* Phones: no category jump cards in the header (the toolbar tabs below cover it). */
+@media (max-width: 640px) {
+  .cat-index { display: none; }
 }
 
 /* ── Shop: sticky toolbar ────────────────────────────────────── */
@@ -225,6 +223,11 @@
 .shop-toolbar .tab { white-space: nowrap; height: 40px; display: inline-flex; align-items: center; gap: 8px; }
 .tab-count { font-family: var(--font-mono); font-size: 11px; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: grid; place-items: center; background: var(--surface-alt); color: var(--text-muted); }
 .tab[aria-pressed="true"] .tab-count { background: rgba(255, 255, 255, 0.18); color: var(--on-ink); }
+/* Phones: the toolbar scrolls away with the page instead of sticking under the header. */
+@media (max-width: 640px) {
+  .shop-toolbar { position: static; backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--surface); }
+  .shop-section { scroll-margin-top: calc(var(--header-h) + 16px); }
+}
 .shop-search-sm { display: flex; align-items: center; gap: 8px; height: 40px; width: 230px; padding: 0 14px; border-radius: var(--radius-pill); border: 1px solid var(--border); background: var(--surface); }
 .shop-search-sm:focus-within { border-color: var(--accent-ink); box-shadow: 0 0 0 4px var(--accent-soft); }
 .shop-search-sm svg { width: 17px; height: 17px; color: var(--text-muted); flex: none; }
