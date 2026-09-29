@@ -3,9 +3,9 @@ import { Newsletter } from "../components/forms/Newsletter";
 import { JsonLd, organizationLd } from "../lib/seo";
 
 /**
- * Homepage — same section order as the Ventra storefront:
- * Hero → Ticker → Categories → COA band → Best Sellers → Quality Control
- * → Reviews → Why Us → Newsletter. Everything is server-rendered.
+ * Homepage: Hero → Ticker → Best Sellers → COA band → Categories →
+ * Quality Control → Reviews → Why Us → Newsletter. Best Sellers sits right
+ * under the hero so "Shop All" is reached first. Everything is server-rendered.
  */
 export default function HomePage() {
   return (
@@ -13,9 +13,9 @@ export default function HomePage() {
       <JsonLd data={organizationLd()} />
       <Hero />
       <Ticker />
-      <Categories />
-      <CoaBand />
       <BestSellers />
+      <CoaBand />
+      <Categories />
       <QualityControl />
       <Reviews />
       <WhyUs />

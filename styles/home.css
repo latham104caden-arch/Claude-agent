@@ -43,6 +43,14 @@
 .hero-callout i { width: 10px; height: 10px; border-radius: 50%; background: var(--action); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 0 0 5px var(--border-strong); flex: none; }
 .hero-callout--a { top: 26%; right: 0; }
 .hero-callout--b { bottom: 22%; left: 2%; flex-direction: row-reverse; }
+/* Leader line + end dot pointing from each callout to the vial */
+.hero-callout::after, .hero-callout::before { content: ""; position: absolute; top: 50%; pointer-events: none; }
+.hero-callout::after { width: var(--lead, 44px); height: 1.5px; background: var(--action); opacity: 0.55; transform: translateY(-50%); }
+.hero-callout::before { width: 7px; height: 7px; border-radius: 50%; background: var(--action); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75); }
+.hero-callout--a::after { right: 100%; }
+.hero-callout--a::before { right: calc(100% + var(--lead, 44px)); transform: translate(50%, -50%); }
+.hero-callout--b::after { left: 100%; }
+.hero-callout--b::before { left: calc(100% + var(--lead, 44px)); transform: translate(-50%, -50%); }
 
 @media (max-width: 980px) {
   .hero-grid { grid-template-columns: 1fr; min-height: 0; padding-bottom: 12px; }
@@ -50,10 +58,18 @@
   .hero-word { font-size: clamp(80px, 22vw, 170px); }
 }
 @media (max-width: 640px) {
-  .hero-callout, .hero-ghost { display: none; }
-  .hero-ctas .btn { flex: 1 1 100%; }
+  .hero-ghost { display: none; }
+  .hero-ctas { gap: 10px; margin-top: 26px; }
+  .hero-ctas .btn { flex: 1 1 0; min-width: 0; height: 46px; padding: 0 14px; font-size: 14px; }
+  .hero-ctas .btn svg { width: 16px; height: 16px; }
   .hero-show { height: 360px; margin-top: 4px; }
   .hero-star { height: 80%; }
+  /* Compact callouts on phones, still pointing at the vial */
+  .hero-callout { --lead: 22px; padding: 7px 10px; gap: 7px; font-size: 9.5px; letter-spacing: 0.06em; border-radius: 10px; }
+  .hero-callout i { width: 7px; height: 7px; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 0 4px var(--border-strong); }
+  .hero-callout::before { width: 5px; height: 5px; }
+  .hero-callout--a { top: 20%; right: 0; }
+  .hero-callout--b { bottom: 16%; left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-star .hero-star-vial, .hero-floor { animation: none; } }
 
