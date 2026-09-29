@@ -33,7 +33,7 @@ export function Hero() {
             Every lot is independently tested and its certificate published before it ships — so you can read the result before you order.
           </p>
           <div className="hero-ctas" data-reveal="" data-reveal-delay="200">
-            <Link href="/shop" className="btn btn--navy">Shop Compounds <Icon name="arrow" /></Link>
+            <Link href="/shop" className="btn btn--dark">Shop Compounds <Icon name="arrow" /></Link>
             <Link href="/coas" className="btn btn--ghost">View COA Library</Link>
           </div>
           <div className="hero-chips" data-reveal="" data-reveal-delay="240">
@@ -85,7 +85,7 @@ export function Categories() {
           <p className="eyebrow" data-reveal="">Explore Research Categories</p>
           <h2 className="h2" data-reveal="" data-reveal-delay="60">Explore.<br />Research.<br /><em>Advance.</em></h2>
           <p className="lead" data-reveal="" data-reveal-delay="100">Clean, premium research compounds at ≥99% purity.</p>
-          <Link href="/shop" className="btn btn--navy" data-reveal="" data-reveal-delay="140">Browse All Compounds <Icon name="arrow" /></Link>
+          <Link href="/shop" className="btn btn--dark" data-reveal="" data-reveal-delay="140">Browse All Compounds <Icon name="arrow" /></Link>
         </div>
         <div className="cats-grid">
           {cats.map((c, i) => {
@@ -112,7 +112,7 @@ export function Categories() {
 export function CoaBand() {
   const c = COAS[0];
   return (
-    <section className="section section--navy coa-band">
+    <section className="section section--dark coa-band">
       <div className="container coa-band-grid">
         <div>
           <p className="eyebrow" data-reveal="">Certificate of Analysis</p>
@@ -136,7 +136,7 @@ export function CoaBand() {
           </dl>
           <div className="coa-doc-bar">
             <svg viewBox="0 0 300 70" preserveAspectRatio="none">
-              <path d="M0 66 L60 65 L90 63 L110 60 L125 8 L140 58 L170 63 L220 64 L240 60 L250 52 L260 61 L300 65" fill="none" stroke="var(--mint-dark)" strokeWidth="2" />
+              <path d="M0 66 L60 65 L90 63 L110 60 L125 8 L140 58 L170 63 L220 64 L240 60 L250 52 L260 61 L300 65" fill="none" stroke="var(--accent-ink)" strokeWidth="2" />
             </svg>
           </div>
         </div>

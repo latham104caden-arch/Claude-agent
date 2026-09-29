@@ -60,7 +60,7 @@ export function ProductPurchase({ product }: { product: Product }) {
       </p>
       <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
         SKU <span className="mono">{v.sku}</span>
-        {product.coaLot ? <> · <Link href={`/coas#${product.coaLot}`} style={{ color: "var(--mint-dark)", fontWeight: 600 }}>View COA ({product.coaLot})</Link></> : null}
+        {product.coaLot ? <> · <Link href={`/coas#${product.coaLot}`} style={{ color: "var(--accent-ink)", fontWeight: 600 }}>View COA ({product.coaLot})</Link></> : null}
       </p>
     </div>
   );

@@ -16,7 +16,7 @@ export function Newsletter() {
           <form onSubmit={submit} noValidate={false}>
             <label htmlFor="nl-email" className="sr-only">Email address</label>
             <input id="nl-email" name="email" type="email" required className="input" placeholder="you@lab.org" autoComplete="email" />
-            <button type="submit" className="btn btn--navy" disabled={state === "sending"}>
+            <button type="submit" className="btn btn--dark" disabled={state === "sending"}>
               {state === "sending" ? "Sending…" : <>Subscribe <Icon name="arrow" /></>}
             </button>
           </form>

@@ -1,36 +1,51 @@
 /* ─────────────────────────────────────────────────────────────
-   Revised Research — brand tokens
+   Revised Research — brand tokens  (v2: silver · slate blue · white)
    Every color on the site resolves to one of these. Do not hard-code hex
    values in components; add a token here instead.
    ───────────────────────────────────────────────────────────── */
 :root {
-  /* Brand palette */
-  --bg: #FFFFFF;          /* page background: true white */
-  --surface: #FFFFFF;     /* cards, product tiles */
-  --surface-soft: #F7F7F4;/* soft off-white panels (original brand bg) */
-  --surface-alt: #EEEFEA; /* chips, wells, alternate fills */
-  --navy: #2B3044;        /* primary: headings, nav, footer, body text */
-  --mint: #6CC89A;        /* accent: buttons, badges, icons */
-  --mint-dark: #1F7A4D;   /* mint for text on light backgrounds */
-  --mint-light: #E3F4EA;  /* badge and callout backgrounds */
-  --text-muted: #5B6072;  /* secondary text */
-  --border: #DCDDD6;      /* dividers, card borders */
+  /* Core palette */
+  --bg: #FFFFFF;            /* page background: true white */
+  --surface: #FFFFFF;       /* cards, product tiles */
+  --surface-soft: #F4F6F8;  /* cool off-white panels */
+  --surface-alt: #E9EDF1;   /* chips, wells, alternate fills */
+  --ink: #26303D;           /* primary: headings, nav, body text */
+  --accent: #6F86A0;        /* grayish blue: buttons, icons, highlights */
+  --accent-ink: #4A6079;    /* grayish blue for text on white (AA) */
+  --accent-soft: #E6ECF2;   /* badge and callout backgrounds */
+  --silver: #C4CBD3;        /* silver gray: metal, dividers, sheen */
+  --silver-light: #DDE2E7;
+  --text-muted: #647080;    /* secondary text */
+  --border: #D9DEE4;        /* dividers, card borders */
 
   /* Derived */
-  --text: var(--navy);
-  --navy-deep: #1E2233;
-  --navy-soft: #3A405A;
-  --on-navy: #FFFFFF;
-  --on-navy-muted: #B9BDCB;
-  --border-soft: #ECEDE8;
-  --mint-mid: #4FB283;
-  --mint-bright: #7AD2A6;
-  --border-strong: #C8CAC1;
+  --text: var(--ink);
+  --ink-deep: #1A222D;
+  --ink-soft: #3A4757;
+  --on-ink: #FFFFFF;
+  --on-ink-muted: #B7C0CB;
+  --border-soft: #E8ECF0;
+  --border-strong: #BCC4CD;
+  --accent-mid: #5A7089;
+  --accent-bright: #93A7BD;
   --danger: #B3261E;
   --danger-light: #FBE9E7;
-  --focus: var(--mint-dark);
-  --hero-wash: linear-gradient(180deg, #F3F8F5 0%, #FFFFFF 100%);
-  --tile-wash: linear-gradient(160deg, #F4F6F3 0%, #E9EEEA 100%);
+  --focus: var(--accent-ink);
+
+  /* Signature blurred backdrops (soft, out-of-focus slate + silver light) */
+  --blur-light:
+    radial-gradient(40% 55% at 10% 16%, rgba(147, 167, 189, 0.55) 0%, transparent 70%),
+    radial-gradient(34% 46% at 88% 12%, rgba(196, 203, 211, 0.55) 0%, transparent 70%),
+    radial-gradient(48% 62% at 74% 86%, rgba(111, 134, 160, 0.38) 0%, transparent 72%),
+    linear-gradient(180deg, #EEF2F6 0%, #FFFFFF 100%);
+  --blur-dark:
+    radial-gradient(40% 60% at 18% 20%, rgba(147, 167, 189, 0.55) 0%, transparent 70%),
+    radial-gradient(36% 50% at 85% 30%, rgba(221, 226, 231, 0.28) 0%, transparent 70%),
+    radial-gradient(50% 70% at 60% 100%, rgba(26, 34, 45, 0.7) 0%, transparent 70%),
+    linear-gradient(160deg, #5A7089 0%, #3F5068 55%, #2B3748 100%);
+  --hero-wash: var(--blur-light);
+  --tile-wash: linear-gradient(160deg, #F3F5F8 0%, #E3E8EE 100%);
+  --silver-sheen: linear-gradient(100deg, #4A6079 0%, #8497AD 45%, #5A7089 70%, #3F5068 100%);
 
   /* Type */
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -42,10 +57,16 @@
   --radius: 16px;
   --radius-lg: 24px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgba(30, 34, 51, 0.05), 0 1px 1px rgba(30, 34, 51, 0.03);
-  --shadow: 0 2px 4px rgba(30, 34, 51, 0.04), 0 12px 32px -12px rgba(30, 34, 51, 0.14);
-  --shadow-lg: 0 4px 10px rgba(30, 34, 51, 0.05), 0 32px 64px -24px rgba(30, 34, 51, 0.26);
-  --shadow-btn: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 8px 20px -8px rgba(31, 122, 77, 0.55);
+  --shadow-sm: 0 1px 2px rgba(26, 34, 45, 0.05), 0 1px 1px rgba(26, 34, 45, 0.03);
+  --shadow: 0 2px 4px rgba(26, 34, 45, 0.04), 0 12px 32px -12px rgba(26, 34, 45, 0.16);
+  --shadow-lg: 0 4px 10px rgba(26, 34, 45, 0.05), 0 32px 64px -24px rgba(26, 34, 45, 0.28);
+  --shadow-btn: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 8px 20px -8px rgba(74, 96, 121, 0.6);
+
+  /* Frosted glass */
+  --glass: rgba(255, 255, 255, 0.58);
+  --glass-dark: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-blur: blur(18px) saturate(1.4);
 
   --container: 1280px;
   --gutter: clamp(16px, 4vw, 40px);

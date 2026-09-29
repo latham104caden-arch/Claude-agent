@@ -9,7 +9,7 @@ import { useId } from "react";
 export function Vial({
   name,
   option,
-  accent = "var(--mint)",
+  accent = "var(--accent)",
   className = "vial",
 }: {
   name: string;
@@ -42,9 +42,9 @@ export function Vial({
           <stop offset="1" stopColor="#80858D" />
         </linearGradient>
         <linearGradient id={id("cap")} x1="0" x2="1">
-          <stop offset="0" stopColor="var(--navy-deep)" />
-          <stop offset="0.45" stopColor="var(--navy-soft)" />
-          <stop offset="1" stopColor="var(--navy-deep)" />
+          <stop offset="0" stopColor="var(--ink-deep)" />
+          <stop offset="0.45" stopColor="var(--ink-soft)" />
+          <stop offset="1" stopColor="var(--ink-deep)" />
         </linearGradient>
         <linearGradient id={id("wrap")} x1="0" x2="1">
           <stop offset="0" stopColor="#000" stopOpacity="0.14" />
@@ -77,10 +77,10 @@ export function Vial({
         {/* label */}
         <rect x="20" y="90" width="80" height="100" fill="#FFFFFF" />
         <rect x="20" y="90" width="80" height="4" fill={accent} />
-        <text x="29" y="118" fontFamily="Inter Variable, system-ui, sans-serif" fontSize={size} fontWeight="700" letterSpacing="-0.3" fill="var(--navy)">{label}</text>
+        <text x="29" y="118" fontFamily="Inter Variable, system-ui, sans-serif" fontSize={size} fontWeight="700" letterSpacing="-0.3" fill="var(--ink)">{label}</text>
         {option ? (
           <>
-            <rect x="30" y="126" width={Math.max(26, option.length * 5.2 + 10)} height="11" rx="5.5" fill="var(--navy)" />
+            <rect x="30" y="126" width={Math.max(26, option.length * 5.2 + 10)} height="11" rx="5.5" fill="var(--ink)" />
             <text x="35" y="134" fontFamily="Inter Variable, system-ui, sans-serif" fontSize="6.4" fontWeight="700" letterSpacing="0.4" fill="#FFFFFF">{option.toUpperCase()}</text>
           </>
         ) : null}
@@ -88,7 +88,7 @@ export function Vial({
         <text x="30" y="160" fontFamily="Inter Variable, system-ui, sans-serif" fontSize="4.2" fontWeight="600" letterSpacing="0.5" fill="#6B7080">≥99% PURITY · HPLC</text>
         <text x="30" y="168" fontFamily="Inter Variable, system-ui, sans-serif" fontSize="4.2" fontWeight="600" letterSpacing="0.5" fill="#6B7080">RESEARCH USE ONLY</text>
         {/* vertical wordmark */}
-        <text transform="translate(92 182) rotate(-90)" fontFamily="Newsreader Variable, Georgia, serif" fontSize="15" fontWeight="600" letterSpacing="-0.2" fill="var(--navy)">Revised</text>
+        <text transform="translate(92 182) rotate(-90)" fontFamily="Newsreader Variable, Georgia, serif" fontSize="15" fontWeight="600" letterSpacing="-0.2" fill="var(--ink)">Revised</text>
         <rect x="20" y="90" width="80" height="100" fill={`url(#${id("wrap")})`} />
         {/* glass highlights: strong on bare glass, a faint gloss across the label */}
         {[[68, 22], [190, 38]].map(([y, h]) => (

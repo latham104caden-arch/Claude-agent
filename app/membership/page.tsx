@@ -13,7 +13,7 @@ export default function MembershipPage() {
       <section className="section">
         <div className="container">
           <div className="card plan">
-            <span className="badge badge--navy">Revised Member</span>
+            <span className="badge badge--dark">Revised Member</span>
             <p className="plan-price">$—<small> / month</small></p>
             <p className="muted">Pricing to be announced.</p>
             <ul>

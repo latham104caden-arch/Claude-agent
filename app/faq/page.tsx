@@ -18,7 +18,7 @@ export default function FaqPage() {
     <>
       <JsonLd data={ld} />
       <PageHero crumbs={[{ label: "FAQ" }]} eyebrow="Support" title={<>Frequently Asked <em>Questions</em></>}
-        lead={<>Can&apos;t find it here? Email <a href={`mailto:${SITE.supportEmail}`} style={{ color: "var(--mint-dark)" }}>{SITE.supportEmail}</a> or use the <Link href="/contact" style={{ color: "var(--mint-dark)" }}>contact form</Link>.</>} />
+        lead={<>Can&apos;t find it here? Email <a href={`mailto:${SITE.supportEmail}`} style={{ color: "var(--accent-ink)" }}>{SITE.supportEmail}</a> or use the <Link href="/contact" style={{ color: "var(--accent-ink)" }}>contact form</Link>.</>} />
       <section className="container" style={{ padding: "48px var(--gutter) var(--section-y)", maxWidth: 880 }}>
         {FAQ.map((g) => (
           <div className="faq-group" key={g.id} id={g.id}>

@@ -20,14 +20,14 @@ export default function AccountPage() {
                 <label htmlFor="acct-email">Email</label>
                 <input id="acct-email" type="email" className="input" placeholder="you@lab.org" autoComplete="email" disabled />
               </div>
-              <button type="button" className="btn btn--navy btn--block" disabled>Email me a sign-in code</button>
+              <button type="button" className="btn btn--dark btn--block" disabled>Email me a sign-in code</button>
             </form>
             <div style={{ marginTop: 18 }}>
               <StubNotice>Accounts are not connected yet. Sign-in codes will be sent once transactional email and the database are set up.</StubNotice>
             </div>
           </div>
           <p className="muted" style={{ textAlign: "center", marginTop: 18, fontSize: 14 }}>
-            Need help? <Link href="/contact" style={{ color: "var(--mint-dark)" }}>Contact support</Link>
+            Need help? <Link href="/contact" style={{ color: "var(--accent-ink)" }}>Contact support</Link>
           </p>
         </div>
       </section>

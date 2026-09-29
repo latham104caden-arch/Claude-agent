@@ -21,7 +21,7 @@ export default function AboutPage() {
           <div className="prose">
             <p>Placeholder brand story. Replace with who you are, why Revised Research exists, and what makes the sourcing and testing different.</p>
             <p>Every compound we list has a lot number, and every lot number has a certificate you can read before you buy.</p>
-            <p style={{ marginTop: 24 }}><Link href="/coas" className="btn btn--navy">See the certificates <Icon name="arrow" /></Link></p>
+            <p style={{ marginTop: 24 }}><Link href="/coas" className="btn btn--dark">See the certificates <Icon name="arrow" /></Link></p>
           </div>
         </div>
       </section>

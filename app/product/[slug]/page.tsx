@@ -48,7 +48,7 @@ export default async function ProductPage({ params }: Props) {
           <h1>{p.name}</h1>
           <div className="pdp-badges">
             <span className="badge">Research Use Only</span>
-            {p.coaLot ? <span className="badge badge--navy">COA available</span> : null}
+            {p.coaLot ? <span className="badge badge--dark">COA available</span> : null}
             {p.badge ? <span className="badge">{p.badge}</span> : null}
           </div>
           <p className="pdp-desc">{p.description}</p>
@@ -79,7 +79,7 @@ export default async function ProductPage({ params }: Props) {
               {includes.length ? (
                 <p style={{ marginTop: 14, fontSize: 14 }}>
                   {includes.map((i, n) => (
-                    <span key={i!.slug}>{n ? " · " : ""}<Link href={`/product/${i!.slug}`} style={{ color: "var(--mint-dark)", fontWeight: 600 }}>{i!.name}</Link></span>
+                    <span key={i!.slug}>{n ? " · " : ""}<Link href={`/product/${i!.slug}`} style={{ color: "var(--accent-ink)", fontWeight: 600 }}>{i!.name}</Link></span>
                   ))}
                 </p>
               ) : null}
@@ -90,7 +90,7 @@ export default async function ProductPage({ params }: Props) {
                 {p.storage.map((s) => <span className="pill" key={s}>{s}</span>)}
               </div>
               <p className="muted" style={{ fontSize: 14, marginTop: 16 }}>
-                Handling guidance for laboratory settings. See our <Link href="/research/storing-research-compounds" style={{ color: "var(--mint-dark)" }}>storage guide</Link>.
+                Handling guidance for laboratory settings. See our <Link href="/research/storing-research-compounds" style={{ color: "var(--accent-ink)" }}>storage guide</Link>.
               </p>
             </div>
           </div>
@@ -103,7 +103,7 @@ export default async function ProductPage({ params }: Props) {
                   {s.journal ? <small>{s.journal}{s.year ? ` · ${s.year}` : ""}</small> : null}
                   <b>{s.title}</b>
                   {s.authors ? <p className="muted">{s.authors}</p> : null}
-                  {s.link ? <a href={s.link} target="_blank" rel="noopener noreferrer" style={{ color: "var(--mint-dark)" }}>View source</a> : null}
+                  {s.link ? <a href={s.link} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-ink)" }}>View source</a> : null}
                 </article>
               ))}
             </div>

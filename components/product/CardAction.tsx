@@ -16,7 +16,7 @@ export function CardAction({ p }: { p: ProductSummary }) {
   return (
     <button
       type="button"
-      className="btn btn--navy"
+      className="btn btn--dark"
       onClick={() => add({ sku: p.firstSku, slug: p.slug, name: p.name, option: p.firstOption, price: p.price })}
     >
       Add to Cart

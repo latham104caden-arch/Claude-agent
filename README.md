@@ -33,21 +33,22 @@ Node 22.6 or newer. No env vars are needed yet. `.env.example` lists the future 
 4. Deploy. Pushes to the production branch deploy production; other branches get Preview URLs.
 5. Later: add the domain under **Project → Settings → Domains** and set `NEXT_PUBLIC_SITE_URL`.
 
-## Brand tokens
+## Brand tokens (v2: silver · slate blue · white)
 
 | Token | Hex | Use |
 |---|---|---|
-| `--bg` | `#F7F7F4` | page background |
-| `--surface` | `#FFFFFF` | cards, product tiles |
-| `--surface-alt` | `#EEEFEA` | alternate sections |
-| `--navy` | `#2B3044` | headings, nav, footer, body text |
-| `--mint` | `#6CC89A` | buttons, badges, icons |
-| `--mint-dark` | `#1F7A4D` | mint text on light backgrounds |
-| `--mint-light` | `#E3F4EA` | badge and callout backgrounds |
-| `--text-muted` | `#5B6072` | secondary text |
-| `--border` | `#DCDDD6` | dividers, card borders |
+| `--bg` / `--surface` | `#FFFFFF` | page background, cards |
+| `--surface-soft` | `#F4F6F8` | cool off-white panels |
+| `--surface-alt` | `#E9EDF1` | chips, wells |
+| `--ink` | `#26303D` | headings, nav, body text |
+| `--accent` | `#6F86A0` | grayish blue: buttons, icons |
+| `--accent-ink` | `#4A6079` | grayish blue text on white |
+| `--accent-soft` | `#E6ECF2` | badge and callout backgrounds |
+| `--silver` | `#C4CBD3` | silver gray: metal, dividers, sheen |
+| `--text-muted` | `#647080` | secondary text |
+| `--border` | `#D9DEE4` | dividers, card borders |
 
-Components never hard-code a hex value. If you need a new color, add a token.
+Signature look: soft, out-of-focus slate and silver backdrops (`--blur-light`, `--blur-dark`) with film grain, plus frosted-glass panels (`.glass`). Components never hard-code a hex value. If you need a new color, add a token.
 
 ## Page map
 

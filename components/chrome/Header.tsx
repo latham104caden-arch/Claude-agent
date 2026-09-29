@@ -75,7 +75,7 @@ export function Header({ products }: { products: ProductSummary[] }) {
               <Icon name="bag" />
               {ready && count > 0 ? <span className="cart-count">{count}</span> : null}
             </button>
-            <Link href="/shop" className="btn btn--navy hdr-cta">
+            <Link href="/shop" className="btn btn--dark hdr-cta">
               Shop Now <Icon name="arrow" />
             </Link>
           </div>
@@ -98,7 +98,7 @@ export function Header({ products }: { products: ProductSummary[] }) {
           ))}
         </nav>
         <div className="mnav-foot">
-          <Link className="btn btn--navy btn--block" href="/my-account" onClick={() => setMenu(false)}>
+          <Link className="btn btn--dark btn--block" href="/my-account" onClick={() => setMenu(false)}>
             <Icon name="user" /> Sign in
           </Link>
           <a className="muted" href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>
