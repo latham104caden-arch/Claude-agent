@@ -5,9 +5,10 @@
    ───────────────────────────────────────────────────────────── */
 :root {
   /* Brand palette */
-  --bg: #F7F7F4;          /* semi off-white page background */
+  --bg: #FFFFFF;          /* page background: true white */
   --surface: #FFFFFF;     /* cards, product tiles */
-  --surface-alt: #EEEFEA; /* alternate sections */
+  --surface-soft: #F7F7F4;/* soft off-white panels (original brand bg) */
+  --surface-alt: #EEEFEA; /* chips, wells, alternate fills */
   --navy: #2B3044;        /* primary: headings, nav, footer, body text */
   --mint: #6CC89A;        /* accent: buttons, badges, icons */
   --mint-dark: #1F7A4D;   /* mint for text on light backgrounds */
@@ -17,31 +18,39 @@
 
   /* Derived */
   --text: var(--navy);
+  --navy-deep: #1E2233;
   --navy-soft: #3A405A;
-  --on-navy: #F7F7F4;
+  --on-navy: #FFFFFF;
   --on-navy-muted: #B9BDCB;
+  --border-soft: #ECEDE8;
+  --mint-mid: #4FB283;
+  --mint-bright: #7AD2A6;
+  --border-strong: #C8CAC1;
   --danger: #B3261E;
   --danger-light: #FBE9E7;
   --focus: var(--mint-dark);
+  --hero-wash: linear-gradient(180deg, #F3F8F5 0%, #FFFFFF 100%);
+  --tile-wash: linear-gradient(160deg, #F4F6F3 0%, #E9EEEA 100%);
 
   /* Type */
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Manrope Variable", var(--font-sans);
+  --font-display: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Scale */
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 22px;
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 24px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgba(43, 48, 68, 0.06);
-  --shadow: 0 6px 24px -8px rgba(43, 48, 68, 0.14);
-  --shadow-lg: 0 24px 60px -20px rgba(43, 48, 68, 0.28);
+  --shadow-sm: 0 1px 2px rgba(30, 34, 51, 0.05), 0 1px 1px rgba(30, 34, 51, 0.03);
+  --shadow: 0 2px 4px rgba(30, 34, 51, 0.04), 0 12px 32px -12px rgba(30, 34, 51, 0.14);
+  --shadow-lg: 0 4px 10px rgba(30, 34, 51, 0.05), 0 32px 64px -24px rgba(30, 34, 51, 0.26);
+  --shadow-btn: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 8px 20px -8px rgba(31, 122, 77, 0.55);
 
-  --container: 1240px;
-  --gutter: clamp(16px, 4vw, 32px);
-  --section-y: clamp(64px, 9vw, 120px);
-  --header-h: 72px;
+  --container: 1280px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --section-y: clamp(72px, 9vw, 128px);
+  --header-h: 84px;
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }

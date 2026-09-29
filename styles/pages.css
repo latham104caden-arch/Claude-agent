@@ -1,9 +1,9 @@
 /* ── Generic content pages ───────────────────────────────────── */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 64px); align-items: start; }
 @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(22px, 3vw, 32px); }
+.card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: clamp(24px, 3vw, 36px); box-shadow: var(--shadow-sm); }
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-.card-grid .card h3 { font-size: 18px; margin: 14px 0 6px; }
+.card-grid .card h3 { font-size: 24px; margin: 14px 0 6px; }
 .card-grid .card p { font-size: 14px; color: var(--text-muted); }
 .step-num { width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: var(--on-navy); display: grid; place-items: center; font-weight: 800; font-size: 14px; }
 
@@ -19,26 +19,26 @@
 /* ── FAQ ─────────────────────────────────────────────────────── */
 .faq-group + .faq-group { margin-top: 44px; }
 .faq-group h2 { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mint-dark); font-family: var(--font-sans); margin-bottom: 12px; }
-.acc { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
-.acc details + details { border-top: 1px solid var(--border); }
-.acc summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 20px; font-weight: 700; }
+.acc { border: 1px solid var(--border-soft); border-radius: var(--radius-lg); background: var(--surface); overflow: hidden; box-shadow: var(--shadow-sm); }
+.acc details + details { border-top: 1px solid var(--border-soft); }
+.acc summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; font-family: var(--font-display); font-size: 20px; font-weight: 500; }
 .acc summary::-webkit-details-marker { display: none; }
 .acc summary svg { width: 18px; height: 18px; flex: none; transition: transform 0.25s var(--ease); color: var(--mint-dark); }
 .acc details[open] summary svg { transform: rotate(45deg); }
-.acc details > div { padding: 0 20px 18px; color: var(--text-muted); }
+.acc details > div { padding: 0 24px 20px; color: var(--text-muted); }
 
 /* ── COA table ───────────────────────────────────────────────── */
-.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border-soft); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-sm); }
 .table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 680px; }
-.table th { text-align: left; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); font-weight: 700; padding: 14px 18px; background: var(--surface-alt); }
-.table td { padding: 16px 18px; border-top: 1px solid var(--border); }
+.table th { text-align: left; font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); font-weight: 700; padding: 16px 20px; background: var(--surface-soft); }
+.table td { padding: 18px 20px; border-top: 1px solid var(--border-soft); }
 .table tr:target td { background: var(--mint-light); }
 .table a { color: var(--mint-dark); font-weight: 600; }
 
 /* ── Membership ──────────────────────────────────────────────── */
 .plan { max-width: 440px; margin: 0 auto; text-align: center; border: 2px solid var(--mint); position: relative; }
 .plan .badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); }
-.plan-price { font-family: var(--font-display); font-size: 52px; font-weight: 800; margin: 12px 0 2px; }
+.plan-price { font-family: var(--font-display); font-size: 60px; font-weight: 500; margin: 12px 0 2px; }
 .plan-price small { font-size: 16px; color: var(--text-muted); font-weight: 600; }
 .plan ul { list-style: none; padding: 0; margin: 22px 0; text-align: left; display: grid; gap: 12px; }
 .plan li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; }
@@ -57,21 +57,21 @@
 .cart-page { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; padding: 32px 0 var(--section-y); }
 .summary { position: sticky; top: calc(var(--header-h) + 20px); }
 .summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; }
-.summary-row.total { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 16px; font-weight: 800; font-size: 19px; }
+.summary-row.total { border-top: 1px solid var(--border-soft); margin-top: 8px; padding-top: 16px; font-weight: 600; font-size: 19px; }
 .summary .btn { margin-top: 18px; }
 .checkout-grid { display: grid; grid-template-columns: 1fr 400px; gap: 32px; align-items: start; padding: 32px 0 var(--section-y); }
 .checkout-grid fieldset { border: 0; padding: 0; margin: 0 0 28px; }
-.checkout-grid legend { font-family: var(--font-display); font-weight: 800; font-size: 20px; margin-bottom: 16px; }
+.checkout-grid legend { font-family: var(--font-display); font-weight: 500; font-size: 28px; margin-bottom: 16px; }
 @media (max-width: 960px) { .cart-page, .checkout-grid { grid-template-columns: 1fr; } .summary { position: static; } }
 
 /* ── Research library ────────────────────────────────────────── */
 .article-card { display: flex; flex-direction: column; gap: 10px; transition: transform 0.25s var(--ease), box-shadow 0.25s; }
 .article-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 .article-card time { font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-.article-card h2 { font-size: 20px; }
+.article-card h2 { font-size: 26px; }
 .article-card p { font-size: 14px; color: var(--text-muted); }
 
 /* ── 404 ─────────────────────────────────────────────────────── */
 .nf { text-align: center; padding: clamp(80px, 12vw, 160px) 0; }
-.nf .h1 { font-size: clamp(72px, 12vw, 140px); color: var(--mint); }
+.nf .h1 { font-size: clamp(96px, 14vw, 180px); color: var(--mint); font-style: italic; }
 .nf .btn { margin-top: 28px; }

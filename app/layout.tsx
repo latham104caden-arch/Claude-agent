@@ -7,9 +7,11 @@ import { Header } from "../components/chrome/Header";
 import { Footer } from "../components/chrome/Footer";
 import { EntryGate } from "../components/chrome/EntryGate";
 import { Reveal } from "../components/chrome/Reveal";
+import { Announcement } from "../components/chrome/Announcement";
 
 import "@fontsource-variable/inter";
-import "@fontsource-variable/manrope";
+import "@fontsource-variable/newsreader/opsz.css";
+import "@fontsource-variable/newsreader/opsz-italic.css";
 import "../styles/tokens.css";
 import "../styles/base.css";
 import "../styles/chrome.css";
@@ -30,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F7F7F4",
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
 };
@@ -46,9 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <a className="skip-link" href="#main">Skip to content</a>
         <CartProvider>
-          <div className="topbar">
-            Free shipping on orders over <strong>${SITE.freeShippingThreshold}</strong> · COAs published for every lot
-          </div>
+          <Announcement />
           <Header products={searchIndex} />
           <main id="main">{children}</main>
           <Footer />

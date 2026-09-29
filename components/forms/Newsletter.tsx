@@ -7,10 +7,10 @@ export function Newsletter() {
   const { state, message, submit } = useStubSubmit("/api/newsletter");
   return (
     <section className="newsletter">
-      <div className="container newsletter-inner">
+      <div className="container"><div className="newsletter-inner">
         <div>
           <p className="eyebrow">Stay in the loop</p>
-          <h2 className="h2" style={{ fontSize: "clamp(26px, 3vw, 36px)" }}>New compounds, restocks and <em>lab notes.</em></h2>
+          <h2 className="h2" style={{ fontSize: "clamp(30px, 3.4vw, 44px)" }}>New compounds, restocks and <em>lab notes.</em></h2>
         </div>
         <div>
           <form onSubmit={submit} noValidate={false}>
@@ -24,7 +24,7 @@ export function Newsletter() {
             {state === "idle" ? "No spam. Unsubscribe any time." : message}
           </p>
         </div>
-      </div>
+      </div></div>
     </section>
   );
 }

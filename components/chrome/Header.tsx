@@ -75,6 +75,9 @@ export function Header({ products }: { products: ProductSummary[] }) {
               <Icon name="bag" />
               {ready && count > 0 ? <span className="cart-count">{count}</span> : null}
             </button>
+            <Link href="/shop" className="btn btn--navy hdr-cta">
+              Shop Now <Icon name="arrow" />
+            </Link>
           </div>
         </div>
       </header>

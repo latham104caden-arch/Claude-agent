@@ -8,33 +8,50 @@ import { SectionHead } from "../ui";
 import { ProductCard } from "../product/ProductCard";
 
 export function Hero() {
-  const heroVials = ["bpc-157", "ghk-cu", "tb-500"]
-    .map((s) => getCatalog().find((p) => p.slug === s))
-    .filter(Boolean) as ReturnType<typeof getCatalog>;
+  const catalog = getCatalog();
+  const pick = (slug: string) => catalog.find((p) => p.slug === slug);
+  // Two staggered columns of product tiles (Biologix-style wall).
+  const cols = [
+    ["mots-c", "bpc-157", "nad-plus"],
+    ["ghk-cu", "tb-500", "epitalon"],
+  ].map((c) => c.map(pick).filter(Boolean) as ReturnType<typeof getCatalog>);
   return (
     <section className="hero">
       <div className="container hero-grid">
-        <div>
-          <p className="eyebrow" data-reveal="">Research Compounds · Verified by Lot</p>
+        <div className="hero-copy">
+          <p className="eyebrow" data-reveal="">Third-party tested · COA every lot</p>
           <h1 className="h1" data-reveal="" data-reveal-delay="60">
-            Research, <em>revised.</em>
+            Premium research<br />
+            <em className="underline-accent">compounds, verified.</em>
           </h1>
-          <p className="lead" data-reveal="" data-reveal-delay="120">
-            High-purity research compounds with an independent certificate of analysis published for every lot — before it ships.
-          </p>
-          <div className="hero-ctas" data-reveal="" data-reveal-delay="180">
-            <Link href="/shop" className="btn btn--primary">Shop Compounds <Icon name="arrow" /></Link>
-            <Link href="/coas" className="btn btn--ghost">View COAs</Link>
+          <div className="hero-stats" data-reveal="" data-reveal-delay="120">
+            <div><b>≥99%</b><span>HPLC purity target</span></div>
+            <div><b>100%</b><span>Lots with a public COA</span></div>
+            <div><b>1 day</b><span>Order to carrier</span></div>
           </div>
-          <div className="hero-proof" data-reveal="" data-reveal-delay="240">
-            <span><Icon name="shield" /> ≥99% purity</span>
-            <span><Icon name="cert" /> Third-party tested</span>
-            <span><Icon name="truck" /> Ships in 1 business day</span>
+          <p className="lead" data-reveal="" data-reveal-delay="160">
+            Every lot is independently tested and its certificate published before it ships — so you can read the result before you order.
+          </p>
+          <div className="hero-ctas" data-reveal="" data-reveal-delay="200">
+            <Link href="/shop" className="btn btn--navy">Shop Compounds <Icon name="arrow" /></Link>
+            <Link href="/coas" className="btn btn--ghost">View COA Library</Link>
+          </div>
+          <div className="hero-chips" data-reveal="" data-reveal-delay="240">
+            <span className="chip"><Icon name="shield" /> ≥99% HPLC purity</span>
+            <span className="chip"><Icon name="flask" /> Third-party tested</span>
+            <span className="chip"><Icon name="coa" /> COA every batch</span>
+            <span className="chip"><Icon name="truck" /> Ships in 1 business day</span>
           </div>
         </div>
-        <div className="hero-art" aria-hidden="true">
-          {heroVials.map((p) => (
-            <Vial key={p.slug} name={p.name} option={p.variants[p.variants.length - 1].option} accent={p.accent} />
+        <div className="hero-wall" aria-hidden="true">
+          {cols.map((col, ci) => (
+            <div className={"hero-col hero-col--" + ci} key={ci}>
+              {col.map((p) => (
+                <Link key={p.slug} href={`/product/${p.slug}`} className="hero-tile" tabIndex={-1}>
+                  <Vial name={p.name} option={p.variants[p.variants.length - 1].option} accent={p.accent} />
+                </Link>
+              ))}
+            </div>
           ))}
         </div>
       </div>
@@ -48,7 +65,11 @@ export function Ticker() {
     <section className="ticker" aria-label="Revised Research at a glance">
       <p className="sr-only">{TICKER.join(" · ")}</p>
       <div className="ticker-track" aria-hidden="true">
-        {items.map((t, i) => <span className="ticker-item" key={i}>{t}</span>)}
+        {items.map((t, i) => (
+          <span className="ticker-item" key={i}>
+            <span className="ticker-dot"><Icon name="check" strokeWidth={2.6} /></span>{t}
+          </span>
+        ))}
       </div>
     </section>
   );

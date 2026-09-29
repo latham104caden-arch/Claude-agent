@@ -1,12 +1,17 @@
 import Link from "next/link";
 import { FOOTER_COLUMNS, LEGAL_LINKS, RUO_DISCLAIMER, SITE } from "../../lib/site";
 import { Brand } from "../Brand";
+import { Icon } from "../Icon";
 
 export function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="footer">
       <div className="container">
+        <div className="footer-top">
+          <h2>Research with <em>proof</em> on every vial.</h2>
+          <Link href="/shop" className="btn btn--primary">Shop Compounds <Icon name="arrow" /></Link>
+        </div>
         <div className="footer-grid">
           <div>
             <Brand />
