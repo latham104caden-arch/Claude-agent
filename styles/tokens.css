@@ -4,53 +4,57 @@
    values in components; add a token here instead.
    ───────────────────────────────────────────────────────────── */
 :root {
-  /* Core palette */
+  /* Core palette — v3: stronger slate / grayish blue */
   --bg: #FFFFFF;            /* page background: true white */
   --surface: #FFFFFF;       /* cards, product tiles */
-  --surface-soft: #F4F6F8;  /* cool off-white panels */
-  --surface-alt: #E9EDF1;   /* chips, wells, alternate fills */
-  --ink: #26303D;           /* primary: headings, nav, body text */
-  --accent: #6F86A0;        /* grayish blue: buttons, icons, highlights */
-  --accent-ink: #4A6079;    /* grayish blue for text on white (AA) */
-  --accent-soft: #E6ECF2;   /* badge and callout backgrounds */
-  --silver: #C4CBD3;        /* silver gray: metal, dividers, sheen */
-  --silver-light: #DDE2E7;
-  --text-muted: #647080;    /* secondary text */
-  --border: #D9DEE4;        /* dividers, card borders */
+  --surface-soft: #ECF1F6;  /* blue-tinted off-white panels */
+  --surface-alt: #DDE5EE;   /* chips, wells, alternate fills */
+  --ink: #223044;           /* primary: headings, nav, body text (blue-black) */
+  --accent: #5E7894;        /* grayish blue: buttons, icons, highlights */
+  --accent-ink: #3F5874;    /* grayish blue for text on white (AA) */
+  --accent-soft: #DCE5EF;   /* badge and callout backgrounds */
+  --silver: #BAC6D3;        /* silver gray with a blue cast */
+  --silver-light: #D6DFE8;
+  --text-muted: #5A6A7E;    /* secondary text */
+  --border: #CFD9E4;        /* dividers, card borders */
 
   /* Derived */
   --text: var(--ink);
-  --ink-deep: #1A222D;
-  --ink-soft: #3A4757;
+  --ink-deep: #172233;
+  --ink-soft: #34465E;
   --on-ink: #FFFFFF;
-  --on-ink-muted: #B7C0CB;
-  --border-soft: #E8ECF0;
-  --border-strong: #BCC4CD;
-  --accent-mid: #5A7089;
-  --accent-bright: #93A7BD;
+  --on-ink-muted: #B4C2D2;
+  --border-soft: #E1E8F0;
+  --border-strong: #AFBDCC;
+  --accent-mid: #4E6781;
+  --accent-bright: #8DA4BE;
   --danger: #B3261E;
   --danger-light: #FBE9E7;
   --focus: var(--accent-ink);
+  /* Primary action color: buttons, active nav, selected states */
+  --action: #435D7A;
+  --action-hi: #5A7592;
+  --action-lo: #34495F;
 
-  /* Signature blurred backdrops (soft, out-of-focus slate + silver light) */
+  /* Signature blurred backdrops (soft, out-of-focus slate-blue light) */
   --blur-light:
-    radial-gradient(40% 55% at 10% 16%, rgba(147, 167, 189, 0.55) 0%, transparent 70%),
-    radial-gradient(34% 46% at 88% 12%, rgba(196, 203, 211, 0.55) 0%, transparent 70%),
-    radial-gradient(48% 62% at 74% 86%, rgba(111, 134, 160, 0.38) 0%, transparent 72%),
-    linear-gradient(180deg, #EEF2F6 0%, #FFFFFF 100%);
+    radial-gradient(42% 58% at 8% 14%, rgba(122, 146, 172, 0.62) 0%, transparent 70%),
+    radial-gradient(36% 48% at 90% 10%, rgba(176, 192, 210, 0.7) 0%, transparent 70%),
+    radial-gradient(50% 64% at 74% 88%, rgba(94, 120, 148, 0.5) 0%, transparent 72%),
+    linear-gradient(180deg, #DCE5EE 0%, #F4F7FA 100%);
   --blur-dark:
-    radial-gradient(40% 60% at 18% 20%, rgba(147, 167, 189, 0.55) 0%, transparent 70%),
-    radial-gradient(36% 50% at 85% 30%, rgba(221, 226, 231, 0.28) 0%, transparent 70%),
-    radial-gradient(50% 70% at 60% 100%, rgba(26, 34, 45, 0.7) 0%, transparent 70%),
-    linear-gradient(160deg, #5A7089 0%, #3F5068 55%, #2B3748 100%);
+    radial-gradient(42% 62% at 16% 18%, rgba(141, 164, 190, 0.6) 0%, transparent 70%),
+    radial-gradient(36% 50% at 86% 28%, rgba(214, 223, 232, 0.25) 0%, transparent 70%),
+    radial-gradient(52% 72% at 60% 100%, rgba(23, 34, 51, 0.6) 0%, transparent 70%),
+    linear-gradient(160deg, #6A84A0 0%, #4C6480 52%, #33475F 100%);
   --hero-wash: var(--blur-light);
   --stage-bg:
-    radial-gradient(46% 56% at 28% 46%, #FFFFFF 0%, rgba(255, 255, 255, 0) 70%),
-    radial-gradient(40% 50% at 90% 10%, rgba(147, 167, 189, 0.45) 0%, transparent 70%),
-    radial-gradient(50% 60% at 10% 100%, rgba(111, 134, 160, 0.28) 0%, transparent 70%),
-    linear-gradient(180deg, #E4E8ED 0%, #D3D9E0 100%);
-  --tile-wash: linear-gradient(160deg, #F3F5F8 0%, #E3E8EE 100%);
-  --silver-sheen: linear-gradient(100deg, #4A6079 0%, #8497AD 45%, #5A7089 70%, #3F5068 100%);
+    radial-gradient(44% 54% at 28% 46%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 70%),
+    radial-gradient(42% 52% at 90% 8%, rgba(141, 164, 190, 0.6) 0%, transparent 70%),
+    radial-gradient(52% 62% at 8% 100%, rgba(94, 120, 148, 0.42) 0%, transparent 70%),
+    linear-gradient(180deg, #CCD8E4 0%, #AEBFD0 100%);
+  --tile-wash: linear-gradient(160deg, #D5DFEA 0%, #BCCBDA 100%);
+  --silver-sheen: linear-gradient(100deg, #3F5874 0%, #7E98B4 45%, #4E6781 70%, #33475F 100%);
 
   /* Vial label print (matches the studio photo's label) */
   --label-ink: #1C1F24;
@@ -67,10 +71,10 @@
   --radius: 16px;
   --radius-lg: 24px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgba(26, 34, 45, 0.05), 0 1px 1px rgba(26, 34, 45, 0.03);
-  --shadow: 0 2px 4px rgba(26, 34, 45, 0.04), 0 12px 32px -12px rgba(26, 34, 45, 0.16);
-  --shadow-lg: 0 4px 10px rgba(26, 34, 45, 0.05), 0 32px 64px -24px rgba(26, 34, 45, 0.28);
-  --shadow-btn: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 8px 20px -8px rgba(74, 96, 121, 0.6);
+  --shadow-sm: 0 1px 2px rgba(23, 34, 51, 0.05), 0 1px 1px rgba(23, 34, 51, 0.03);
+  --shadow: 0 2px 4px rgba(23, 34, 51, 0.04), 0 12px 32px -12px rgba(23, 34, 51, 0.16);
+  --shadow-lg: 0 4px 10px rgba(23, 34, 51, 0.05), 0 32px 64px -24px rgba(23, 34, 51, 0.28);
+  --shadow-btn: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 8px 20px -8px rgba(63, 88, 116, 0.6);
 
   /* Frosted glass */
   --glass: rgba(255, 255, 255, 0.58);

@@ -33,20 +33,22 @@ Node 22.6 or newer. No env vars are needed yet. `.env.example` lists the future 
 4. Deploy. Pushes to the production branch deploy production; other branches get Preview URLs.
 5. Later: add the domain under **Project → Settings → Domains** and set `NEXT_PUBLIC_SITE_URL`.
 
-## Brand tokens (v2: silver · slate blue · white)
+## Brand tokens (v3: stronger slate / grayish blue · silver · white)
 
 | Token | Hex | Use |
 |---|---|---|
 | `--bg` / `--surface` | `#FFFFFF` | page background, cards |
-| `--surface-soft` | `#F4F6F8` | cool off-white panels |
-| `--surface-alt` | `#E9EDF1` | chips, wells |
-| `--ink` | `#26303D` | headings, nav, body text |
-| `--accent` | `#6F86A0` | grayish blue: buttons, icons |
-| `--accent-ink` | `#4A6079` | grayish blue text on white |
-| `--accent-soft` | `#E6ECF2` | badge and callout backgrounds |
-| `--silver` | `#C4CBD3` | silver gray: metal, dividers, sheen |
-| `--text-muted` | `#647080` | secondary text |
-| `--border` | `#D9DEE4` | dividers, card borders |
+| `--surface-soft` | `#ECF1F6` | blue-tinted panels, alternate sections |
+| `--surface-alt` | `#DDE5EE` | chips, wells |
+| `--ink` | `#223044` | headings, body text |
+| `--action` | `#435D7A` | primary buttons, active nav, selected states |
+| `--accent` | `#5E7894` | grayish blue: icons, highlights |
+| `--accent-ink` | `#3F5874` | grayish blue text on white |
+| `--accent-soft` | `#DCE5EF` | badge and callout backgrounds |
+| `--silver` | `#BAC6D3` | silver gray: metal, dividers, sheen |
+| `--tile-wash` | `#D5DFEA → #BCCBDA` | product tile backgrounds |
+| `--text-muted` | `#5A6A7E` | secondary text |
+| `--border` | `#CFD9E4` | dividers, card borders |
 
 Signature look: soft, out-of-focus slate and silver backdrops (`--blur-light`, `--blur-dark`) with film grain, plus frosted-glass panels (`.glass`). Components never hard-code a hex value. If you need a new color, add a token.
 
