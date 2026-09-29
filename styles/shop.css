@@ -28,6 +28,19 @@
   .pcard-foot .btn { height: 42px; font-size: 13px; padding: 0 10px; }
 }
 
+/* ── Vial photo (image + live label text) ────────────────────── */
+.vial-photo { position: relative; display: block; aspect-ratio: 412 / 852; container-type: inline-size; flex: none; }
+.vial-photo img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; }
+.vp-name {
+  position: absolute; left: 16.3%; top: 42.4%; line-height: 1; white-space: nowrap;
+  font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.02em; color: var(--label-ink);
+}
+.vp-opt {
+  position: absolute; left: 15.6%; top: 50.2%; line-height: 1; white-space: nowrap;
+  font-family: var(--font-sans); font-size: 4.4cqw; font-weight: 600; color: var(--label-ink-soft);
+  padding: 1.3cqw 4.4cqw; border: 0.5cqw solid var(--label-rule); border-radius: 99px;
+}
+
 /* ── Vial art ────────────────────────────────────────────────── */
 .vial { height: auto; filter: drop-shadow(0 18px 22px rgba(26, 34, 45, 0.18)); }
 
@@ -247,11 +260,11 @@
   display: grid; grid-template-columns: 0.95fr 1.05fr; gap: clamp(24px, 4vw, 56px); align-items: center;
   border-radius: var(--radius-lg); padding: clamp(24px, 4vw, 48px); overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow-lg);
 }
-.bundle-art { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 4%; min-height: 340px; padding-bottom: 40px; }
+.bundle-art { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 4%; min-height: 360px; padding: 28px 20px 44px; border-radius: calc(var(--radius-lg) - 6px); background: var(--stage-bg); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; }
 .bundle-vial { width: clamp(90px, 11vw, 132px); position: relative; z-index: 1; filter: drop-shadow(0 24px 24px rgba(0, 0, 0, 0.35)); animation: stage-float 6s ease-in-out infinite; }
 .bundle-vial--0 { transform-origin: bottom; rotate: -5deg; }
 .bundle-vial--1 { rotate: 5deg; animation-delay: -3s; }
-.bundle-pedestal { position: absolute; left: 50%; bottom: 14px; width: 78%; aspect-ratio: 5 / 1; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(60% 60% at 50% 38%, rgba(255, 255, 255, 0.95), rgba(221, 226, 231, 0.7) 60%, rgba(196, 203, 211, 0.4)); box-shadow: 0 24px 40px -18px rgba(0, 0, 0, 0.5); }
+.bundle-pedestal { position: absolute; left: 50%; bottom: 22px; width: 72%; aspect-ratio: 5 / 1; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(60% 60% at 50% 38%, rgba(255, 255, 255, 0.95), rgba(221, 226, 231, 0.7) 60%, rgba(196, 203, 211, 0.4)); box-shadow: 0 24px 40px -18px rgba(0, 0, 0, 0.5); }
 .bundle-copy h3 { font-size: clamp(38px, 4.4vw, 60px); color: var(--on-ink); letter-spacing: -0.03em; }
 .bundle-desc { color: var(--on-ink-muted); margin-top: 10px; max-width: 48ch; }
 .bundle-list { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 8px; }

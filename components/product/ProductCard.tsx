@@ -8,7 +8,7 @@ export function ProductCard({ p, delay = 0 }: { p: ProductSummary; delay?: numbe
   return (
     <article className="pcard" data-reveal="" data-reveal-delay={String(delay)}>
       <div className="pcard-art">
-        <Vial name={p.name} option={p.singleVariant ? p.firstOption : undefined} accent={p.accent} />
+        <Vial name={p.name} option={p.firstOption} accent={p.accent} />
         <div className="pcard-badges">
           {p.badge ? <span className="badge">{p.badge}</span> : null}
           {!p.inStock ? <span className="badge badge--muted">Sold out</span> : null}

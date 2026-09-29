@@ -52,6 +52,11 @@
   --tile-wash: linear-gradient(160deg, #F3F5F8 0%, #E3E8EE 100%);
   --silver-sheen: linear-gradient(100deg, #4A6079 0%, #8497AD 45%, #5A7089 70%, #3F5068 100%);
 
+  /* Vial label print (matches the studio photo's label) */
+  --label-ink: #1C1F24;
+  --label-ink-soft: #3A3D42;
+  --label-rule: #9A9EA5;
+
   /* Type */
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
