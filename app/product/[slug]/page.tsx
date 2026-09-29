@@ -2,13 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCatalog, getCategory, getProduct, related, summarize } from "../../../lib/catalog";
-import { RUO_SHORT } from "../../../lib/site";
 import { JsonLd, productLd } from "../../../lib/seo";
-import { Crumbs, SectionHead } from "../../../components/ui";
-import { Vial } from "../../../components/Vial";
-import { Icon } from "../../../components/Icon";
+import { SectionHead } from "../../../components/ui";
 import { ProductCard } from "../../../components/product/ProductCard";
-import { ProductPurchase } from "../../../components/product/ProductPurchase";
+import { ProductStage } from "../../../components/product/ProductStage";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -35,32 +32,12 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <JsonLd data={productLd(p)} />
-      <div className="container" style={{ paddingTop: 24 }}>
-        <Crumbs items={[{ href: "/shop", label: "Compounds" }, ...(cat ? [{ href: `/product-category/${cat.slug}`, label: cat.name }] : []), { label: p.name }]} />
-      </div>
-
-      <section className="container pdp">
-        <div className="pdp-gallery">
-          <Vial name={p.name} option={p.variants[0].option} accent={p.accent} />
-        </div>
-        <div className="pdp-info">
-          <p className="pdp-sub">{p.subtitle}</p>
-          <h1>{p.name}</h1>
-          <div className="pdp-badges">
-            <span className="badge">Research Use Only</span>
-            {p.coaLot ? <span className="badge badge--dark">COA available</span> : null}
-            {p.badge ? <span className="badge">{p.badge}</span> : null}
-          </div>
-          <p className="pdp-desc">{p.description}</p>
-          <ProductPurchase product={p} />
-          <div className="pdp-assure">
-            <div><Icon name="shield" /> ≥99% purity target</div>
-            <div><Icon name="cert" /> Third-party tested</div>
-            <div><Icon name="truck" /> Ships in 1 business day</div>
-          </div>
-          <div className="callout pdp-ruo"><strong>Research use only.</strong> {RUO_SHORT}</div>
-        </div>
-      </section>
+      <ProductStage
+        product={p}
+        categoryName={cat?.name}
+        categorySlug={cat?.slug}
+        pairs={related(p, 4).map(summarize).filter((r) => r.inStock)}
+      />
 
       <section className="section section--alt">
         <div className="container">

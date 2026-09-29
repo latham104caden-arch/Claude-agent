@@ -44,6 +44,11 @@
     radial-gradient(50% 70% at 60% 100%, rgba(26, 34, 45, 0.7) 0%, transparent 70%),
     linear-gradient(160deg, #5A7089 0%, #3F5068 55%, #2B3748 100%);
   --hero-wash: var(--blur-light);
+  --stage-bg:
+    radial-gradient(46% 56% at 28% 46%, #FFFFFF 0%, rgba(255, 255, 255, 0) 70%),
+    radial-gradient(40% 50% at 90% 10%, rgba(147, 167, 189, 0.45) 0%, transparent 70%),
+    radial-gradient(50% 60% at 10% 100%, rgba(111, 134, 160, 0.28) 0%, transparent 70%),
+    linear-gradient(180deg, #E4E8ED 0%, #D3D9E0 100%);
   --tile-wash: linear-gradient(160deg, #F3F5F8 0%, #E3E8EE 100%);
   --silver-sheen: linear-gradient(100deg, #4A6079 0%, #8497AD 45%, #5A7089 70%, #3F5068 100%);
 
