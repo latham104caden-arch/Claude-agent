@@ -147,7 +147,7 @@ export function BestSellers() {
   return (
     <section className="section">
       <div className="container">
-        <SectionHead eyebrow="Shop Best Sellers" title={<>Trusted by <em>Researchers.</em></>} action={{ href: "/shop", label: "Shop All" }} />
+        <SectionHead eyebrow="Shop Best Sellers" title={<>Chosen by over 10k <em>Researchers.</em></>} action={{ href: "/shop", label: "Shop All" }} />
         <div className="grid-products">
           {list.map((p, i) => <ProductCard key={p.slug} p={p} delay={(i % 4) * 60} />)}
         </div>
