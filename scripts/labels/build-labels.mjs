@@ -39,7 +39,7 @@ const CATEGORIES = [
       ["CJC-1295 DAC", "5mg"], ["CJC-1295 No DAC", "5mg"], ["Sermorelin", "5mg"], ["Tesamorelin", "10mg"],
       ["Ipamorelin", "10mg"], ["GHRP-2", "10mg"], ["GHRP-6", "10mg"], ["Hexarelin", "5mg"],
       ["IGF-1 LR3", "1mg"], ["AOD-9604", "5mg"], ["HGH Frag 176-191", "5mg"], ["MOTS-c", "10mg"],
-      ["SS-31", "10mg"], ["Humanin", "5mg"], ["CJC-1295 + Ipamorelin", "10mg"],
+      ["SS-31", "10mg"], ["Humanin", "5mg"], ["CJC-1295 + Ipa", "10mg"],
     ],
   },
   {
@@ -72,30 +72,32 @@ body { background: transparent; font-family: Inter, sans-serif; -webkit-font-smo
     linear-gradient(180deg, rgba(255,255,255,.06) 0%, transparent 22%, transparent 78%, rgba(0,0,0,.14) 100%),
     linear-gradient(90deg, transparent 5%, rgba(255,255,255,.16) 13%, transparent 26%),
     linear-gradient(90deg, var(--c0) 0%, var(--c1) 14%, var(--c2) 45%, var(--c3) 100%); }
-.top { position: absolute; left: 22px; top: 16px; width: 418px; }
+.top { position: absolute; left: 22px; top: 18px; width: 300px; }
 .name { font-weight: 700; letter-spacing: -.01em; line-height: 1.04; white-space: nowrap; }
-.row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-.pill { background: #fff; color: #3A3F47; font-size: 28px; font-weight: 600; height: 42px; line-height: 42px; padding: 0 14px; border-radius: 13px; }
-.purity { font-size: 20px; font-weight: 500; height: 36px; line-height: 33px; padding: 0 12px; border: 1.5px solid rgba(255,255,255,.85); border-radius: 999px; }
-.bottom { position: absolute; left: 22px; bottom: 14px; }
-.made { font-size: 25px; font-weight: 600; }
-.ruo { margin-top: 3px; font-size: 19px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
-.word { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; line-height: 1;
-  font-size: 38px; font-weight: 600; letter-spacing: .05em; color: rgba(255,255,255,.95); }
+.stack { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; margin-top: 7px; }
+.pill { background: #fff; color: #3A3F47; font-size: 23px; font-weight: 600; height: 35px; line-height: 35px; padding: 0 12px; border-radius: 11px; }
+.purity { font-size: 16px; font-weight: 500; height: 30px; line-height: 27px; padding: 0 10px; border: 1.5px solid rgba(255,255,255,.85); border-radius: 999px; }
+.bottom { position: absolute; left: 22px; bottom: 16px; }
+.made { font-size: 21px; font-weight: 600; }
+.ruo { margin-top: 3px; font-size: 16px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+/* Sits just right of the text block (~1.1 in from the left edge) so it stays
+   on the front of the vial instead of wrapping round the back. */
+.word { position: absolute; left: 340px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; line-height: 1;
+  font-size: 37px; font-weight: 600; letter-spacing: .05em; color: rgba(255,255,255,.95); }
 `;
 
 const labelHtml = (c, [name, mg]) => `
 <div class="label" style="--c0:${c.colors[0]};--c1:${c.colors[1]};--c2:${c.colors[2]};--c3:${c.colors[3]}">
   <div class="top"><div class="name">${esc(name)}</div>
-    <div class="row"><span class="pill">${esc(mg)}</span><span class="purity">99% Purity</span></div></div>
+    <div class="stack"><span class="pill">${esc(mg)}</span><span class="purity">99% Purity</span></div></div>
   <div class="bottom"><div class="made">U.S. Synthesized</div><div class="ruo">Research use only</div></div>
   <div class="word">REVISED</div>
 </div>`;
 
-// Fit each name on one line: 64px (~15pt) down to 34px (~8pt).
+// Fit each name on one line: 52px (~12.5pt) down to 28px (~6.7pt).
 const FIT = `for (const el of document.querySelectorAll('.name')) {
-  const max = el.parentElement.clientWidth; let s = 64; el.style.fontSize = s + 'px';
-  while (el.scrollWidth > max && s > 34) { s -= 1; el.style.fontSize = s + 'px'; }
+  const max = el.parentElement.clientWidth; let s = 52; el.style.fontSize = s + 'px';
+  while (el.scrollWidth > max && s > 28) { s -= 1; el.style.fontSize = s + 'px'; }
   if (el.scrollWidth > max) throw new Error('Name too long for label: ' + el.textContent);
 }`;
 
