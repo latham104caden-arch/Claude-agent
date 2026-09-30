@@ -48,21 +48,21 @@
 }
 
 /* ── Vial photo (image + live label text) ────────────────────── */
-/* Positions are measured from public/vial/vial.webp (746×1695, slate label v2). */
-.vial-photo { position: relative; display: block; aspect-ratio: 746 / 1695; container-type: inline-size; flex: none; }
+/* Positions are measured from public/vial/vial-<tone>.webp (746×1740, category labels v3). */
+.vial-photo { position: relative; display: block; aspect-ratio: 746 / 1740; container-type: inline-size; flex: none; }
 .vial-photo img {
   position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none;
   /* Soft bottom edge so the glass base never ends on a hard line when a vial is tilted. */
   -webkit-mask-image: linear-gradient(180deg, #000 97%, transparent 100%); mask-image: linear-gradient(180deg, #000 97%, transparent 100%);
 }
 .vp-name {
-  position: absolute; left: 11.8%; top: 44.8%; line-height: 1; white-space: nowrap;
-  font-family: var(--font-sans); font-weight: 600; letter-spacing: -0.015em; color: var(--label-ink);
+  position: absolute; left: 10.2%; top: 43.7%; line-height: 1; white-space: nowrap;
+  font-family: var(--font-sans); font-weight: 600; letter-spacing: -0.035em; color: var(--label-ink);
 }
 .vp-opt {
-  position: absolute; left: 11.1%; top: 52.2%; line-height: 1; white-space: nowrap;
-  font-family: var(--font-sans); font-size: 5.2cqw; font-weight: 600; color: var(--label-ink-soft);
-  padding: 4.5cqw 6.6cqw; background: var(--label-pill); border: 0.4cqw solid var(--label-rule); border-radius: 99px;
+  position: absolute; left: 11.3%; top: 51.5%; line-height: 1; white-space: nowrap;
+  font-family: var(--font-sans); font-size: 7cqw; font-weight: 500; color: var(--label-ink-soft);
+  padding: 3.2cqw 2.2cqw; background: var(--label-pill); border: 0.5cqw solid var(--label-rule); border-radius: 3.4cqw;
   box-shadow: 0 0.4cqw 1.2cqw rgba(0, 0, 0, 0.18);
 }
 
@@ -138,7 +138,7 @@
    overflowed to the right instead of sitting centered on the pedestal. */
 .stage-visual-inner { --vial-h: 68cqh; }
 .stage-float { position: relative; z-index: 2; display: flex; justify-content: center; animation: stage-float 6s ease-in-out infinite; margin-bottom: 8%; }
-.stage-vial { height: var(--vial-h); width: calc(var(--vial-h) * 746 / 1695); filter: drop-shadow(0 30px 30px rgba(23, 34, 51, 0.22)); }
+.stage-vial { height: var(--vial-h); width: calc(var(--vial-h) * 746 / 1740); filter: drop-shadow(0 30px 30px rgba(23, 34, 51, 0.22)); }
 .stage-pedestal {
   position: absolute; left: 50%; bottom: 9%; width: min(62%, 440px); aspect-ratio: 4 / 1; transform: translateX(-50%); z-index: 1; border-radius: 50%;
   background: radial-gradient(60% 60% at 50% 38%, #FFFFFF 0%, #F1F4F7 55%, #D5DBE2 100%);

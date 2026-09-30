@@ -1,20 +1,17 @@
 /**
- * Product vial: the studio photo (public/vial/vial-slate.webp — blank label,
- * transparent background) with the product name and size set as live text on
- * the label. One image serves every product, and the label always matches the
- * catalog (including the RUO naming guard) because it is rendered from data,
- * never baked into a picture.
- *
- * Category color comes from pre-tinted copies of the same photo
- * (vial-<tone>.webp), so text positions are identical for every color.
+ * Product vial: a studio photo per category color (public/vial/vial-<tone>.webp,
+ * blank name area, transparent background) with the product name and size set
+ * as live text on the label. The label always matches the catalog (including
+ * the RUO naming guard) because it is rendered from data, never baked into a
+ * picture. All three photos share one crop (scripts/vial/build-vials.mjs), so
+ * the text positions in styles/shop.css fit every color.
  *
  * Text is sized in container-query units (cqw) so it stays locked to the
  * label at every rendered size, from 18px thumbnails to the PDP stage.
  */
-/** Glossy copy of the slate studio photo; vial.webp is the untouched source. */
-export const VIAL_SRC = "/vial/vial-slate.webp";
-/** Category label colors with a pre-tinted photo (scripts/vial/tint-vial.mjs). */
+/** Label colors with a photo; anything else (bundles, supplies) uses navy. */
 const TONES = new Set(["repair", "metabolic", "cognitive"]);
+export const VIAL_SRC = "/vial/vial-metabolic.webp";
 
 export function Vial({
   name,
@@ -24,18 +21,18 @@ export function Vial({
 }: {
   name: string;
   option?: string;
-  /** Label color: "repair" | "metabolic" | "cognitive". Unset = slate. */
+  /** Label color: "repair" | "metabolic" | "cognitive". Unset = navy. */
   accent?: string;
   className?: string;
 }) {
-  const label = name.length > 12 ? name.split(" ")[0] : name;
-  // Fit left of the vertical wordmark (~56% of the vial width; semibold sans ≈ 0.62em per glyph),
+  const label = name.length > 16 ? name.split(" ")[0] : name;
+  // Fit left of the vertical wordmark (~58% of the vial width; semibold sans ≈ 0.62em per glyph),
   // capped at the size the name is printed in the studio design.
-  const size = Math.min(14, +(56 / (Math.max(label.length, 1) * 0.62)).toFixed(2));
+  const size = Math.min(15, +(58 / (Math.max(label.length, 1) * 0.62)).toFixed(2));
   return (
     <span className={"vial-photo " + className} role="img" aria-label={`${name}${option ? " " + option : ""} research vial`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={accent && TONES.has(accent) ? `/vial/vial-${accent}.webp` : VIAL_SRC} alt="" width={746} height={1695} decoding="async" draggable={false} />
+      <img src={accent && TONES.has(accent) ? `/vial/vial-${accent}.webp` : VIAL_SRC} alt="" width={746} height={1740} decoding="async" draggable={false} />
       <span className="vp-name" style={{ fontSize: `${size}cqw` }}>{label}</span>
       {option ? <span className="vp-opt">{option.replace(/\s+/g, "")}</span> : null}
     </span>

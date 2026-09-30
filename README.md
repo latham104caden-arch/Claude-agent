@@ -101,7 +101,7 @@ styles/              tokens, base, chrome, home, shop, pages
 | Payments | Place Order disabled | new `app/api/checkout/*` + Stripe |
 | Accounts / sign-in | Disabled form | database + transactional email |
 | Membership billing | "Coming soon" | Stripe subscriptions |
-| Product photos | One studio vial photo with each product's name and size overlaid as live text (`components/Vial.tsx`, `public/vial/vial.webp`) | per-product photos, if wanted; see `scripts/vial/README.md` |
+| Product photos | Three studio vial photos (one per category color) with each product's name and size overlaid as live text (`components/Vial.tsx`, `public/vial/vial-<tone>.webp`) | per-product photos, if wanted; see `scripts/vial/README.md` |
 | COA PDFs | "PDF pending" | put files in `public/coas/` and set `pdf` in `data/content.ts` |
 
 When checkout is wired, the server must re-price every cart line from the catalog. Cart prices in the browser are display-only.
