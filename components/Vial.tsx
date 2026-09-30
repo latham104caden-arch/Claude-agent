@@ -9,9 +9,8 @@
  * Text is sized in container-query units (cqw) so it stays locked to the
  * label at every rendered size, from 18px thumbnails to the PDP stage.
  */
-/** Label colors with a photo; anything else (bundles, supplies) uses navy. */
+/** Label colors with a photo; anything else (bundles, supplies) uses navy (metabolic). */
 const TONES = new Set(["repair", "metabolic", "cognitive"]);
-export const VIAL_SRC = "/vial/vial-metabolic.webp";
 
 export function Vial({
   name,
@@ -25,15 +24,16 @@ export function Vial({
   accent?: string;
   className?: string;
 }) {
+  const tone = accent && TONES.has(accent) ? accent : "metabolic";
   const label = name.length > 16 ? name.split(" ")[0] : name;
-  // Fit left of the vertical wordmark (~58% of the vial width; semibold sans ≈ 0.62em per glyph),
-  // capped at the size the name is printed in the studio design.
-  const size = Math.min(15, +(58 / (Math.max(label.length, 1) * 0.62)).toFixed(2));
+  // Fit left of the vertical wordmark (~56% of the vial width; semibold sans ≈ 0.62em per glyph),
+  // capped at the size the name is printed in the studio photo (--vp-scale: navy prints larger).
+  const fit = +(56 / (Math.max(label.length, 1) * 0.62)).toFixed(2);
   return (
-    <span className={"vial-photo " + className} role="img" aria-label={`${name}${option ? " " + option : ""} research vial`}>
+    <span className={`vial-photo vial-photo--${tone} ${className}`} role="img" aria-label={`${name}${option ? " " + option : ""} research vial`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={accent && TONES.has(accent) ? `/vial/vial-${accent}.webp` : VIAL_SRC} alt="" width={746} height={1740} decoding="async" draggable={false} />
-      <span className="vp-name" style={{ fontSize: `${size}cqw` }}>{label}</span>
+      <img src={`/vial/vial-${tone}.webp`} alt="" width={746} height={1740} decoding="async" draggable={false} />
+      <span className="vp-name" style={{ fontSize: `min(${fit}cqw, calc(15cqw * var(--vp-scale, 1)))` }}>{label}</span>
       {option ? <span className="vp-opt">{option.replace(/\s+/g, "")}</span> : null}
     </span>
   );

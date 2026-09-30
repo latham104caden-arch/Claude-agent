@@ -59,6 +59,12 @@ for (const [tone, file] of inputs) {
     const print = { ...e };
     e = { x0: e.x0 - 16, x1: e.x1 + 18, y0: e.y0 - 16, y1: e.y1 + 18 };
 
+    // Un-erased crop (with the printed placeholder), for text-position checks only.
+    const cx0 = Math.round((L.x0 + L.x1) / 2 - CROP.w / 2), cy0 = L.y0 - CROP.above;
+    const oc = document.createElement("canvas"); oc.width = CROP.w; oc.height = CROP.h;
+    oc.getContext("2d").drawImage(c, cx0, cy0, CROP.w, CROP.h, 0, 0, CROP.w, CROP.h);
+    const printed = oc.toDataURL("image/jpeg", 0.9);
+
     // Erase: per column, blend from the clean strip above to the one below.
     const avg = (x, ya, yb) => { let s = [0, 0, 0], n = 0; for (let y = ya; y < yb; y++) { const q = at(x, y); s = s.map((v, k) => v + q[k]); n++; } return s.map((v) => v / n); };
     for (let x = e.x0; x <= e.x1; x++) {
@@ -78,26 +84,41 @@ for (const [tone, file] of inputs) {
 
     // Backdrop → alpha. Label and metal cap are opaque.
     const od = og.getImageData(0, 0, CROP.w, CROP.h); const q = od.data;
-    const B = [0, 1, 2].map((k) => Math.max(q[(3 * CROP.w + 3) * 4 + k], q[(3 * CROP.w + CROP.w - 4) * 4 + k]) + 1);
+    const orig = new Uint8ClampedArray(q); // un-keyed crop, for the solid metal fill
     const lab = { x0: L.x0 - cx, x1: L.x1 - cx, y0: L.y0 - cy, y1: L.y1 - cy };
     const capY1 = Math.round(lab.y0 * 0.47); // cap + crimp end about halfway down to the label
+    // Backdrop per row, sampled far left and far right of the vial in the source
+    // and blended across, so vignettes or gray backdrops key out cleanly.
+    const strip = (sx, sy) => { let s = [0, 0, 0], n = 0; for (let y = Math.max(0, sy - 2); y <= Math.min(H - 1, sy + 2); y++) for (let x = sx; x < sx + 100; x += 4) { const v = at(x, y); s = s.map((t, k) => t + v[k]); n++; } return s.map((t) => t / n + 1); };
+    const bgL = [], bgR = [];
+    for (let y = 0; y < CROP.h; y++) { bgL.push(strip(60, y + cy)); bgR.push(strip(W - 160, y + cy)); }
+    const back = (x, y) => { const t = (x + cx - 110) / (W - 220); return [0, 1, 2].map((k) => bgL[y][k] + (bgR[y][k] - bgL[y][k]) * t); };
+    const alphaOf = (i, B) => { let a = 0; for (let k = 0; k < 3; k++) a = Math.max(a, (B[k] - q[i + k]) / B[k]); return a; };
     for (let y = 0; y < CROP.h; y++) for (let x = 0; x < CROP.w; x++) {
       const i = (y * CROP.w + x) * 4;
       if (x >= lab.x0 && x <= lab.x1 && y >= lab.y0 && y <= lab.y1) { q[i + 3] = 255; continue; }
-      const lum = (q[i] + q[i + 1] + q[i + 2]) / 3;
-      if (y < capY1 && lum < (B[0] + B[1] + B[2]) / 3 - 6) {
-        // Metal: opaque wherever it is visibly darker than the backdrop.
-        let a = 0; for (let k = 0; k < 3; k++) a = Math.max(a, (B[k] - q[i + k]) / B[k]);
-        if (a > 0.08) { q[i + 3] = 255; continue; }
-      }
-      let a = 0;
-      for (let k = 0; k < 3; k++) a = Math.max(a, (B[k] - q[i + k]) / B[k]);
-      // Below the label the studio floor casts a faint shadow; drop it so the
-      // crop edge never shows as a box on colored backgrounds.
-      if (a < (y > lab.y1 ? 0.09 : 0.03)) { q[i + 3] = 0; continue; }
-      a = Math.min(1, a * 1.3);
-      for (let k = 0; k < 3; k++) q[i + k] = Math.max(0, Math.min(255, B[k] - (B[k] - q[i + k]) / a));
+      const B = back(x, y);
+      let a = alphaOf(i, B);
+      // Metal: opaque wherever it is visibly darker than the backdrop.
+      if (y < capY1 && a > 0.08) { q[i + 3] = 255; continue; }
+      // Soft knee instead of a hard cutoff: faint pixels fade out smoothly, so
+      // glass never breaks into blocky patches.
+      const t = Math.max(0, Math.min(1, (a - 0.015) / 0.06));
+      a = Math.min(1, a * 1.3) * t * t * (3 - 2 * t);
+      if (a <= 0.002) { q[i + 3] = 0; continue; }
+      for (let k = 0; k < 3; k++) q[i + k] = Math.max(0, Math.min(255, B[k] - (B[k] - q[i + k]) / Math.max(a, 0.05)));
       q[i + 3] = Math.round(a * 255);
+    }
+    // Glass base: find the last row with solid glass under the label, then fade
+    // everything below it (floor shadow / reflection) to nothing.
+    let base = lab.y1;
+    for (let y = lab.y1 + 1; y < CROP.h; y++) {
+      let n = 0; for (let x = lab.x0; x <= lab.x1; x++) if (q[(y * CROP.w + x) * 4 + 3] > 70) n++;
+      if (n > (lab.x1 - lab.x0) * 0.12) base = y;
+    }
+    for (let y = base - 6; y < CROP.h; y++) {
+      const f = Math.max(0, 1 - (y - (base - 6)) / 16);
+      for (let x = 0; x < CROP.w; x++) { const i = (y * CROP.w + x) * 4; q[i + 3] = Math.round(q[i + 3] * f); }
     }
     // Feather the left/right crop edges below the label (glass base + floor
     // shadow run to the edge there) so no straight cut line shows.
@@ -112,18 +133,20 @@ for (const [tone, file] of inputs) {
       let a = -1, z = -1;
       for (let x = 0; x < CROP.w; x++) if (q[(y * CROP.w + x) * 4 + 3] > 60) { if (a < 0) a = x; z = x; }
       if (a < 0 || z - a < CROP.w * 0.5) continue; // only full-width metal rows
-      for (let x = a + 2; x <= z - 2; x++) q[(y * CROP.w + x) * 4 + 3] = 255;
+      for (let x = a + 2; x <= z - 2; x++) { const i = (y * CROP.w + x) * 4; for (let k = 0; k < 3; k++) q[i + k] = orig[i + k]; q[i + 3] = 255; }
     }
     og.putImageData(od, 0, 0);
     const pct = (v, n) => +((v / n) * 100).toFixed(2);
     return {
-      blank, alpha: o.toDataURL("image/webp", 0.92),
+      blank, printed, alpha: o.toDataURL("image/webp", 0.92),
       label: { left: pct(lab.x0, CROP.w), right: pct(CROP.w - lab.x1, CROP.w), top: pct(lab.y0, CROP.h), bottom: pct(CROP.h - lab.y1, CROP.h) },
       print: { left: pct(print.x0 - cx, CROP.w), top: pct(print.y0 - cy, CROP.h), right: pct(print.x1 - cx, CROP.w), bottom: pct(print.y1 - cy, CROP.h) },
     };
   }, { url, CROP });
   writeFileSync(`${root}design/vial-blank-${tone}.jpg`, Buffer.from(out.blank.split(",")[1], "base64"));
   writeFileSync(`${root}public/vial/vial-${tone}.webp`, Buffer.from(out.alpha.split(",")[1], "base64"));
+  // CALIB_DIR: also save the un-erased crop (never commit it: it carries the placeholder name).
+  if (process.env.CALIB_DIR) writeFileSync(`${process.env.CALIB_DIR}/printed-${tone}.jpg`, Buffer.from(out.printed.split(",")[1], "base64"));
   console.log(tone, JSON.stringify({ label: out.label, print: out.print }));
   shown.push(out.alpha);
 }
