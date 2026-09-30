@@ -74,30 +74,30 @@ body { background: transparent; font-family: Inter, sans-serif; -webkit-font-smo
     linear-gradient(90deg, var(--c0) 0%, var(--c1) 14%, var(--c2) 45%, var(--c3) 100%); }
 .top { position: absolute; left: 22px; top: 18px; width: 300px; }
 .name { font-weight: 700; letter-spacing: -.01em; line-height: 1.04; white-space: nowrap; }
-.stack { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; margin-top: 7px; }
-.pill { background: #fff; color: #3A3F47; font-size: 23px; font-weight: 600; height: 35px; line-height: 35px; padding: 0 12px; border-radius: 11px; }
-.purity { font-size: 16px; font-weight: 500; height: 30px; line-height: 27px; padding: 0 10px; border: 1.5px solid rgba(255,255,255,.85); border-radius: 999px; }
+.row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.pill { background: #fff; color: #3A3F47; font-size: 20px; font-weight: 600; height: 31px; line-height: 31px; padding: 0 11px; border-radius: 10px; }
+.purity { font-size: 14px; font-weight: 500; height: 26px; line-height: 23px; padding: 0 9px; border: 1.5px solid rgba(255,255,255,.85); border-radius: 999px; }
 .bottom { position: absolute; left: 22px; bottom: 16px; }
-.made { font-size: 21px; font-weight: 600; }
-.ruo { margin-top: 3px; font-size: 16px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+.made { font-size: 18px; font-weight: 600; }
+.ruo { margin-top: 3px; font-size: 14px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
 /* Sits just right of the text block (~1.1 in from the left edge) so it stays
    on the front of the vial instead of wrapping round the back. */
 .word { position: absolute; left: 340px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; line-height: 1;
-  font-size: 37px; font-weight: 600; letter-spacing: .05em; color: rgba(255,255,255,.95); }
+  font-size: 37px; font-weight: 800; letter-spacing: .05em; color: #fff; }
 `;
 
 const labelHtml = (c, [name, mg]) => `
 <div class="label" style="--c0:${c.colors[0]};--c1:${c.colors[1]};--c2:${c.colors[2]};--c3:${c.colors[3]}">
   <div class="top"><div class="name">${esc(name)}</div>
-    <div class="stack"><span class="pill">${esc(mg)}</span><span class="purity">99% Purity</span></div></div>
+    <div class="row"><span class="pill">${esc(mg)}</span><span class="purity">99% Purity</span></div></div>
   <div class="bottom"><div class="made">U.S. Synthesized</div><div class="ruo">Research use only</div></div>
   <div class="word">REVISED</div>
 </div>`;
 
-// Fit each name on one line: 52px (~12.5pt) down to 28px (~6.7pt).
+// Fit each name on one line: 44px (~10.5pt) down to 26px (~6.2pt).
 const FIT = `for (const el of document.querySelectorAll('.name')) {
-  const max = el.parentElement.clientWidth; let s = 52; el.style.fontSize = s + 'px';
-  while (el.scrollWidth > max && s > 28) { s -= 1; el.style.fontSize = s + 'px'; }
+  const max = el.parentElement.clientWidth; let s = 44; el.style.fontSize = s + 'px';
+  while (el.scrollWidth > max && s > 26) { s -= 1; el.style.fontSize = s + 'px'; }
   if (el.scrollWidth > max) throw new Error('Name too long for label: ' + el.textContent);
 }`;
 
