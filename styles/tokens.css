@@ -62,7 +62,10 @@
   --label-ink-dark: #3E4045;  /* size text on the white supplies label */
   --label-rule-dark: #8C8E93; /* outlined size pill on the supplies label */
   --label-pill: #FFFFFF;
-  --label-pill-shade: #E3E6EA; /* pill's shaded right edge, following the vial's curve */
+  --label-pill-shade: #E9EAEB; /* pill's shaded right edge, following the vial's curve */
+  --label-pill-ink: #6A6C70;  /* size text, printed mid-gray */
+  --label-pill-ink-maroon: #7A2F37; /* size text on the maroon label (printed tinted) */
+  --label-pill-rim: rgba(52, 66, 66, 0.55); /* thin printed rim on the teal label */
   --label-rule: #C9CFD7;
 
   /* COA band flag, in brand palette (read by components/home/WavingFlag.tsx) */
