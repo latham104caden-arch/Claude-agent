@@ -17,13 +17,13 @@ const TONES = new Set(["repair", "metabolic", "cognitive", "supply", "nasal"]);
 /** Approximate width in em of Inter semibold with the label's tight tracking. */
 function textEms(s: string): number {
   let w = 0;
-  for (const ch of s) w += /[A-Z0-9]/.test(ch) ? 0.6 : /[a-z]/.test(ch) ? 0.49 : 0.32;
+  for (const ch of s) w += /[MW]/.test(ch) ? 0.78 : /[A-Z0-9]/.test(ch) ? 0.62 : /[a-z]/.test(ch) ? 0.5 : ch === "+" ? 0.55 : 0.34;
   return w;
 }
 
-/** Long names go on two balanced lines (never ending a line on "+"). */
+/** Names over 12 characters go on two balanced lines (never ending a line on "+"). */
 function nameLines(name: string): string[] {
-  if (name.length <= 16 || !name.includes(" ")) return [name];
+  if (name.length <= 12 || !name.includes(" ")) return [name];
   const words = name.split(" ");
   let best: { lines: string[]; cost: number } | null = null;
   for (let i = 1; i < words.length; i++) {
@@ -48,13 +48,13 @@ export function Vial({
 }) {
   const tone = accent && TONES.has(accent) ? accent : "metabolic";
   const lines = nameLines(name);
-  // Fit left of the vertical wordmark: ~56% of a vial's width (scaled by --vp-room for narrower
+  // Fit comfortably left of the vertical wordmark: ~50% of a vial's width (scaled by --vp-room for narrower
   // labels), using rough semibold glyph widths, capped at the printed size (--vp-scale).
   const ems = Math.max(...lines.map(textEms), 0.5);
-  const fit = +(56 / ems).toFixed(2);
+  const fit = +(50 / ems).toFixed(2);
   const fs = `min(calc(${fit}cqw * var(--vp-room, 1)), calc(15cqw * var(--vp-scale, 1)))`;
-  // The size pill sits just under the name, however many lines it takes.
-  const style = { "--vp-name-h": `calc(${fs} * ${lines.length})` } as CSSProperties;
+  // The size pill sits just under the name, however many lines it takes (a little more air after two).
+  const style = { "--vp-name-h": `calc(${fs} * ${lines.length}${lines.length > 1 ? " + 2.6cqw" : ""})` } as CSSProperties;
   return (
     <span className={`vial-photo vial-photo--${tone} ${className}`} style={style} role="img" aria-label={`${name}${option ? " " + option : ""} research vial`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}

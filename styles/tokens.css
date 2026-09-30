@@ -61,6 +61,7 @@
   --label-ink-soft: #3A3F47;  /* size text inside the pill */
   --label-ink-dark: #111316;  /* product name on the gray supplies label */
   --label-pill: #FFFFFF;
+  --label-pill-shade: #E3E6EA; /* pill's shaded right edge, following the vial's curve */
   --label-rule: #C9CFD7;
 
   /* COA band flag, in brand palette (read by components/home/WavingFlag.tsx) */

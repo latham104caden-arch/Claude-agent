@@ -62,11 +62,13 @@
 .vp-opt {
   position: absolute; left: 10.9%; top: calc(var(--vp-top) + var(--vp-name-h, 15cqw) + var(--vp-gap)); line-height: 1; white-space: nowrap;
   font-family: var(--font-sans); font-size: 7cqw; font-weight: 500; color: var(--label-ink-soft);
-  padding: 3.85cqw 2.2cqw; background: var(--label-pill); border: 0.5cqw solid var(--label-rule); border-radius: 3.4cqw;
-  box-shadow: 0 0.4cqw 1.2cqw rgba(0, 0, 0, 0.18);
+  padding: 3.85cqw 2.2cqw; border: 0.5cqw solid var(--label-rule); border-radius: 3.4cqw;
+  /* Printed, not stuck on: no drop shadow, and the same left-to-right falloff
+     as the label as it wraps round the vial (light from the left). */
+  background: linear-gradient(90deg, var(--label-pill) 0%, var(--label-pill) 35%, var(--label-pill-shade) 100%);
 }
 /* The navy photo prints the name and size larger and a touch further right. */
-.vial-photo--metabolic { --vp-scale: 1.14; --vp-top: 43.3%; --vp-gap: 0.4cqw; }
+.vial-photo--metabolic { --vp-scale: 1.14; --vp-room: 0.9; --vp-top: 43.3%; --vp-gap: 0.4cqw; }
 .vial-photo--metabolic .vp-name { left: 12.2%; }
 .vial-photo--metabolic .vp-opt { left: 12.8%; font-size: 7.5cqw; padding: 3.95cqw 2.4cqw; }
 /* Gray vial (lab supplies): dark print on a light label, smaller pill. */
