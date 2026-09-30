@@ -128,7 +128,21 @@ for (const [tone, file] of inputs) {
 
     // 3) Cut out, in source coordinates.
     const k = new ImageData(new Uint8ClampedArray(px), W, H); const q = k.data;
-    const inLab = (x, y) => x >= L.x0 && x <= L.x1 && y >= L.y0 && y <= L.y1;
+    // The label is solid, but only where it really is: its top and bottom edges
+    // curve round the vial, so take each row's own left/right label edge rather
+    // than the bounding box (whose corners would keep patches of white backdrop).
+    const labSpan = new Map();
+    for (let y = L.y0 - 6; y <= L.y1 + 6; y++) {
+      let a = -1, z = -1;
+      for (let x = L.x0 - 6; x <= L.x1 + 6; x++) if (ink(x, y)) { if (a < 0) a = x; z = x; }
+      if (a >= 0 && z - a > LW * 0.5) labSpan.set(y, [a, z]);
+    }
+    // Near the top/bottom edge only real label pixels count (no light seam where
+    // the label meets the glass); inside, the whole span (white print included).
+    const inLab = (x, y) => {
+      const sp = labSpan.get(y); if (!sp || x < sp[0] || x > sp[1]) return false;
+      return (y > L.y0 + 8 && y < L.y1 - 8) || ink(x, y);
+    };
     if (solid) {
       for (let y = 0; y < H; y++) {
         const sp = spans[y];
