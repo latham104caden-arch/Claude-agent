@@ -62,7 +62,7 @@ export const FAQ: FaqGroup[] = [
     title: "About Compounds and Storage",
     items: [
       { q: "How should lyophilized compounds be stored?", a: "Sealed and frozen at -20°C, protected from light. Refrigerate after reconstitution." },
-      { q: "Do you sell diluent?", a: "Yes — bacteriostatic water is listed under Lab Supplies." },
+      { q: "Do you sell diluent?", a: "Yes — bacteriostatic water is listed as Reconstitution Solution under Lab Supplies." },
     ],
   },
   {

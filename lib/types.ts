@@ -43,7 +43,7 @@ export interface Product {
   popularity: number;
   featured?: boolean;
   badge?: string;
-  /** Vial label color: "repair" | "metabolic" | "cognitive" (see public/vial). Set from the category in data/products.ts. Unset = slate. */
+  /** Product photo: "repair" | "metabolic" | "cognitive" | "supply" | "nasal" (see public/vial). Set from the category in data/products.ts. Unset = navy vial. */
   accent?: string;
   specs: Spec[];
   storage: string[];

@@ -191,11 +191,11 @@ const BASE: Product[] = [
     sources: [],
   },
   {
-    slug: "bacteriostatic-water",
-    name: "Bacteriostatic Water",
+    slug: "reconstitution-solution",
+    name: "Reconstitution Solution",
     category: "supplies",
     subtitle: "Lab Supplies",
-    description: "Sterile water with 0.9% benzyl alcohol for reconstituting lyophilized research compounds.",
+    description: "Bacteriostatic water (sterile water with 0.9% benzyl alcohol) for reconstituting lyophilized research compounds.",
     variants: [
       { sku: "RR-BW3", option: "3 mL", price: 10, inStock: true },
       { sku: "RR-BW10", option: "10 mL", price: 15, inStock: true },
@@ -267,12 +267,13 @@ const ADDED: Product[] = ROWS.map(([slug, name, category, subtitle, description,
   sources: [],
 }));
 
-/** Vial label color per category (public/vial/vial-<tone>.webp, matches the printed labels). */
+/** Product photo per category (public/vial/vial-<tone>.webp; label colors match the printed labels). */
 const TONE: Partial<Record<Product["category"], string>> = {
   "repair-immune": "repair",
   "metabolic-gh": "metabolic",
   "cognitive-longevity": "cognitive",
-  nasal: "cognitive",
+  nasal: "nasal",
+  supplies: "supply",
 };
 
 export const PRODUCTS: Product[] = [...BASE, ...ADDED].map((p) => ({ ...p, accent: p.accent ?? TONE[p.category] }));

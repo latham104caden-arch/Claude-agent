@@ -49,26 +49,33 @@
 
 /* ── Vial photo (image + live label text) ────────────────────── */
 /* Positions are measured from public/vial/vial-<tone>.webp (746×1740, category labels v3). */
-.vial-photo { position: relative; display: block; aspect-ratio: 746 / 1740; container-type: inline-size; flex: none; }
+.vial-photo { position: relative; display: block; aspect-ratio: 746 / 1740; container-type: inline-size; flex: none; --vp-top: 43.7%; --vp-gap: 1.56cqw; }
 .vial-photo img {
   position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none;
   /* Soft bottom edge so the glass base never ends on a hard line when a vial is tilted. */
   -webkit-mask-image: linear-gradient(180deg, #000 97%, transparent 100%); mask-image: linear-gradient(180deg, #000 97%, transparent 100%);
 }
 .vp-name {
-  position: absolute; left: 10.7%; top: 43.7%; line-height: 1; white-space: nowrap;
+  position: absolute; left: 10.7%; top: var(--vp-top); line-height: 1; white-space: nowrap;
   font-family: var(--font-sans); font-weight: 600; letter-spacing: -0.06em; color: var(--label-ink);
 }
 .vp-opt {
-  position: absolute; left: 10.9%; top: 50.8%; line-height: 1; white-space: nowrap;
+  position: absolute; left: 10.9%; top: calc(var(--vp-top) + var(--vp-name-h, 15cqw) + var(--vp-gap)); line-height: 1; white-space: nowrap;
   font-family: var(--font-sans); font-size: 7cqw; font-weight: 500; color: var(--label-ink-soft);
   padding: 3.85cqw 2.2cqw; background: var(--label-pill); border: 0.5cqw solid var(--label-rule); border-radius: 3.4cqw;
   box-shadow: 0 0.4cqw 1.2cqw rgba(0, 0, 0, 0.18);
 }
 /* The navy photo prints the name and size larger and a touch further right. */
-.vial-photo--metabolic { --vp-scale: 1.14; }
-.vial-photo--metabolic .vp-name { left: 12.2%; top: 43.3%; }
+.vial-photo--metabolic { --vp-scale: 1.14; --vp-top: 43.3%; --vp-gap: 0.4cqw; }
+.vial-photo--metabolic .vp-name { left: 12.2%; }
 .vial-photo--metabolic .vp-opt { left: 12.8%; font-size: 7.5cqw; padding: 3.95cqw 2.4cqw; }
+/* Gray vial (lab supplies): dark print on a light label, smaller pill. */
+.vial-photo--supply .vp-name { left: 10.3%; color: var(--label-ink-dark); }
+.vial-photo--supply .vp-opt { left: 10.4%; font-size: 6.15cqw; padding: 1.8cqw 2cqw; border-radius: 3cqw; }
+/* Nasal bottle: narrower label, lower on the photo, print ~0.89× a vial's. */
+.vial-photo--nasal { --vp-scale: 0.85; --vp-room: 0.86; --vp-top: 62%; --vp-gap: 0.4cqw; }
+.vial-photo--nasal .vp-name { left: 20.1%; }
+.vial-photo--nasal .vp-opt { left: 20.4%; font-size: 4.2cqw; padding: 2.6cqw 1.3cqw; border-radius: 2.4cqw; }
 
 /* ── Vial art ────────────────────────────────────────────────── */
 .vial { height: auto; filter: drop-shadow(0 18px 22px rgba(23, 34, 51, 0.18)); }
