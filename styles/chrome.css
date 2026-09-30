@@ -124,6 +124,25 @@
 .gate-fine { font-size: 12px; color: var(--text-muted); margin-top: 16px; }
 .gate-fine a, .gate-exit a { color: var(--accent-ink); text-decoration: underline; }
 .gate-exit { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 14px; }
+/* Phones: a compact card that floats over the page instead of filling it. */
+@media (max-width: 560px) {
+  .gate { padding: 24px 28px; }
+  .gate-card { max-width: 340px; padding: 22px 20px 18px; border-radius: 20px; }
+  .gate-card .brand { margin-bottom: 14px; gap: 9px; }
+  .gate-card .brand-mark { width: 30px; height: 30px; }
+  .gate-card .brand-word b { font-size: 20px; }
+  .gate-card .brand-word span { font-size: 8px; margin-top: 3px; }
+  .gate-card h2 { font-size: 25px; margin-bottom: 6px; }
+  .gate-card > p { font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+  .gate-card .check { font-size: 12.5px; line-height: 1.45; margin-bottom: 10px; gap: 9px; }
+  .gate-card .check input { width: 16px; height: 16px; margin-top: 1px; }
+  .gate-card .field { margin: 14px 0 16px; gap: 6px; }
+  .gate-card .field label { font-size: 12.5px; }
+  .gate-card .select { height: 42px; font-size: 14px; }
+  .gate-card .btn { height: 44px; font-size: 14.5px; }
+  .gate-fine { font-size: 11px; margin-top: 12px; }
+  .gate-exit { font-size: 12px; margin-top: 8px; }
+}
 
 /* ── Footer ──────────────────────────────────────────────────── */
 .footer { position: relative; isolation: isolate; overflow: hidden; background: var(--blur-dark); color: var(--on-ink-muted); padding: 88px 0 34px; font-size: 14.5px; }
