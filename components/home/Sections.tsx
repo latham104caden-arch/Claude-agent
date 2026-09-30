@@ -6,6 +6,7 @@ import { Icon } from "../Icon";
 import { Vial } from "../Vial";
 import { SectionHead } from "../ui";
 import { ProductCard } from "../product/ProductCard";
+import { WavingFlag } from "./WavingFlag";
 
 /**
  * Poster-style hero: headline on the left; on the right a giant blurred
@@ -107,6 +108,8 @@ export function CoaBand() {
   const c = COAS[0];
   return (
     <section className="section section--dark coa-band">
+      {/* Background layer: blurred waving flag, behind all content */}
+      <WavingFlag />
       <div className="container coa-band-grid">
         <div>
           <p className="eyebrow" data-reveal="">Certificate of Analysis</p>

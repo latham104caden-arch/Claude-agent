@@ -106,6 +106,21 @@
 
 /* ── COA band ────────────────────────────────────────────────── */
 .coa-band { position: relative; overflow: hidden; }
+/* Background: blurred waving flag (z -2) → slate veil (z -1, ::after) → content.
+   The veil is heavier on the left so the headline stays readable. */
+.coa-flag {
+  position: absolute; inset: -4%; width: 108%; height: 108%; z-index: -2; pointer-events: none;
+  filter: blur(9px) saturate(0.8); opacity: 0.5;
+}
+.coa-band::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(43, 59, 80, 0.72) 0%, rgba(43, 59, 80, 0.45) 42%, rgba(43, 59, 80, 0.2) 100%),
+    linear-gradient(180deg, rgba(23, 34, 51, 0.15) 0%, rgba(23, 34, 51, 0.35) 100%);
+}
+@media (max-width: 860px) {
+  .coa-band::after { background: linear-gradient(180deg, rgba(43, 59, 80, 0.7) 0%, rgba(43, 59, 80, 0.45) 55%, rgba(43, 59, 80, 0.3) 100%); }
+}
 .coa-band-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
 .coa-doc {
   background: var(--surface); color: var(--ink); border-radius: var(--radius-lg); padding: 30px;
