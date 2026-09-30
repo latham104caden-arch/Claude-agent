@@ -64,9 +64,9 @@
   font-family: var(--font-sans); font-size: 7cqw; font-weight: 560; letter-spacing: -0.01em; color: var(--vp-pill-ink, var(--label-pill-ink));
   padding: 3.85cqw 2.4cqw; border-radius: 6cqw; border: var(--vp-pill-rim, 0 solid transparent);
   /* Printed, not stuck on: flat white with the label's own falloff round the
-     vial, text tinted like the print, and the photo's slight softness. */
+     vial, text tinted like the print. (No blur filter: Safari mis-scales a
+     cqw blur and smears the whole pill.) */
   background: linear-gradient(90deg, var(--label-pill) 0%, var(--label-pill) 40%, var(--label-pill-shade) 100%);
-  filter: blur(0.12cqw);
 }
 /* The navy photo prints the name and size larger and a touch further right. */
 .vial-photo--repair { --vp-pill-rim: 0.4cqw solid var(--label-pill-rim); }
