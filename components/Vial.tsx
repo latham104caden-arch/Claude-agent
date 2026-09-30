@@ -1,5 +1,5 @@
 /**
- * Product vial: the studio photo (public/vial/vial.webp — blank label,
+ * Product vial: the studio photo (public/vial/vial-slate.webp — blank label,
  * transparent background) with the product name and size set as live text on
  * the label. One image serves every product, and the label always matches the
  * catalog (including the RUO naming guard) because it is rendered from data,
@@ -11,7 +11,8 @@
  * Text is sized in container-query units (cqw) so it stays locked to the
  * label at every rendered size, from 18px thumbnails to the PDP stage.
  */
-export const VIAL_SRC = "/vial/vial.webp";
+/** Glossy copy of the slate studio photo; vial.webp is the untouched source. */
+export const VIAL_SRC = "/vial/vial-slate.webp";
 /** Category label colors with a pre-tinted photo (scripts/vial/tint-vial.mjs). */
 const TONES = new Set(["repair", "metabolic", "cognitive"]);
 

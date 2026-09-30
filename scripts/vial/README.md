@@ -24,8 +24,10 @@ framing changes, re-measure them and update the label text positions
 
 `public/vial/vial-repair.webp`, `vial-metabolic.webp` and `vial-cognitive.webp`
 are the same photo with the slate label recolored to the category gradients
-used by the printed labels (`scripts/labels`). Rebuild them after changing
-`vial.webp`:
+used by the printed labels (`scripts/labels`); `vial-slate.webp` keeps the
+original color. All four get a glossy laminate finish (specular streak,
+edge shading). The site shows these, never `vial.webp` directly. Rebuild
+them after changing `vial.webp`:
 
 ```bash
 node scripts/vial/tint-vial.mjs
