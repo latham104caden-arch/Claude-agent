@@ -139,9 +139,21 @@ for (const [tone, file] of inputs) {
     }
     // Near the top/bottom edge only real label pixels count (no light seam where
     // the label meets the glass); inside, the whole span (white print included).
+    // Same per column: the bottom edge dips in the middle, so the corners end higher.
+    const colSpan = new Map();
+    for (let x = L.x0 - 6; x <= L.x1 + 6; x++) {
+      let a = -1, z = -1;
+      for (let y = L.y0 - 6; y <= L.y1 + 6; y++) if (ink(x, y)) { if (a < 0) a = y; z = y; }
+      if (a >= 0 && z - a > LH * 0.5) colSpan.set(x, [a, z]);
+    }
     const inLab = (x, y) => {
       const sp = labSpan.get(y); if (!sp || x < sp[0] || x > sp[1]) return false;
-      return (y > L.y0 + 8 && y < L.y1 - 8) || ink(x, y);
+      // Columns too pale to trace (the light end of the gray label) fall back to the row span.
+      const cs = colSpan.get(x) ?? [L.y0, L.y1]; if (y < cs[0] || y > cs[1]) return false;
+      if (y > cs[0] + 8 && y < cs[1] - 8) return true;
+      // Edge rows: only strongly colored/dark pixels. The label's paper edge
+      // catches the light (palest on teal) and would read as a white rim.
+      const c = at(x, y); return Math.max(...c) - Math.min(...c) > 35 || lumOf(c) < lumOf(back(x, y)) - 48;
     };
     if (solid) {
       for (let y = 0; y < H; y++) {
