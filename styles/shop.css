@@ -132,9 +132,13 @@
 
 .stage-grid > * { min-width: 0; }
 .stage-visual { position: sticky; top: calc(var(--header-h) + 12px); height: calc(100vh - var(--header-h) - 40px); min-height: 560px; max-height: 860px; }
-.stage-visual-inner { position: relative; height: 100%; display: grid; place-items: center; }
-.stage-float { position: relative; z-index: 2; height: 68%; display: flex; align-items: flex-end; animation: stage-float 6s ease-in-out infinite; margin-bottom: 8%; }
-.stage-vial { height: 100%; width: auto; filter: drop-shadow(0 30px 30px rgba(23, 34, 51, 0.22)); }
+.stage-visual-inner { position: relative; height: 100%; display: grid; place-items: center; container-type: size; }
+/* The vial gets an explicit width from the stage height (cqh). Relying on
+   aspect-ratio + a % height let Safari size the box too narrow, so the vial
+   overflowed to the right instead of sitting centered on the pedestal. */
+.stage-visual-inner { --vial-h: 68cqh; }
+.stage-float { position: relative; z-index: 2; display: flex; justify-content: center; animation: stage-float 6s ease-in-out infinite; margin-bottom: 8%; }
+.stage-vial { height: var(--vial-h); width: calc(var(--vial-h) * 746 / 1695); filter: drop-shadow(0 30px 30px rgba(23, 34, 51, 0.22)); }
 .stage-pedestal {
   position: absolute; left: 50%; bottom: 9%; width: min(62%, 440px); aspect-ratio: 4 / 1; transform: translateX(-50%); z-index: 1; border-radius: 50%;
   background: radial-gradient(60% 60% at 50% 38%, #FFFFFF 0%, #F1F4F7 55%, #D5DBE2 100%);
@@ -194,7 +198,8 @@
 @media (max-width: 960px) {
   .stage-grid { grid-template-columns: 1fr; padding-top: 16px; }
   .stage-visual { position: relative; top: 0; height: 440px; min-height: 0; }
-  .stage-float { height: 58%; margin-top: 28px; }
+  .stage-visual-inner { --vial-h: 58cqh; }
+  .stage-float { margin-top: 28px; }
   .pdp-assure { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
