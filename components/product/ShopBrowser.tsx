@@ -121,7 +121,7 @@ export function ShopBrowser({ items, categories, bundles }: { items: ProductSumm
             <label className="shop-search-sm">
               <Icon name="search" />
               <span className="sr-only">Search compounds</span>
-              <input type="search" placeholder="Search compounds" value={q} onChange={(e) => setQ(e.target.value)} />
+              <input type="search" placeholder="Search" value={q} onChange={(e) => setQ(e.target.value)} />
             </label>
             <select className="select" value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort">
               <option value="popular">Most popular</option>
