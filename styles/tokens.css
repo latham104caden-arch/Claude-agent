@@ -62,6 +62,12 @@
   --label-pill: #FFFFFF;
   --label-rule: #C9CFD7;
 
+  /* COA band flag, in brand palette (read by components/home/WavingFlag.tsx) */
+  --flag-stripe: var(--accent-mid);
+  --flag-stripe-alt: var(--silver-light);
+  --flag-field: var(--ink-deep);
+  --flag-star: var(--on-ink);
+
   /* Type */
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
