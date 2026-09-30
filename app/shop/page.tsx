@@ -8,7 +8,7 @@ import { ShopBrowser, type BundleInfo } from "../../components/product/ShopBrows
 
 export const metadata: Metadata = {
   title: "Shop Research Compounds",
-  description: "Browse high-purity research compounds, nasal research formats, bundles and lab supplies. COAs published for every lot.",
+  description: "Browse high-purity research compounds, nasal research formats and lab supplies. COAs published for every lot.",
   alternates: { canonical: "/shop" },
 };
 

@@ -41,7 +41,6 @@ export const FOOTER_COLUMNS: { title: string; links: NavItem[] }[] = [
       { href: "/product-category/repair-immune", label: "Repair & Immune" },
       { href: "/product-category/metabolic-gh", label: "Metabolic & GH" },
       { href: "/product-category/cognitive-longevity", label: "Cognitive & Longevity" },
-      { href: "/product-category/bundles", label: "Bundles" },
       { href: "/coas", label: "COAs" },
       { href: "/membership", label: "Membership" },
     ],
