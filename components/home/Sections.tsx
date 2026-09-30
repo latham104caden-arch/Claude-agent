@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCatalog, getCategories, bestSellers, summarize } from "../../lib/catalog";
 import { COAS, QC_PILLARS, QC_STATS, TICKER, WHY_US } from "../../data/content";
+import { REVIEWS, REVIEWS_SOURCE } from "../../data/reviews";
 import { RUO_SHORT } from "../../lib/site";
 import { Icon } from "../Icon";
 import { Vial } from "../Vial";
@@ -191,20 +192,30 @@ export function QualityControl() {
 }
 
 /**
- * Reviews slot. Empty on purpose: only publish reviews from verified orders.
- * Wire a review source here later; never seed it with invented quotes.
+ * Reviews: verbatim customer emails (see data/reviews.ts for the rules).
+ * A swipeable row; no star ratings because none were given.
  */
 export function Reviews() {
+  const initials = (n: string) => n.replace(/^(Dr|Prof)\.\s+/, "").split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   return (
     <section className="section">
       <div className="container">
-        <SectionHead eyebrow="Reviews" title={<>Real Researchers, Real <em>Reviews.</em></>} lead="Published exactly as given, by researchers who ordered." />
-        <div className="reviews-empty" data-reveal="">
-          <div className="stars" aria-hidden="true">
-            {Array.from({ length: 5 }).map((_, i) => <Icon key={i} name="star" />)}
-          </div>
-          <p>Verified reviews will appear here once orders begin.</p>
-        </div>
+        <SectionHead eyebrow="Reviews" title={<>Real Researchers, Real <em>Reviews.</em></>} lead="In their own words, as they wrote to us." />
+      </div>
+      <div className="reviews-row" role="list" aria-label="Customer reviews">
+        {REVIEWS.map((r) => (
+          <figure className="review-card" role="listitem" key={r.name}>
+            <span className="review-mark" aria-hidden="true">&ldquo;</span>
+            <blockquote>{r.quote}</blockquote>
+            <figcaption>
+              <span className="review-avatar" aria-hidden="true">{initials(r.name)}</span>
+              {r.name}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div className="container">
+        <p className="reviews-source">{REVIEWS_SOURCE}</p>
       </div>
     </section>
   );
