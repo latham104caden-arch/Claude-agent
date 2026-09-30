@@ -1,4 +1,4 @@
-export type CategorySlug = "peptides" | "nasal" | "bundles" | "supplies";
+export type CategorySlug = "repair-immune" | "metabolic-gh" | "cognitive-longevity" | "nasal" | "bundles" | "supplies";
 
 export interface Category {
   slug: CategorySlug;
@@ -43,7 +43,7 @@ export interface Product {
   popularity: number;
   featured?: boolean;
   badge?: string;
-  /** Vial label accent; defaults to brand mint. */
+  /** Vial label color: "repair" | "metabolic" | "cognitive" (see public/vial). Set from the category in data/products.ts. Unset = slate. */
   accent?: string;
   specs: Spec[];
   storage: string[];

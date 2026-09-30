@@ -40,10 +40,10 @@ export function Hero() {
 
         <div className="hero-show" aria-hidden="true">
           <span className="hero-word">REVISED</span>
-          <span className="hero-ghost hero-ghost--a"><Vial name={back.name} option={back.variants[0].option} /></span>
-          <span className="hero-ghost hero-ghost--b"><Vial name={back2.name} option={back2.variants[0].option} /></span>
+          <span className="hero-ghost hero-ghost--a"><Vial name={back.name} option={back.variants[0].option} accent={back.accent} /></span>
+          <span className="hero-ghost hero-ghost--b"><Vial name={back2.name} option={back2.variants[0].option} accent={back2.accent} /></span>
           <Link href={`/product/${star.slug}`} className="hero-star" tabIndex={-1}>
-            <Vial name={star.name} option={starOption} className="vial hero-star-vial" />
+            <Vial name={star.name} option={starOption} accent={star.accent} className="vial hero-star-vial" />
           </Link>
           <span className="hero-floor" />
           <span className="hero-callout hero-callout--a"><i />≥99% HPLC purity</span>

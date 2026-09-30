@@ -19,3 +19,17 @@ installed elsewhere, copy the script there and run it with
 The pixel boxes in the script's `CFG` are for the current photo. If the
 framing changes, re-measure them and update the label text positions
 (`.vp-name`, `.vp-opt`) and the aspect ratio in `styles/shop.css`.
+
+## Category colors
+
+`public/vial/vial-repair.webp`, `vial-metabolic.webp` and `vial-cognitive.webp`
+are the same photo with the slate label recolored to the category gradients
+used by the printed labels (`scripts/labels`). Rebuild them after changing
+`vial.webp`:
+
+```bash
+node scripts/vial/tint-vial.mjs
+```
+
+Products pick their color through `accent` ("repair" | "metabolic" |
+"cognitive"), which `data/products.ts` sets from the category.

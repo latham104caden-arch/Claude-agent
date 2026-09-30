@@ -5,19 +5,25 @@
  * catalog (including the RUO naming guard) because it is rendered from data,
  * never baked into a picture.
  *
+ * Category color comes from pre-tinted copies of the same photo
+ * (vial-<tone>.webp), so text positions are identical for every color.
+ *
  * Text is sized in container-query units (cqw) so it stays locked to the
  * label at every rendered size, from 18px thumbnails to the PDP stage.
  */
 export const VIAL_SRC = "/vial/vial.webp";
+/** Category label colors with a pre-tinted photo (scripts/vial/tint-vial.mjs). */
+const TONES = new Set(["repair", "metabolic", "cognitive"]);
 
 export function Vial({
   name,
   option,
+  accent,
   className = "vial",
 }: {
   name: string;
   option?: string;
-  /** Kept for API compatibility; the photo has its own label design. */
+  /** Label color: "repair" | "metabolic" | "cognitive". Unset = slate. */
   accent?: string;
   className?: string;
 }) {
@@ -28,7 +34,7 @@ export function Vial({
   return (
     <span className={"vial-photo " + className} role="img" aria-label={`${name}${option ? " " + option : ""} research vial`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={VIAL_SRC} alt="" width={746} height={1695} decoding="async" draggable={false} />
+      <img src={accent && TONES.has(accent) ? `/vial/vial-${accent}.webp` : VIAL_SRC} alt="" width={746} height={1695} decoding="async" draggable={false} />
       <span className="vp-name" style={{ fontSize: `${size}cqw` }}>{label}</span>
       {option ? <span className="vp-opt">{option.replace(/\s+/g, "")}</span> : null}
     </span>
