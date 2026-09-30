@@ -34,6 +34,14 @@ const preview = args.find((a) => !a.includes("="));
 const CROP = { w: 746, h: 1740, above: 670 };
 // Tones shot as a solid (opaque plastic) bottle rather than a glass vial.
 const SOLID = new Set(["nasal"]);
+// Per-photo settings where detection can't work (source pixels, 2000×2000).
+// supply: near-white label on a near-white backdrop, and a wider, squatter vial.
+// Its printed name ("RECONSTITUTION SOLUTION") is kept; only the size pill is
+// erased. `scale` matches its label width to the other vials; `labelTop` is
+// where the label top lands in the crop so the glass base lines up with them.
+const MANUAL = {
+  supply: { label: { x0: 576, x1: 1431, y0: 922, y1: 1662 }, sag: 22, erase: { x0: 650, x1: 800, y0: 1150, y1: 1254 }, scale: 0.779, labelTop: 938, capEnd: 490 },
+};
 
 const b = await chromium.launch({ executablePath: process.env.CHROME_PATH || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const p = await b.newPage();
@@ -41,7 +49,7 @@ const shown = [];
 
 for (const [tone, file] of inputs) {
   const url = "data:image/jpeg;base64," + readFileSync(file).toString("base64");
-  const out = await p.evaluate(async ({ url, CROP, solid }) => {
+  const out = await p.evaluate(async ({ url, CROP, solid, man }) => {
     const img = new Image(); img.src = url; await img.decode();
     const W = img.width, H = img.height;
     const c = document.createElement("canvas"); c.width = W; c.height = H;
@@ -60,13 +68,13 @@ for (const [tone, file] of inputs) {
 
     // 1) Label: longest run of "ink" rows (small gaps from print merged), then its columns.
     const runs = []; let cur = null;
-    for (let y = 0; y < H; y++) {
+    if (!man) for (let y = 0; y < H; y++) {
       let n = 0; for (let x = 0; x < W; x += 3) if (ink(x, y)) n++;
       if (n > 110) { if (cur && y - cur.y1 < 30) cur.y1 = y; else { cur = { y0: y, y1: y }; runs.push(cur); } }
     }
-    const L = runs.sort((a, z) => (z.y1 - z.y0) - (a.y1 - a.y0))[0];
+    const L = man ? { ...man.label } : runs.sort((a, z) => (z.y1 - z.y0) - (a.y1 - a.y0))[0];
     const LH = L.y1 - L.y0, mid = Math.round((L.y0 + L.y1) / 2);
-    for (let x = 0; x < W; x++) if (ink(x, mid) && ink(x, mid - Math.round(LH * 0.3)) && ink(x, mid + Math.round(LH * 0.3))) { if (L.x0 === undefined) L.x0 = x; L.x1 = x; }
+    if (!man) for (let x = 0; x < W; x++) if (ink(x, mid) && ink(x, mid - Math.round(LH * 0.3)) && ink(x, mid + Math.round(LH * 0.3))) { if (L.x0 === undefined) L.x0 = x; L.x1 = x; }
     const LW = L.x1 - L.x0, Lcx = (L.x0 + L.x1) / 2;
 
     // 2) Printed name + pill: pixels in the upper-left of the label that differ
@@ -74,18 +82,22 @@ for (const [tone, file] of inputs) {
     const avg = (x, ya, yb) => { let s = [0, 0, 0], n = 0; for (let y = ya; y < yb; y++) { const q = at(x, y); s = s.map((v, k) => v + q[k]); n++; } return s.map((v) => v / n); };
     let e = { x0: W, x1: 0, y0: H, y1: 0 };
     const ry0 = L.y0 + Math.round(LH * 0.015), ry1 = L.y0 + Math.round(LH * 0.045);
-    for (let x = L.x0 + Math.round(LW * 0.04); x < L.x0 + LW * 0.6; x++) {
+    if (man) e = { ...man.erase };
+    else for (let x = L.x0 + Math.round(LW * 0.04); x < L.x0 + LW * 0.6; x++) {
       const ref = lumOf(avg(x, ry0, ry1));
       for (let y = L.y0 + Math.round(LH * 0.05); y < L.y0 + LH * 0.45; y++)
         if (Math.abs(lumOf(at(x, y)) - ref) > 45) { e.x0 = Math.min(e.x0, x); e.x1 = Math.max(e.x1, x); e.y0 = Math.min(e.y0, y); e.y1 = Math.max(e.y1, y); }
     }
     const print = { ...e };
-    e = { x0: e.x0 - 16, x1: e.x1 + 18, y0: e.y0 - 14, y1: e.y1 + 18 };
+    if (!man) e = { x0: e.x0 - 16, x1: e.x1 + 18, y0: e.y0 - 14, y1: e.y1 + 18 };
 
     // Crop geometry (source rect → 746×1740), decided before erasing.
     const bright = (x, y) => { const q = at(x, y), B = back(x, y); return Math.max(...q.map((v, k) => Math.abs(v - B[k]))); };
     let src, spans = null;
-    if (!solid) {
+    if (man) {
+      const s = man.scale;
+      src = { x: Lcx - CROP.w / (2 * s), y: L.y0 - man.labelTop / s, w: CROP.w / s, h: CROP.h / s };
+    } else if (!solid) {
       src = { x: Math.round(Lcx - CROP.w / 2), y: L.y0 - CROP.above, w: CROP.w, h: CROP.h };
     } else {
       // Solid bottle: white plastic is nearly the backdrop's color, so find the
@@ -117,7 +129,8 @@ for (const [tone, file] of inputs) {
 
     // Erase: per column, blend from the clean strip above to the one below.
     for (let x = e.x0; x <= e.x1; x++) {
-      const top = avg(x, e.y0 - 20, e.y0 - 4), bot = avg(x, e.y1 + 4, e.y1 + 20);
+      // Manual photos: the printed name sits right above the pill, so fill from below only.
+      const bot = avg(x, e.y1 + 4, e.y1 + 20), top = man ? bot : avg(x, e.y0 - 20, e.y0 - 4);
       for (let y = e.y0; y <= e.y1; y++) {
         const t = (y - e.y0) / (e.y1 - e.y0), i = (y * W + x) * 4, k = (Math.random() - 0.5) * 1.2;
         for (let j = 0; j < 3; j++) px[i + j] = top[j] + (bot[j] - top[j]) * t + k;
@@ -146,7 +159,12 @@ for (const [tone, file] of inputs) {
       for (let y = L.y0 - 6; y <= L.y1 + 6; y++) if (ink(x, y)) { if (a < 0) a = y; z = y; }
       if (a >= 0 && z - a > LH * 0.5) colSpan.set(x, [a, z]);
     }
-    const inLab = (x, y) => {
+    const inLab = man ? (x, y) => {
+      // Manual label: straight top, bottom edge sagging by `sag` at the middle.
+      if (x < L.x0 || x > L.x1) return false;
+      const u = (x - L.x0) / LW;
+      return y >= L.y0 + 2 && y <= L.y1 - man.sag * (2 * u - 1) ** 2 - 2;
+    } : (x, y) => {
       const sp = labSpan.get(y); if (!sp || x < sp[0] || x > sp[1]) return false;
       // Columns too pale to trace (the light end of the gray label) fall back to the row span.
       const cs = colSpan.get(x) ?? [L.y0, L.y1]; if (y < cs[0] || y > cs[1]) return false;
@@ -166,8 +184,8 @@ for (const [tone, file] of inputs) {
         }
       }
     } else {
-      const capTop = src.y, capEnd = src.y + Math.round(CROP.above * 0.47);
-      const x0 = Math.max(0, src.x), x1 = Math.min(W, src.x + src.w), y0 = Math.max(0, src.y), y1 = Math.min(H, src.y + src.h);
+      const capEnd = man ? man.capEnd : src.y + Math.round(CROP.above * 0.47);
+      const x0 = Math.max(0, Math.floor(src.x)), x1 = Math.min(W, Math.ceil(src.x + src.w)), y0 = Math.max(0, Math.floor(src.y)), y1 = Math.min(H, Math.ceil(src.y + src.h));
       for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
         const i = (y * W + x) * 4;
         if (inLab(x, y)) { q[i + 3] = 255; continue; }
@@ -208,7 +226,7 @@ for (const [tone, file] of inputs) {
       label: { left: pct(lc.x0, CROP.w), right: pct(CROP.w - lc.x1, CROP.w), top: pct(lc.y0, CROP.h), bottom: pct(CROP.h - lc.y1, CROP.h) },
       print: { left: pct(pc.x0, CROP.w), top: pct(pc.y0, CROP.h), right: pct(pc.x1, CROP.w), bottom: pct(pc.y1, CROP.h) },
     };
-  }, { url, CROP, solid: SOLID.has(tone) });
+  }, { url, CROP, solid: SOLID.has(tone), man: MANUAL[tone] ?? null });
   writeFileSync(`${root}design/vial-blank-${tone}.jpg`, Buffer.from(out.blank.split(",")[1], "base64"));
   writeFileSync(`${root}public/vial/vial-${tone}.webp`, Buffer.from(out.alpha.split(",")[1], "base64"));
   if (process.env.CALIB_DIR) writeFileSync(`${process.env.CALIB_DIR}/printed-${tone}.jpg`, Buffer.from(out.printed.split(",")[1], "base64"));

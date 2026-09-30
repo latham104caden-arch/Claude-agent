@@ -71,9 +71,12 @@
 .vial-photo--metabolic { --vp-scale: 1.14; --vp-room: 0.9; --vp-top: 43.3%; --vp-gap: 0.4cqw; }
 .vial-photo--metabolic .vp-name { left: 12.2%; }
 .vial-photo--metabolic .vp-opt { left: 12.8%; font-size: 7.5cqw; padding: 3.95cqw 2.4cqw; }
-/* Gray vial (lab supplies): dark print on a light label, smaller pill. */
-.vial-photo--supply .vp-name { left: 10.3%; color: var(--label-ink-dark); }
-.vial-photo--supply .vp-opt { left: 10.4%; font-size: 6.15cqw; padding: 1.8cqw 2cqw; border-radius: 3cqw; }
+/* Lab supplies vial: name printed in the photo; outlined size pill, uppercase unit. */
+.vial-photo--supply .vp-opt {
+  left: 13.3%; top: 64.4%; font-size: 4.6cqw; font-weight: 500; color: var(--label-ink-dark); text-transform: uppercase;
+  padding: 2.35cqw 1.9cqw; background: transparent; border: 0.3cqw solid var(--label-rule-dark); border-radius: 2.8cqw;
+}
+.vial-photo--supply .vp-unit { font-size: 0.8em; }
 /* Nasal bottle: narrower label, lower on the photo, print ~0.89× a vial's. */
 .vial-photo--nasal { --vp-scale: 0.85; --vp-room: 0.86; --vp-top: 62%; --vp-gap: 0.4cqw; }
 .vial-photo--nasal .vp-name { left: 20.1%; }

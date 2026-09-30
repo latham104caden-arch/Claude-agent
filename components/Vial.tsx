@@ -13,6 +13,8 @@ import type { CSSProperties } from "react";
  */
 /** Photos available; anything else (e.g. bundles) uses the navy vial (metabolic). */
 const TONES = new Set(["repair", "metabolic", "cognitive", "supply", "nasal"]);
+/** Photos whose product name is printed in the photo itself; only the size is live text. */
+const PRINTED_NAME = new Set(["supply"]);
 
 /** Approximate width in em of Inter semibold with the label's tight tracking. */
 function textEms(s: string): number {
@@ -32,6 +34,12 @@ function nameLines(name: string): string[] {
     if (!best || cost < best.cost) best = { lines: [a, b], cost };
   }
   return best!.lines;
+}
+
+/** "10 mL" → 10<small>mL</small>, so a photo's label style can shrink the unit. */
+function sizeText(option: string) {
+  const m = option.replace(/\s+/g, "").match(/^([\d.]+)(.*)$/);
+  return m ? <>{m[1]}<span className="vp-unit">{m[2]}</span></> : option.replace(/\s+/g, "");
 }
 
 export function Vial({
@@ -59,11 +67,13 @@ export function Vial({
     <span className={`vial-photo vial-photo--${tone} ${className}`} style={style} role="img" aria-label={`${name}${option ? " " + option : ""} research vial`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={`/vial/vial-${tone}.webp`} alt="" width={746} height={1740} decoding="async" draggable={false} />
-      <span className="vp-name" style={{ fontSize: fs }}>
-        {lines[0]}
-        {lines[1] ? <><br />{lines[1]}</> : null}
-      </span>
-      {option ? <span className="vp-opt">{option.replace(/\s+/g, "")}</span> : null}
+      {PRINTED_NAME.has(tone) ? null : (
+        <span className="vp-name" style={{ fontSize: fs }}>
+          {lines[0]}
+          {lines[1] ? <><br />{lines[1]}</> : null}
+        </span>
+      )}
+      {option ? <span className="vp-opt">{sizeText(option)}</span> : null}
     </span>
   );
 }

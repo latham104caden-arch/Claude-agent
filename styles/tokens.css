@@ -59,7 +59,8 @@
   /* Vial label print (matches the slate studio label) */
   --label-ink: #FFFFFF;       /* product name, white on slate */
   --label-ink-soft: #3A3F47;  /* size text inside the pill */
-  --label-ink-dark: #111316;  /* product name on the gray supplies label */
+  --label-ink-dark: #3E4045;  /* size text on the white supplies label */
+  --label-rule-dark: #8C8E93; /* outlined size pill on the supplies label */
   --label-pill: #FFFFFF;
   --label-pill-shade: #E3E6EA; /* pill's shaded right edge, following the vial's curve */
   --label-rule: #C9CFD7;
