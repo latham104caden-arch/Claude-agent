@@ -42,7 +42,7 @@
 }
 .hero-callout i { width: 10px; height: 10px; border-radius: 50%; background: var(--action); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 0 0 5px var(--border-strong); flex: none; }
 .hero-callout--a { top: 26%; right: 0; }
-.hero-callout--b { bottom: 22%; left: 2%; flex-direction: row-reverse; }
+.hero-callout--b { bottom: 13%; left: 2%; flex-direction: row-reverse; }
 /* Leader line + end dot pointing from each callout to the vial */
 .hero-callout::after, .hero-callout::before { content: ""; position: absolute; top: 50%; pointer-events: none; }
 .hero-callout::after { width: var(--lead, 44px); height: 1.5px; background: var(--action); opacity: 0.55; transform: translateY(-50%); }
@@ -69,7 +69,7 @@
   .hero-callout i { width: 7px; height: 7px; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 0 4px var(--border-strong); }
   .hero-callout::before { width: 5px; height: 5px; }
   .hero-callout--a { top: 20%; right: 0; }
-  .hero-callout--b { bottom: 16%; left: 0; }
+  .hero-callout--b { bottom: 10%; left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-star .hero-star-vial, .hero-floor { animation: none; } }
 

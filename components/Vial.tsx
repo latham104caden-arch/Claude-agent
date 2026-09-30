@@ -22,12 +22,13 @@ export function Vial({
   className?: string;
 }) {
   const label = name.length > 12 ? name.split(" ")[0] : name;
-  // Fit within ~52% of the vial width (bold sans ≈ 0.66em per glyph), cap at the photo's own size.
-  const size = Math.min(12.6, +(52 / (Math.max(label.length, 1) * 0.66)).toFixed(2));
+  // Fit left of the vertical wordmark (~56% of the vial width; semibold sans ≈ 0.62em per glyph),
+  // capped at the size the name is printed in the studio design.
+  const size = Math.min(14, +(56 / (Math.max(label.length, 1) * 0.62)).toFixed(2));
   return (
     <span className={"vial-photo " + className} role="img" aria-label={`${name}${option ? " " + option : ""} research vial`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={VIAL_SRC} alt="" width={412} height={852} decoding="async" draggable={false} />
+      <img src={VIAL_SRC} alt="" width={746} height={1695} decoding="async" draggable={false} />
       <span className="vp-name" style={{ fontSize: `${size}cqw` }}>{label}</span>
       {option ? <span className="vp-opt">{option.replace(/\s+/g, "")}</span> : null}
     </span>

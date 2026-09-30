@@ -1,16 +1,21 @@
 # Vial image pipeline
 
-`public/vial/vial.webp` is the one product photo every product uses. The name
-and size are live text laid over the blank label by `components/Vial.tsx`.
+`public/vial/vial.webp` is the one product photo every product uses (slate
+label design). The product name and size are live text laid over the blank
+label by `components/Vial.tsx`, so labels always match the catalog.
 
-To regenerate it from a new studio shot (same framing as the original):
+To rebuild it from a new studio shot with the same framing (2000×2000):
 
 ```bash
-# needs playwright-core + Chromium (see CLAUDE.md for the local browser path)
-node scripts/vial/blank-vial.mjs <photo.jpg> design/vial-blank.jpg      # erase name + size pill, crop
-node scripts/vial/alpha-vial.mjs design/vial-blank.jpg public/vial/vial.webp preview.png  # white → transparent
+# needs playwright-core + Chromium (set CHROME_PATH if not the default)
+node scripts/vial/build-vial.mjs <photo.jpg> [preview.png]
 ```
 
-The pixel boxes in both scripts (erase area, crop, label/cap/crimp zones) are
-for the original photo. If the framing changes, re-measure them and update the
-label text positions (`.vp-name`, `.vp-opt`) in `styles/shop.css`.
+It writes `design/vial-blank.jpg` (name/pill erased, cropped) and
+`public/vial/vial.webp` (backdrop keyed to transparent). If playwright-core is
+installed elsewhere, copy the script there and run it with
+`REPO_ROOT=/path/to/repo/`.
+
+The pixel boxes in the script's `CFG` are for the current photo. If the
+framing changes, re-measure them and update the label text positions
+(`.vp-name`, `.vp-opt`) and the aspect ratio in `styles/shop.css`.
