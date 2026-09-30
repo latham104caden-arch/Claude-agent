@@ -52,7 +52,7 @@ export default function ShopPage() {
               const lead = list[0];
               return (
                 /* Plain <a>, not <Link>: a native hash jump fires `hashchange`,
-                   which ShopBrowser uses to clear filters so the section exists. */
+                   which ShopBrowser uses to open this category's tab. */
                 <a key={c.slug} href={`#cat-${c.slug}`} className="cat-index-item">
                   <span className="cat-index-num mono">{String(i + 1).padStart(2, "0")}</span>
                   <span className="cat-index-art">{lead ? <Vial name={lead.name} accent={lead.accent} className="tile-vial" /> : null}</span>

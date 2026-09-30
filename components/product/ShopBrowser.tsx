@@ -25,19 +25,18 @@ const SORTERS: Record<Sort, (a: ProductSummary, b: ProductSummary) => number> = 
   popular: (a, b) => Number(b.inStock) - Number(a.inStock) || b.popularity - a.popularity,
   "price-asc": (a, b) => a.price - b.price,
   "price-desc": (a, b) => b.price - a.price,
-  name: (a, b) => a.name.localeCompare(b.name),
+  name: (a, b) => a.name.localeCompare(b.name, "en", { numeric: true, sensitivity: "base" }),
 };
 
 /**
- * Shop grid. Default view ("All", no search) is sectioned by category with
- * numbered headers and bundles shown as feature cards; any filter or search
- * switches to one flat results grid. ?tab= is read after mount so the page
- * server-renders fully (no Suspense fallback swap).
+ * Shop grid. "All" is every product in one grid, A–Z by default; a category
+ * tab filters it (bundles show as feature cards there). ?tab= is read after
+ * mount so the page server-renders fully (no Suspense fallback swap).
  */
 export function ShopBrowser({ items, categories, bundles }: { items: ProductSummary[]; categories: Category[]; bundles: BundleInfo[] }) {
   const [tab, setTabState] = useState("all");
   const [q, setQ] = useState("");
-  const [sort, setSort] = useState<Sort>("popular");
+  const [sort, setSort] = useState<Sort>("name");
 
   useEffect(() => {
     const read = () => {
@@ -45,18 +44,19 @@ export function ShopBrowser({ items, categories, bundles }: { items: ProductSumm
       if (t && categories.some((c) => c.slug === t)) setTabState(t);
     };
     read();
-    // Category index links jump to #cat-… sections, which only exist in the
-    // sectioned view — so reset any filter when one is followed.
+    // Category index links (#cat-<slug>) open that category's tab and scroll to the grid.
     const onHash = () => {
       const hash = window.location.hash;
       if (!hash.startsWith("#cat-")) return;
-      setTabState("all");
+      const slug = hash.slice(5);
+      if (!categories.some((c) => c.slug === slug)) return;
+      setTabState(slug);
       setQ("");
       const url = new URL(window.location.href);
-      url.searchParams.delete("tab");
-      window.history.replaceState(null, "", url.pathname + url.search + url.hash);
-      // The section may only exist after this re-render, so scroll once it does.
-      setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+      url.searchParams.set("tab", slug);
+      url.hash = "";
+      window.history.replaceState(null, "", url.pathname + url.search);
+      document.getElementById("shop-results")?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
@@ -77,7 +77,7 @@ export function ShopBrowser({ items, categories, bundles }: { items: ProductSumm
   }, [items]);
 
   const query = q.trim().toLowerCase();
-  const sectioned = tab === "all" && !query;
+  const filtered = tab !== "all" || !!query;
 
   const results = useMemo(() => {
     const out = items.filter(
@@ -89,7 +89,8 @@ export function ShopBrowser({ items, categories, bundles }: { items: ProductSumm
   const bundleFor = (slug: string) => bundles.find((b) => b.summary.slug === slug);
 
   const renderList = (list: ProductSummary[]) => {
-    const bundleItems = list.filter((p) => p.category === "bundles" && bundleFor(p.slug));
+    // Bundles get the feature card only on their own tab; in "All" they sit in the A–Z grid.
+    const bundleItems = tab === "bundles" ? list.filter((p) => bundleFor(p.slug)) : [];
     const rest = list.filter((p) => !bundleItems.includes(p));
     return (
       <>
@@ -134,40 +135,18 @@ export function ShopBrowser({ items, categories, bundles }: { items: ProductSumm
       </div>
 
       <div className="container shop-body">
-        {sectioned ? (
-          categories.map((c, i) => {
-            const list = items.filter((p) => p.category === c.slug).sort(SORTERS[sort]);
-            if (!list.length) return null;
-            return (
-              <section key={c.slug} id={`cat-${c.slug}`} className="shop-section">
-                <header className="shop-section-head">
-                  <span className="shop-section-num mono">{String(i + 1).padStart(2, "0")}</span>
-                  <div>
-                    <h2>{c.name}</h2>
-                    <p>{c.blurb}</p>
-                  </div>
-                  <div className="shop-section-meta">
-                    <span className="mono">{list.length} {list.length === 1 ? "item" : "items"}</span>
-                    <Link href={`/product-category/${c.slug}`} className="shop-section-link">View all <Icon name="arrow" /></Link>
-                  </div>
-                </header>
-                {renderList(list)}
-              </section>
-            );
-          })
-        ) : (
-          <section className="shop-section">
-            <header className="shop-results-head">
-              <p className="mono">
-                {results.length} {results.length === 1 ? "result" : "results"}
-                {query ? <> for “{q.trim()}”</> : null}
-                {tab !== "all" ? <> in {categories.find((c) => c.slug === tab)?.name}</> : null}
-              </p>
-              <button type="button" className="shop-clear" onClick={() => { setQ(""); setTab("all"); }}>Clear filters</button>
-            </header>
-            {results.length ? renderList(results) : <p className="shop-empty">No compounds match your filters.</p>}
-          </section>
-        )}
+        <section id="shop-results" className="shop-section">
+          <header className="shop-results-head">
+            <p className="mono">
+              {results.length} {results.length === 1 ? "product" : "products"}
+              {query ? <> for “{q.trim()}”</> : null}
+              {tab !== "all" ? <> in {categories.find((c) => c.slug === tab)?.name}</> : null}
+              {sort === "name" ? " · A–Z" : null}
+            </p>
+            {filtered ? <button type="button" className="shop-clear" onClick={() => { setQ(""); setTab("all"); }}>Clear filters</button> : null}
+          </header>
+          {results.length ? renderList(results) : <p className="shop-empty">No compounds match your filters.</p>}
+        </section>
       </div>
     </>
   );
