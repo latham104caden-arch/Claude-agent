@@ -14,6 +14,7 @@
     "check": "npm run typecheck && npm run check:ruo"
   },
   "dependencies": {
+    "@adz/next": "file:vendor/adz-next-1.0.0.tgz",
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource-variable/newsreader": "^5.3.0",
     "next": "^15.5.26",
