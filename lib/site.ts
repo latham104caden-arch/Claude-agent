@@ -14,7 +14,7 @@ export const SITE = {
   // TODO: confirm real inbox before launch.
   supportEmail: "support@revisedresearch.com",
   minAge: 21,
-  freeShippingThreshold: 200,
+  freeShippingThreshold: 249,
   social: [] as { label: string; href: string }[],
 } as const;
 
