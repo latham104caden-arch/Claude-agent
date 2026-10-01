@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Account", robots: { index: false } }
 export default function AccountPage() {
   return (
     <>
-      <PageHero crumbs={[{ label: "Account" }]} eyebrow="Account" title="Sign in" lead="Track orders, reorder in one tap, and manage your membership." />
+      <PageHero crumbs={[{ label: "Account" }]} eyebrow="Account" title="Sign in" lead="Track orders and reorder in one tap." />
       <section className="section">
         <div className="container auth">
           <div className="card">

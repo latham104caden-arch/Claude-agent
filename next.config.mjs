@@ -3,6 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   trailingSlash: false,
+  async redirects() {
+    return [{ source: "/membership", destination: "/shop", permanent: true }];
+  },
   async headers() {
     return [
       {

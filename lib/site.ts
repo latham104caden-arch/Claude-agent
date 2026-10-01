@@ -28,7 +28,6 @@ export const NAV: NavItem[] = [
   { href: "/shop", label: "Compounds" },
   { href: "/coas", label: "COAs" },
   { href: "/affiliate", label: "Partner Program" },
-  { href: "/membership", label: "Membership" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -44,7 +43,6 @@ export const FOOTER_COLUMNS: { title: string; links: NavItem[] }[] = [
       { href: "/product-category/metabolic-gh", label: "Metabolic & GH" },
       { href: "/product-category/cognitive-longevity", label: "Cognitive & Longevity" },
       { href: "/coas", label: "COAs" },
-      { href: "/membership", label: "Membership" },
     ],
   },
   {

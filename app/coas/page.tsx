@@ -40,7 +40,7 @@ export default function CoasPage() {
           </table>
         </div>
         <div style={{ marginTop: 20 }}>
-          <StubNotice>Placeholder lots. Drop real certificate PDFs into <code>public/coas/</code> and set the <code>pdf</code> path in <code>data/content.ts</code>.</StubNotice>
+          <StubNotice>New COAs on the way.</StubNotice>
         </div>
       </section>
     </>

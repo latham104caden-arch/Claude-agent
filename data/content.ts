@@ -119,13 +119,6 @@ export const ARTICLES: Article[] = [
   },
 ];
 
-export const MEMBERSHIP_PERKS = [
-  { title: "Member pricing", body: "A standing discount on every order." },
-  { title: "Free shipping", body: "On every order, no minimum." },
-  { title: "Early access", body: "First look at new compounds and restocks." },
-  { title: "Priority support", body: "Member emails are answered first." },
-];
-
 export const AFFILIATE_STEPS = [
   { title: "Apply", body: "Tell us about your audience. Approval usually takes a few business days." },
   { title: "Share", body: "Get a personal code and link to share with your research community." },
