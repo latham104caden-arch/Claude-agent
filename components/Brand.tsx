@@ -1,21 +1,21 @@
 import Link from "next/link";
 import { SITE } from "../lib/site";
 
-/** The "R" monogram: an ink tile with an accent re-direction arc ("revised"). */
-export function BrandMark({ className = "brand-mark" }: { className?: string }) {
+/**
+ * The helix mark (public/brand/, built from the owner's logo artwork). `light`
+ * swaps the navy strands for white, for dark backgrounds like the footer.
+ */
+export function BrandMark({ className = "brand-mark", light = false }: { className?: string; light?: boolean }) {
   return (
-    <svg className={className} viewBox="0 0 40 40" aria-hidden="true">
-      <rect width="40" height="40" rx="11" fill="var(--ink)" />
-      <path d="M13 29V11h8.2a5.6 5.6 0 0 1 0 11.2H13" fill="none" stroke="var(--bg)" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M20.5 22.2 27.5 29" fill="none" stroke="var(--accent)" strokeWidth="3.4" strokeLinecap="round" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img className={className} src={light ? "/brand/logo-light.webp" : "/brand/logo.webp"} alt="" width={313} height={600} aria-hidden="true" draggable={false} />
   );
 }
 
-export function Brand({ onClick }: { onClick?: () => void }) {
+export function Brand({ onClick, light = false }: { onClick?: () => void; light?: boolean }) {
   return (
     <Link href="/" className="brand" aria-label={`${SITE.name} — home`} onClick={onClick}>
-      <BrandMark />
+      <BrandMark light={light} />
       <span className="brand-word">
         <b>Revised</b>
         <span>Research</span>

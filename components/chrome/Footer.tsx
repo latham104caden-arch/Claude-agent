@@ -14,7 +14,7 @@ export function Footer() {
         </div>
         <div className="footer-grid">
           <div>
-            <Brand />
+            <Brand light />
             <p className="footer-desc">Independent laboratory certificates, published lot by lot, before the batch ships.</p>
             <a className="footer-mail" href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>
           </div>
