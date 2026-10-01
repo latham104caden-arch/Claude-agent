@@ -2,20 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { US_STATES } from "../../lib/states";
 import { money } from "../../lib/format";
 import { useCart } from "../cart/CartProvider";
-import { StubNotice } from "../ui";
+import { Icon } from "../Icon";
 import { Summary } from "./Summary";
 
 /**
- * Checkout layout — contact, shipping, research attestation, payment slot.
- * PAYMENTS ARE NOT CONNECTED. The Place Order button is disabled until a
- * payment provider + server-side order creation exist (app/api/checkout).
+ * Checkout: research attestation and an optional creator code, then off to
+ * Stripe's hosted page for address and card. The server re-prices the cart
+ * (app/api/checkout); nothing priced here is trusted.
  */
 export function CheckoutForm() {
   const { lines, ready } = useCart();
   const [attest, setAttest] = useState(false);
+  const [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
   if (!ready) return <div style={{ minHeight: 400 }} />;
   if (lines.length === 0) {
@@ -27,37 +29,45 @@ export function CheckoutForm() {
     );
   }
 
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!attest || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: code.trim() || undefined, attest }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) {
+        window.location.assign(data.url);
+        return;
+      }
+      setError(data.message || "Couldn't start checkout. Please try again.");
+    } catch {
+      setError("Couldn't reach the server. Check your connection and try again.");
+    }
+    setBusy(false);
+  };
+
   return (
-    <form className="checkout-grid" onSubmit={(e) => e.preventDefault()}>
+    <form className="checkout-grid" onSubmit={submit}>
       <div>
         <fieldset>
-          <legend>Contact</legend>
+          <legend>Creator code</legend>
           <div className="form-grid">
-            <div className="field span-2"><label htmlFor="co-email">Email</label><input id="co-email" type="email" className="input" autoComplete="email" required /></div>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend>Shipping address</legend>
-          <div className="form-grid">
-            <div className="field"><label htmlFor="co-fn">First name</label><input id="co-fn" className="input" autoComplete="given-name" required /></div>
-            <div className="field"><label htmlFor="co-ln">Last name</label><input id="co-ln" className="input" autoComplete="family-name" required /></div>
-            <div className="field span-2"><label htmlFor="co-a1">Address</label><input id="co-a1" className="input" autoComplete="address-line1" required /></div>
-            <div className="field span-2"><label htmlFor="co-a2">Apartment, suite, etc. (optional)</label><input id="co-a2" className="input" autoComplete="address-line2" /></div>
-            <div className="field"><label htmlFor="co-city">City</label><input id="co-city" className="input" autoComplete="address-level2" required /></div>
-            <div className="field">
-              <label htmlFor="co-state">State</label>
-              <select id="co-state" className="select" autoComplete="address-level1" defaultValue="" required>
-                <option value="" disabled>Select…</option>
-                {US_STATES.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
-              </select>
+            <div className="field span-2">
+              <label htmlFor="co-code">Code (optional)</label>
+              <input id="co-code" className="input" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={64} placeholder="Enter a code" />
             </div>
-            <div className="field"><label htmlFor="co-zip">ZIP</label><input id="co-zip" className="input" autoComplete="postal-code" inputMode="numeric" required /></div>
-            <div className="field"><label htmlFor="co-phone">Phone (for delivery issues)</label><input id="co-phone" type="tel" className="input" autoComplete="tel" /></div>
           </div>
+          <p className="drawer-note">Arrived from a creator link? Their code is applied automatically.</p>
         </fieldset>
         <fieldset>
-          <legend>Payment</legend>
-          <StubNotice>Payments are not connected yet. The card form from the payment provider will mount here.</StubNotice>
+          <legend>Shipping and payment</legend>
+          <p className="muted">You&apos;ll enter your address and card on Stripe&apos;s secure checkout page. US shipping only.</p>
         </fieldset>
         <label className="check" style={{ marginBottom: 20 }}>
           <input type="checkbox" checked={attest} onChange={(e) => setAttest(e.target.checked)} />
@@ -73,10 +83,11 @@ export function CheckoutForm() {
               </div>
             ))}
           </div>
-          <button type="submit" className="btn btn--primary btn--block" disabled title="Payments not connected yet">
-            Place Order
+          <button type="submit" className="btn btn--primary btn--block" disabled={!attest || busy}>
+            {busy ? "Opening secure checkout…" : <>Continue to Payment <Icon name="arrow" /></>}
           </button>
-          {!attest ? <p className="drawer-note" style={{ marginTop: 10 }}>Research-use confirmation required.</p> : null}
+          {error ? <p className="drawer-note" role="alert" style={{ marginTop: 10, color: "var(--danger)" }}>{error}</p> : null}
+          {!attest && !error ? <p className="drawer-note" style={{ marginTop: 10 }}>Research-use confirmation required.</p> : null}
         </Summary>
       </div>
     </form>

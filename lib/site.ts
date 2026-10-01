@@ -15,6 +15,8 @@ export const SITE = {
   supportEmail: "support@revisedresearch.com",
   minAge: 21,
   freeShippingThreshold: 249,
+  /** Flat shipping (USD) under the free-shipping threshold. */
+  flatShipping: 15,
   social: [] as { label: string; href: string }[],
 } as const;
 
