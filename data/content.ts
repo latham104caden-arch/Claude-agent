@@ -35,6 +35,9 @@ export const WHY_US = [
   { icon: "book", title: "COAs on every batch", body: "Certificates are published as the lab issued them, open to anyone." },
 ];
 
+/** When the next batch of certificates goes up (drives the countdown on /coas). */
+export const NEW_COAS_AT = "2026-10-04T22:00:00Z";
+
 export const COAS: Coa[] = [
   { lot: "RR-BPC-0001", productSlug: "bpc-157", productName: "BPC-157", strength: "10 mg", purity: "99.4%", lab: "Independent lab (TBD)", tested: "2026-09-01" },
   { lot: "RR-TB-0001", productSlug: "tb-500", productName: "TB-500", strength: "10 mg", purity: "99.2%", lab: "Independent lab (TBD)", tested: "2026-09-01" },

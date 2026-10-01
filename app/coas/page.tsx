@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { COAS } from "../../data/content";
-import { PageHero, StubNotice } from "../../components/ui";
+import { COAS, NEW_COAS_AT } from "../../data/content";
+import { CoaCountdown } from "../../components/CoaCountdown";
+import { PageHero } from "../../components/ui";
 
 export const metadata: Metadata = {
   title: "Certificates of Analysis",
@@ -19,6 +20,7 @@ export default function CoasPage() {
         lead="Match the lot number on your vial to the certificate below. Every certificate opens in full, with no login and no request form."
       />
       <section className="container" style={{ padding: "40px var(--gutter) var(--section-y)" }}>
+        <CoaCountdown at={NEW_COAS_AT} />
         <div className="table-wrap">
           <table className="table">
             <thead>
@@ -38,9 +40,6 @@ export default function CoasPage() {
               ))}
             </tbody>
           </table>
-        </div>
-        <div style={{ marginTop: 20 }}>
-          <StubNotice>New COAs on the way.</StubNotice>
         </div>
       </section>
     </>
