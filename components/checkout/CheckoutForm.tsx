@@ -5,12 +5,13 @@ import { useState } from "react";
 import { money } from "../../lib/format";
 import { useCart } from "../cart/CartProvider";
 import { Icon } from "../Icon";
+import { PaymentForm } from "./PaymentForm";
 import { Summary } from "./Summary";
 
 /**
- * Checkout: research attestation and an optional creator code, then off to
- * Stripe's hosted page for address and card. The server re-prices the cart
- * (app/api/checkout); nothing priced here is trusted.
+ * Checkout: research attestation and an optional creator code, then Stripe's
+ * embedded form (address and card) opens right here on the page. The server
+ * re-prices the cart (app/api/checkout); nothing priced here is trusted.
  */
 export function CheckoutForm() {
   const { lines, ready } = useCart();
@@ -18,6 +19,7 @@ export function CheckoutForm() {
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
 
   if (!ready) return <div style={{ minHeight: 400 }} />;
   if (lines.length === 0) {
@@ -25,6 +27,15 @@ export function CheckoutForm() {
       <div className="drawer-empty" style={{ padding: "80px 0 var(--section-y)" }}>
         <p>Your cart is empty.</p>
         <Link href="/shop" className="btn btn--primary">Browse Compounds</Link>
+      </div>
+    );
+  }
+
+  if (clientSecret) {
+    return (
+      <div className="checkout-pay">
+        <button type="button" className="shop-clear" onClick={() => { setClientSecret(""); setBusy(false); }}>← Edit code or cart</button>
+        <PaymentForm clientSecret={clientSecret} />
       </div>
     );
   }
@@ -41,8 +52,9 @@ export function CheckoutForm() {
         body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: code.trim() || undefined, attest }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok && data.url) {
-        window.location.assign(data.url);
+      if (res.ok && data.clientSecret) {
+        setClientSecret(data.clientSecret);
+        window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       setError(data.message || "Couldn't start checkout. Please try again.");
@@ -67,7 +79,7 @@ export function CheckoutForm() {
         </fieldset>
         <fieldset>
           <legend>Shipping and payment</legend>
-          <p className="muted">You&apos;ll enter your address and card on Stripe&apos;s secure checkout page. US shipping only.</p>
+          <p className="muted">Your address and card are entered on the next step, in a secure form from Stripe. US shipping only.</p>
         </fieldset>
         <label className="check" style={{ marginBottom: 20 }}>
           <input type="checkbox" checked={attest} onChange={(e) => setAttest(e.target.checked)} />
@@ -84,7 +96,7 @@ export function CheckoutForm() {
             ))}
           </div>
           <button type="submit" className="btn btn--primary btn--block" disabled={!attest || busy}>
-            {busy ? "Opening secure checkout…" : <>Continue to Payment <Icon name="arrow" /></>}
+            {busy ? "Loading secure payment…" : <>Continue to Payment <Icon name="arrow" /></>}
           </button>
           {error ? <p className="drawer-note" role="alert" style={{ marginTop: 10, color: "var(--danger)" }}>{error}</p> : null}
           {!attest && !error ? <p className="drawer-note" style={{ marginTop: 10 }}>Research-use confirmation required.</p> : null}

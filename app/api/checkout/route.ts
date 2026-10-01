@@ -11,9 +11,9 @@ const cents = (usd: number) => Math.round(usd * 100);
 const fail = (message: string, status = 400) => NextResponse.json({ ok: false, message }, { status });
 
 /**
- * Creates a Stripe Checkout session from the cart. Prices, shipping and the
- * creator-code discount are all decided here; Stripe collects the address and
- * card. Attribution rides on the session so the webhook can report the order.
+ * Creates an embedded Stripe Checkout session from the cart (the card form
+ * mounts on our checkout page). Prices, shipping and the creator-code discount
+ * are all decided here; Stripe's form collects the address and card. Attribution rides on the session so the webhook can report the order.
  */
 export async function POST(req: Request) {
   let body: { lines?: unknown; code?: unknown; attest?: unknown };
@@ -51,6 +51,7 @@ export async function POST(req: Request) {
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      ui_mode: "embedded",
       line_items: cart.lines.map((l) => ({
         quantity: l.qty,
         price_data: {
@@ -68,11 +69,10 @@ export async function POST(req: Request) {
       custom_text: { submit: { message: "Research use only. By paying you confirm you are 21 or older and these products are not for human or veterinary use." } },
       metadata,
       payment_intent_data: { metadata },
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout`,
+      return_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     });
-    if (!session.url) return fail("Couldn't start checkout. Please try again.", 502);
-    return NextResponse.json({ ok: true, url: session.url });
+    if (!session.client_secret) return fail("Couldn't start checkout. Please try again.", 502);
+    return NextResponse.json({ ok: true, clientSecret: session.client_secret });
   } catch (err) {
     console.error("[checkout] Stripe session failed", err);
     return fail("Couldn't start checkout. Please try again.", 502);

@@ -62,6 +62,9 @@
 .checkout-grid { display: grid; grid-template-columns: 1fr 400px; gap: 32px; align-items: start; padding: 32px 0 var(--section-y); }
 .checkout-grid fieldset { border: 0; padding: 0; margin: 0 0 28px; }
 .checkout-grid legend { font-family: var(--font-display); font-weight: 500; font-size: 28px; margin-bottom: 16px; }
+.checkout-pay { max-width: 1080px; margin: 0 auto; padding: 24px 0 var(--section-y); }
+.checkout-pay .shop-clear { margin-bottom: 16px; }
+.pay-embed { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-lg, 20px); padding: 8px; min-height: 520px; }
 @media (max-width: 960px) { .cart-page, .checkout-grid { grid-template-columns: 1fr; } .summary { position: static; } }
 
 /* ── Research library ────────────────────────────────────────── */

@@ -14,7 +14,7 @@ export function Summary({ children }: { children?: React.ReactNode }) {
       <div className="summary-row"><span>Subtotal</span><span>{money(subtotal)}</span></div>
       <div className="summary-row"><span>Shipping</span><span>{shipping ? money(shipping) : "Free"}</span></div>
       <div className="summary-row total"><span>Total</span><span>{money(subtotal + shipping)}</span></div>
-      {shipping ? <p className="drawer-note">Free shipping on orders {money(SITE.freeShippingThreshold)}+. Creator-code discounts apply on the payment page.</p> : <p className="drawer-note">Creator-code discounts apply on the payment page.</p>}
+      {shipping ? <p className="drawer-note">Free shipping on orders {money(SITE.freeShippingThreshold)}+. Creator-code discounts apply at payment.</p> : <p className="drawer-note">Creator-code discounts apply at payment.</p>}
       {children}
     </aside>
   );
