@@ -17,6 +17,8 @@ export function CheckoutForm() {
   const { lines, ready } = useCart();
   const [attest, setAttest] = useState(false);
   const [code, setCode] = useState("");
+  // Pre-ticked per the owner; the shopper can untick it. Email only (no SMS opt-in is collected).
+  const [emailOptIn, setEmailOptIn] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState("");
@@ -49,7 +51,7 @@ export function CheckoutForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: code.trim() || undefined, attest }),
+        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: code.trim() || undefined, attest, emailOptIn }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.clientSecret) {
@@ -81,6 +83,10 @@ export function CheckoutForm() {
           <legend>Shipping and payment</legend>
           <p className="muted">Your address and card are entered on the next step, in a secure form from Stripe. US shipping only.</p>
         </fieldset>
+        <label className="check" style={{ marginBottom: 14 }}>
+          <input type="checkbox" checked={emailOptIn} onChange={(e) => setEmailOptIn(e.target.checked)} />
+          <span>Email me new compounds, restocks and offers. Unsubscribe any time.</span>
+        </label>
         <label className="check" style={{ marginBottom: 20 }}>
           <input type="checkbox" checked={attest} onChange={(e) => setAttest(e.target.checked)} />
           <span>I confirm I am 21 or older and that these products are purchased for laboratory research use only, not for human or veterinary use.</span>

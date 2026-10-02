@@ -10,9 +10,21 @@ export type ContactInput = {
   phone?: string | null;
   address?: { line1?: string | null; line2?: string | null; city?: string | null; state?: string | null; postalCode?: string | null; country?: string | null } | null;
   tags: string[];
+  /** Email marketing opt-in. Phones are saved for contact only; no SMS opt-in is collected. */
   subscribe?: boolean;
   consentSource?: string;
 };
+
+/** US-first phone normaliser: "(405) 555-0101" → "+14055550101". Null if it can't be made E.164. */
+export function toE164(raw?: string | null): string | null {
+  const s = (raw ?? "").trim();
+  if (!s) return null;
+  const digits = s.replace(/\D/g, "");
+  if (s.startsWith("+")) return digits.length >= 8 && digits.length <= 15 ? `+${digits}` : null;
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  return null;
+}
 
 export async function upsertContact(c: ContactInput): Promise<boolean> {
   const key = process.env.OMNISEND_API_KEY;
@@ -26,7 +38,8 @@ export async function upsertContact(c: ContactInput): Promise<boolean> {
       consent: { source: c.consentSource ?? "website", createdAt: now },
     } : {}),
   }];
-  if (c.phone && /^\+\d{8,15}$/.test(c.phone)) identifiers.push({ type: "phone", id: c.phone });
+  const phone = toE164(c.phone);
+  if (phone) identifiers.push({ type: "phone", id: phone });
   const a = c.address;
   const body = {
     identifiers,

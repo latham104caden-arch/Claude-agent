@@ -11,11 +11,12 @@ export async function POST(req: Request) {
   let code = "";
   try { code = String((await req.json())?.code ?? ""); } catch {}
   const jar = await cookies();
-  const email = checkChallenge(jar.get(CHALLENGE_COOKIE)?.value, code);
-  if (!email) return NextResponse.json({ ok: false, message: "That code is wrong or has expired. Check it, or send a new one." }, { status: 400 });
+  const ok = checkChallenge(jar.get(CHALLENGE_COOKIE)?.value, code);
+  if (!ok) return NextResponse.json({ ok: false, message: "That code is wrong or has expired. Check it, or send a new one." }, { status: 400 });
 
-  // Account holders appear in Omnisend (no marketing opt-in implied).
-  await upsertContact({ email, tags: ["account"] });
+  const { email, profile } = ok;
+  // Account holders appear in Omnisend with what they typed (no marketing opt-in implied).
+  await upsertContact({ email, firstName: profile.firstName, lastName: profile.lastName, phone: profile.phone, tags: ["account"] });
 
   const { token, maxAge } = newSession(email);
   const res = NextResponse.json({ ok: true });

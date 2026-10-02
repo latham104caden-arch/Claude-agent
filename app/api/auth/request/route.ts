@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { CHALLENGE_COOKIE, EMAIL, authConfigured, cookieOpts, newChallenge } from "../../../../lib/auth";
+import { CHALLENGE_COOKIE, EMAIL, authConfigured, cookieOpts, newChallenge, type Profile } from "../../../../lib/auth";
+import { toE164 } from "../../../../lib/omnisend";
 import { sendSignInCode } from "../../../../lib/email";
 
 export const runtime = "nodejs";
@@ -8,10 +9,17 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   if (!authConfigured()) return NextResponse.json({ ok: false, message: "Accounts aren't connected yet." }, { status: 503 });
   let email = "";
-  try { email = String((await req.json())?.email ?? "").trim().toLowerCase(); } catch {}
+  let profile: Profile = {};
+  try {
+    const b = await req.json();
+    email = String(b?.email ?? "").trim().toLowerCase();
+    const s = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n) || undefined;
+    profile = { firstName: s(b?.firstName, 60), lastName: s(b?.lastName, 60), phone: s(b?.phone, 30) };
+  } catch {}
   if (!EMAIL.test(email) || email.length > 254) return NextResponse.json({ ok: false, message: "Please enter a valid email address." }, { status: 400 });
 
-  const { code, token, maxAge } = newChallenge(email);
+  if (profile.phone && !toE164(profile.phone)) return NextResponse.json({ ok: false, message: "Please enter a valid US phone number, or leave it blank." }, { status: 400 });
+  const { code, token, maxAge } = newChallenge(email, profile);
   if (!(await sendSignInCode(email, code))) {
     return NextResponse.json({ ok: false, message: "Couldn't send the code right now. Please try again." }, { status: 502 });
   }

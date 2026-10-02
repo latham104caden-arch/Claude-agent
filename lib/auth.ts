@@ -55,21 +55,24 @@ const codeHash = (email: string, code: string, exp: number) =>
 /** Normalises what the shopper typed: "k7q2 m9xp" → "K7Q2M9XP". */
 export const cleanCode = (s: string) => s.toUpperCase().replace(/[^0-9A-Z]/g, "");
 
+/** Optional details typed on the sign-in form; carried in the challenge until the code checks out. */
+export type Profile = { firstName?: string; lastName?: string; phone?: string };
+
 /** New 8-character code (~31^8 ≈ 8.5×10^11 combinations) and the cookie that remembers it. */
-export function newChallenge(email: string): { code: string; token: string; maxAge: number } {
+export function newChallenge(email: string, profile: Profile = {}): { code: string; token: string; maxAge: number } {
   let code = "";
   for (let i = 0; i < 8; i++) code += ALPHABET[randomInt(ALPHABET.length)];
   const exp = Date.now() + CODE_MINUTES * 60_000;
-  return { code, token: seal({ email, h: codeHash(email, code, exp), exp }), maxAge: CODE_MINUTES * 60 };
+  return { code, token: seal({ email, p: profile, h: codeHash(email, code, exp), exp }), maxAge: CODE_MINUTES * 60 };
 }
 
-/** Email the challenge was issued to, if `code` matches and hasn't expired. */
-export function checkChallenge(token: string | undefined, code: string): string | null {
-  const c = unseal<{ email: string; h: string; exp: number }>(token);
+/** Email (and form details) the challenge was issued for, if `code` matches and hasn't expired. */
+export function checkChallenge(token: string | undefined, code: string): { email: string; profile: Profile } | null {
+  const c = unseal<{ email: string; p?: Profile; h: string; exp: number }>(token);
   if (!c) return null;
   const want = Buffer.from(c.h);
   const got = Buffer.from(codeHash(c.email, cleanCode(code), c.exp));
-  return want.length === got.length && timingSafeEqual(want, got) ? c.email : null;
+  return want.length === got.length && timingSafeEqual(want, got) ? { email: c.email, profile: c.p ?? {} } : null;
 }
 
 export function newSession(email: string): { token: string; maxAge: number } {

@@ -16,7 +16,7 @@ const fail = (message: string, status = 400) => NextResponse.json({ ok: false, m
  * are all decided here; Stripe's form collects the address and card. Attribution rides on the session so the webhook can report the order.
  */
 export async function POST(req: Request) {
-  let body: { lines?: unknown; code?: unknown; attest?: unknown };
+  let body: { lines?: unknown; code?: unknown; attest?: unknown; emailOptIn?: unknown };
   try { body = await req.json(); } catch { return fail("Invalid request."); }
   if (body.attest !== true) return fail("Please confirm the research-use statement.");
 
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
 
   const jar = await cookies();
   const attribution = readAttribution(jar);
-  const metadata: Record<string, string> = { ...attributionMetadata(jar), ruo_attested: "yes", attested_at: new Date().toISOString() };
+  const metadata: Record<string, string> = { ...attributionMetadata(jar), ruo_attested: "yes", attested_at: new Date().toISOString(), mkt_email: body.emailOptIn === true ? "yes" : "no" };
 
   // Creator code: the one typed at checkout wins over the one from a creator link.
   const typed = typeof body.code === "string" ? body.code.trim() : "";
@@ -66,8 +66,6 @@ export async function POST(req: Request) {
         shipping_rate_data: { type: "fixed_amount", display_name: shipping ? "Standard shipping" : "Free shipping", fixed_amount: { amount: cents(shipping), currency: "usd" } },
       }],
       phone_number_collection: { enabled: true },
-      // Optional "email me offers" checkbox; the webhook passes the answer to Omnisend.
-      consent_collection: { promotions: "auto" },
       custom_text: { submit: { message: "Research use only. By paying you confirm you are 21 or older and these products are not for human or veterinary use." } },
       metadata,
       payment_intent_data: { metadata },

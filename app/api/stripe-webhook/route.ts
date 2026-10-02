@@ -45,7 +45,7 @@ export async function POST(req: Request) {
   return Response.json({ received: true });
 }
 
-/** Buyer → Omnisend with name, phone and ship-to; subscribed only if they ticked Stripe's offers box. */
+/** Buyer → Omnisend with name, phone and ship-to; email-subscribed only if the checkout opt-in box was left ticked. */
 async function saveCustomer(session: Stripe.Checkout.Session) {
   const c = session.customer_details;
   if (!c?.email) return;
@@ -57,8 +57,8 @@ async function saveCustomer(session: Stripe.Checkout.Session) {
     phone: c.phone,
     address: a ? { line1: a.line1, line2: a.line2, city: a.city, state: a.state, postalCode: a.postal_code, country: a.country } : null,
     tags: ["customer"],
-    subscribe: session.consent?.promotions === "opt_in",
-    consentSource: "stripe checkout",
+    subscribe: session.metadata?.mkt_email === "yes",
+    consentSource: "website checkout opt-in",
   });
 }
 
