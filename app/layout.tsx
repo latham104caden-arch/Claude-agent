@@ -8,6 +8,7 @@ import { Footer } from "../components/chrome/Footer";
 import { EntryGate } from "../components/chrome/EntryGate";
 import { Reveal } from "../components/chrome/Reveal";
 import { Announcement } from "../components/chrome/Announcement";
+import { Omnisend } from "../components/chrome/Omnisend";
 
 import "@fontsource-variable/inter";
 import "@fontsource-variable/newsreader/opsz.css";
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <EntryGate />
           <Reveal />
         </CartProvider>
+        <Omnisend />
       </body>
     </html>
   );
