@@ -9,6 +9,7 @@ import { EntryGate } from "../components/chrome/EntryGate";
 import { Reveal } from "../components/chrome/Reveal";
 import { Announcement } from "../components/chrome/Announcement";
 import { Omnisend } from "../components/chrome/Omnisend";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "@fontsource-variable/inter";
 import "@fontsource-variable/newsreader/opsz.css";
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Reveal />
         </CartProvider>
         <Omnisend />
+        <SpeedInsights />
       </body>
     </html>
   );
