@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { CHALLENGE_COOKIE, SESSION_COOKIE, authConfigured, checkChallenge, cookieOpts, newSession } from "../../../../lib/auth";
+import { upsertContact } from "../../../../lib/omnisend";
 
 export const runtime = "nodejs";
 
@@ -12,6 +13,9 @@ export async function POST(req: Request) {
   const jar = await cookies();
   const email = checkChallenge(jar.get(CHALLENGE_COOKIE)?.value, code);
   if (!email) return NextResponse.json({ ok: false, message: "That code is wrong or has expired. Check it, or send a new one." }, { status: 400 });
+
+  // Account holders appear in Omnisend (no marketing opt-in implied).
+  await upsertContact({ email, tags: ["account"] });
 
   const { token, maxAge } = newSession(email);
   const res = NextResponse.json({ ok: true });

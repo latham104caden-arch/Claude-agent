@@ -66,6 +66,8 @@ export async function POST(req: Request) {
         shipping_rate_data: { type: "fixed_amount", display_name: shipping ? "Standard shipping" : "Free shipping", fixed_amount: { amount: cents(shipping), currency: "usd" } },
       }],
       phone_number_collection: { enabled: true },
+      // Optional "email me offers" checkbox; the webhook passes the answer to Omnisend.
+      consent_collection: { promotions: "auto" },
       custom_text: { submit: { message: "Research use only. By paying you confirm you are 21 or older and these products are not for human or veterinary use." } },
       metadata,
       payment_intent_data: { metadata },

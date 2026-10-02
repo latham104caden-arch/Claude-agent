@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import { trackOrder, trackRefund } from "@adz/next";
+import { splitName, upsertContact } from "../../../lib/omnisend";
 import { getStripe } from "../../../lib/stripe";
 
 export const runtime = "nodejs";
@@ -28,7 +29,10 @@ export async function POST(req: Request) {
   try {
     if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
       const session = await stripe.checkout.sessions.retrieve(event.data.object.id, { expand: ["line_items.data.price.product"] });
-      if (session.payment_status === "paid") await reportOrder(session);
+      if (session.payment_status === "paid") {
+        await reportOrder(session);
+        await saveCustomer(session);
+      }
     } else if (event.type === "charge.refunded") {
       const charge = event.data.object;
       const orderId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
@@ -39,6 +43,23 @@ export async function POST(req: Request) {
     return new Response("handler failed", { status: 500 });
   }
   return Response.json({ received: true });
+}
+
+/** Buyer → Omnisend with name, phone and ship-to; subscribed only if they ticked Stripe's offers box. */
+async function saveCustomer(session: Stripe.Checkout.Session) {
+  const c = session.customer_details;
+  if (!c?.email) return;
+  const ship = session.collected_information?.shipping_details;
+  const a = ship?.address ?? c.address;
+  await upsertContact({
+    email: c.email.toLowerCase(),
+    ...splitName(ship?.name || c.name),
+    phone: c.phone,
+    address: a ? { line1: a.line1, line2: a.line2, city: a.city, state: a.state, postalCode: a.postal_code, country: a.country } : null,
+    tags: ["customer"],
+    subscribe: session.consent?.promotions === "opt_in",
+    consentSource: "stripe checkout",
+  });
 }
 
 function reportOrder(session: Stripe.Checkout.Session) {
