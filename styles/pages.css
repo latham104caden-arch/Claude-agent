@@ -53,6 +53,19 @@
 .acct-order li { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
 .acct-ship { font-size: 14px; margin-bottom: 14px; }
 .acct-order footer { border-top: 1px solid var(--border-soft); padding-top: 14px; }
+.acct-rewards { display: grid; gap: 12px; }
+.acct-rewards-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.acct-rewards-head .eyebrow { margin-bottom: 8px; }
+.acct-spent { font-family: var(--font-display); font-weight: 500; font-size: 30px; line-height: 1; text-align: right; color: var(--ink); }
+.acct-spent span { display: block; margin-top: 4px; font-family: var(--font-sans); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+.acct-meter { height: 10px; border-radius: var(--radius-pill); background: var(--accent-soft); overflow: hidden; }
+.acct-meter i { display: block; height: 100%; border-radius: inherit; background: var(--accent-ink); }
+.acct-codes { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 8px; }
+.acct-codes li { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border: 1px dashed var(--border); border-radius: var(--radius); }
+.acct-codes code { font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink); user-select: all; }
+.acct-codes span { font-size: 13px; color: var(--text-muted); }
+.acct-codes li.is-used { opacity: 0.55; }
+.acct-codes li.is-used code { text-decoration: line-through; }
 .acct-foot { display: flex; justify-content: center; margin-top: 8px; }
 .account-shell { display: grid; grid-template-columns: 240px 1fr; gap: 32px; }
 .account-nav { display: grid; gap: 4px; align-content: start; }

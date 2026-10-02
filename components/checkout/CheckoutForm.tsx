@@ -70,14 +70,14 @@ export function CheckoutForm() {
     <form className="checkout-grid" onSubmit={submit}>
       <div>
         <fieldset>
-          <legend>Creator code</legend>
+          <legend>Discount code</legend>
           <div className="form-grid">
             <div className="field span-2">
               <label htmlFor="co-code">Code (optional)</label>
               <input id="co-code" className="input" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={64} placeholder="Enter a code" />
             </div>
           </div>
-          <p className="drawer-note">Arrived from a creator link? Their code is applied automatically.</p>
+          <p className="drawer-note">Creator code or a $100 reward code from your account. Arrived from a creator link? That code is applied automatically.</p>
         </fieldset>
         <fieldset>
           <legend>Shipping and payment</legend>

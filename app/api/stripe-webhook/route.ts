@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { trackOrder, trackRefund } from "@adz/next";
 import { splitName, upsertContact } from "../../../lib/omnisend";
 import { getStripe } from "../../../lib/stripe";
+import { syncRewards } from "../../../lib/rewards";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,6 +33,9 @@ export async function POST(req: Request) {
       if (session.payment_status === "paid") {
         await reportOrder(session);
         await saveCustomer(session);
+        // Issue any $100 reward this order unlocked (idempotent; the account page also does this).
+        const email = session.customer_details?.email;
+        if (email) await syncRewards(email).catch((err) => console.error("[stripe-webhook] rewards", err));
       }
     } else if (event.type === "charge.refunded") {
       const charge = event.data.object;

@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { attributionMetadata, readAttribution, validateCode } from "@adz/next";
 import { priceCart, shippingFor } from "../../../lib/orders";
 import { getStripe } from "../../../lib/stripe";
+import { currentEmail } from "../../../lib/auth";
+import { isRewardCode, rewardPromotionFor } from "../../../lib/rewards";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,7 +15,9 @@ const fail = (message: string, status = 400) => NextResponse.json({ ok: false, m
 /**
  * Creates an embedded Stripe Checkout session from the cart (the card form
  * mounts on our checkout page). Prices, shipping and the creator-code discount
- * are all decided here; Stripe's form collects the address and card. Attribution rides on the session so the webhook can report the order.
+ * are all decided here; Stripe's form collects the address and card. Attribution
+ * rides on the session so the webhook can report the order. Codes: a $100 spend
+ * reward (lib/rewards.ts, signed-in owner only) or an adz creator code.
  */
 export async function POST(req: Request) {
   let body: { lines?: unknown; code?: unknown; attest?: unknown; emailOptIn?: unknown };
@@ -30,10 +34,21 @@ export async function POST(req: Request) {
   const attribution = readAttribution(jar);
   const metadata: Record<string, string> = { ...attributionMetadata(jar), ruo_attested: "yes", attested_at: new Date().toISOString(), mkt_email: body.emailOptIn === true ? "yes" : "no" };
 
-  // Creator code: the one typed at checkout wins over the one from a creator link.
+  // Signed-in shoppers check out under their account email (orders, rewards and Omnisend all key on it).
+  const account = await currentEmail();
+
+  // One discount per order (Stripe rule). A typed code wins over a creator-link code.
   const typed = typeof body.code === "string" ? body.code.trim() : "";
-  const code = typed || attribution.code;
-  const discounts: { coupon: string }[] = [];
+  const discounts: ({ coupon: string } | { promotion_code: string })[] = [];
+  if (typed && isRewardCode(typed)) {
+    // $100 spend reward: only for the account it was earned on.
+    if (!account) return fail("Sign in to use a reward code. It only works for the account that earned it.");
+    const r = await rewardPromotionFor(account, typed);
+    if ("error" in r) return fail(r.error);
+    discounts.push({ promotion_code: r.id });
+    metadata.reward_code = typed.toUpperCase();
+  }
+  const code = discounts.length ? null : typed || attribution.code;
   if (code) {
     let check: Awaited<ReturnType<typeof validateCode>> | null = null;
     try { check = await validateCode(code); } catch (err) { console.error("[checkout] adz code check failed", err); }
@@ -52,6 +67,7 @@ export async function POST(req: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       ui_mode: "embedded",
+      ...(account ? { customer_email: account } : {}),
       line_items: cart.lines.map((l) => ({
         quantity: l.qty,
         price_data: {
