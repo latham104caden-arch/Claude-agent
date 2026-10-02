@@ -66,6 +66,7 @@ const ROWS: Row[] = [
   { slug: "glutathione", name: "Glutathione", category: "repair-immune", subtitle: "Antioxidant Research", description: "Glutathione is a tripeptide antioxidant studied in cellular redox research.", sizes: [["500 mg", 60], ["1500 mg", 80, 100]], popularity: 80, form: "solution" },
 
   // ── Metabolic & GH ─────────────────────────────────────────
+   { slug: "rt-3", name: "RT-3", category: "metabolic-gh", subtitle: "Metabolic Research", description: "RT-3 is a long-acting amylin analog studied in appetite-signalling research.", sizes: [["10 mg", 69.99], ["20 mg", 119.99, 120], ["30 mg", 149.99]], popularity: 99 },
   { slug: "5-amino-1mq", name: "5-Amino-1MQ", category: "metabolic-gh", subtitle: "Metabolic Research", description: "5-Amino-1MQ is a small-molecule NNMT inhibitor studied in cellular metabolism research.", sizes: [["10 mg", 55, 75]], popularity: 77 },
   { slug: "aod-9604", name: "AOD-9604", category: "metabolic-gh", subtitle: "Metabolic Research", description: "AOD-9604 is a modified fragment of the growth-hormone C-terminus studied in lipid-metabolism research.", sizes: [["10 mg", 85, 100]], popularity: 68 },
   { slug: "cagrilintide", name: "Cagrilintide", category: "metabolic-gh", subtitle: "Metabolic Research", description: "Cagrilintide is a long-acting amylin analog studied in appetite-signalling research.", sizes: [["5 mg", 65], ["10 mg", 110, 115]], popularity: 85 },
