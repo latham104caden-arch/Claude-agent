@@ -38,6 +38,19 @@
 /* ── Account ─────────────────────────────────────────────────── */
 .auth { max-width: 460px; margin: 0 auto; }
 .auth .field { margin: 20px 0 16px; }
+.auth .form-msg { font-size: 14px; color: var(--text-muted); }
+.auth-code { font-family: var(--font-mono, ui-monospace, monospace); letter-spacing: 0.18em; text-transform: uppercase; font-size: 20px; text-align: center; }
+.link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--accent-ink); text-decoration: underline; cursor: pointer; }
+.link-btn:disabled { opacity: 0.5; cursor: default; }
+.acct-orders { max-width: 760px; display: grid; gap: 18px; }
+.acct-empty { text-align: center; display: grid; gap: 16px; justify-items: center; padding: 40px 24px; }
+.acct-order header, .acct-order footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.acct-order header div { display: grid; gap: 2px; }
+.acct-order ul { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 8px; border-top: 1px solid var(--border-soft); padding-top: 14px; }
+.acct-order li { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+.acct-ship { font-size: 14px; margin-bottom: 14px; }
+.acct-order footer { border-top: 1px solid var(--border-soft); padding-top: 14px; }
+.acct-foot { display: flex; justify-content: center; margin-top: 8px; }
 .account-shell { display: grid; grid-template-columns: 240px 1fr; gap: 32px; }
 .account-nav { display: grid; gap: 4px; align-content: start; }
 .account-nav a { padding: 10px 14px; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; }
