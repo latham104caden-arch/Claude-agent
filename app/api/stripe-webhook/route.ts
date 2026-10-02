@@ -40,7 +40,11 @@ export async function POST(req: Request) {
     } else if (event.type === "charge.refunded") {
       const charge = event.data.object;
       const orderId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
-      if (orderId) await trackRefund({ orderId, totalRefunded: charge.amount_refunded / 100 });
+      // Only orders that carried a creator code were reported to adz, so only those get refunds reported.
+      if (orderId) {
+        const pi = await stripe.paymentIntents.retrieve(orderId);
+        if (pi.metadata?.adz_code) await trackRefund({ orderId, totalRefunded: charge.amount_refunded / 100 });
+      }
     }
   } catch (err) {
     console.error(`[stripe-webhook] ${event.type} failed`, err);
@@ -66,9 +70,15 @@ async function saveCustomer(session: Stripe.Checkout.Session) {
   });
 }
 
-function reportOrder(session: Stripe.Checkout.Session) {
+/**
+ * Affiliates are paid only when their code was actually applied to the order
+ * (typed, or auto-applied from their link). Orders with no creator code, or
+ * where a reward code took the single discount slot, aren't reported.
+ */
+async function reportOrder(session: Stripe.Checkout.Session) {
   const d = session.total_details;
   const m = session.metadata ?? {};
+  if (!m.adz_code) return;
   const orderId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id ?? session.id;
   return trackOrder({
     id: orderId,
@@ -80,7 +90,7 @@ function reportOrder(session: Stripe.Checkout.Session) {
     discount: (d?.amount_discount ?? 0) / 100,
     currency: session.currency ?? "usd",
     code: m.adz_code,
-    referral: m.adz_ref,
+    referral: m.adz_code,
     source: m.adz_src,
     customer: { email: session.customer_details?.email, firstName: session.customer_details?.name },
     lineItems: (session.line_items?.data ?? []).map((li) => {

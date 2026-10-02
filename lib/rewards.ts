@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
 import type Stripe from "stripe";
+import { sendEvent } from "./omnisend";
 import { getStripe } from "./stripe";
 
 /**
@@ -72,6 +73,8 @@ export async function syncRewards(email: string): Promise<Rewards | null> {
         restrictions: { minimum_amount: REWARD_VALUE * 100, minimum_amount_currency: "usd" },
         metadata: { email, milestone: String(n), reason: `$${REWARD_EVERY * n} lifetime spend` },
       });
+      // First time this code exists → Omnisend's "earned reward" automation emails it.
+      await sendEvent("earned reward", email, { code, amount: REWARD_VALUE, milestone: n, lifetimeSpend: Math.round(spent * 100) / 100 });
     }
     codes.push({ code, used: promo.times_redeemed > 0 || !promo.active });
   }
