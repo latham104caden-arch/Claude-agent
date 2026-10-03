@@ -30,6 +30,8 @@ export async function sendSignInCode(to: string, code: string): Promise<boolean>
   return res.ok;
 }
 
+/** PNG (not WebP) so Outlook and older clients show it. Served from the live site. */
+const LOGO = "https://revisedresearch.com/brand/logo-email.png";
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 const usd = (cents: number | null | undefined) => `$${((cents ?? 0) / 100).toFixed(2)}`;
 
@@ -65,7 +67,10 @@ export async function sendOrderConfirmation(session: Stripe.Checkout.Session): P
 
   const html = `<div style="background:#EEF2F6;padding:28px 12px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#223044">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid #E1E8F0;border-radius:20px">
-<tr><td style="padding:28px 32px 6px"><p style="margin:0;font-family:Georgia,serif;font-size:24px;font-weight:600;color:#223044">Revised</p><p style="margin:3px 0 0;font-size:10px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:#3F5874">Research</p></td></tr>
+<tr><td style="padding:26px 32px 6px"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
+<td style="padding-right:10px;vertical-align:middle"><img src="${LOGO}" width="29" height="56" alt="" style="display:block;border:0;width:29px;height:56px"></td>
+<td style="vertical-align:middle"><p style="margin:0;font-family:Georgia,serif;font-size:24px;line-height:1;font-weight:600;color:#223044">Revised</p><p style="margin:4px 0 0;font-size:10px;line-height:1;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:#3F5874">Research</p></td>
+</tr></table></td></tr>
 <tr><td style="padding:22px 32px 0"><p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#3F5874">Order ${number} confirmed</p>
 <p style="margin:0 0 10px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#223044">Thanks, ${esc(name)}. Your order is in.</p>
 <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#34465E">We've received your payment. Shipping takes 2–3 business days, and we'll email tracking when your label is created.</p></td></tr>
