@@ -1,4 +1,5 @@
 import type Stripe from "stripe";
+import { LOGO_PNG_BASE64 } from "./email-logo";
 
 /**
  * Transactional email via Resend (owner-approved): account sign-in codes and
@@ -30,8 +31,13 @@ export async function sendSignInCode(to: string, code: string): Promise<boolean>
   return res.ok;
 }
 
-/** PNG (not WebP) so Outlook and older clients show it. Served from the live site. */
-const LOGO = "https://revisedresearch.com/brand/logo-email.png";
+
+/**
+ * Logo travels inside the email as an inline attachment (cid:), so it shows
+ * without the mail app fetching anything from the site.
+ */
+const LOGO = "cid:rr-logo";
+const LOGO_ATTACHMENT = { filename: "revised-research.png", content: LOGO_PNG_BASE64, content_id: "rr-logo", content_type: "image/png" };
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 const usd = (cents: number | null | undefined) => `$${((cents ?? 0) / 100).toFixed(2)}`;
 
@@ -98,6 +104,7 @@ ${shipTo.length ? `<tr><td style="padding:18px 32px 0"><p style="margin:0 0 4px;
       subject: `Order ${number} confirmed`,
       html,
       text,
+      attachments: [LOGO_ATTACHMENT],
     }),
     cache: "no-store",
   });
