@@ -43,7 +43,7 @@ export default function ShopPage() {
             <div className="hero-chips">
               <span className="chip"><Icon name="shield" /> ≥99% HPLC purity</span>
               <span className="chip"><Icon name="coa" /> COA every lot</span>
-              <span className="chip"><Icon name="truck" /> Ships in 1 business day</span>
+              <span className="chip"><Icon name="truck" /> 2–3 day shipping</span>
             </div>
           </div>
           <nav className="cat-index" aria-label="Jump to category">

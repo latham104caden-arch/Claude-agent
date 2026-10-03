@@ -7,8 +7,8 @@ import type { Coa } from "../lib/types";
 export const TICKER = [
   "COAs on every batch",
   "≥ 99% purity",
-  "Third-party tested",
-  "Ships in one business day",
+  "7x tested, every product",
+  "2–3 day shipping",
   "Secure checkout",
   "Research use only",
 ];
@@ -16,7 +16,8 @@ export const TICKER = [
 export const QC_STATS = [
   { value: "≥99%", label: "HPLC purity target" },
   { value: "100%", label: "Lots with a published COA" },
-  { value: "1 day", label: "Order to carrier" },
+  { value: "7x", label: "Tests on every product" },
+  { value: "2–3 days", label: "Shipping" },
 ];
 
 export const QC_PILLARS = [
@@ -28,8 +29,8 @@ export const QC_PILLARS = [
 
 export const WHY_US = [
   { icon: "flask", title: "US-sourced materials", body: "Compounds are synthesized from US-sourced raw materials." },
-  { icon: "cert", title: "Third-party tested", body: "Testing is done by an outside lab, so results are not self-reported." },
-  { icon: "truck", title: "Ships in one business day", body: "Orders are picked, packed and handed to the carrier with tracking." },
+  { icon: "cert", title: "7x tested", body: "Every product goes through seven tests, run by an outside lab, so results are not self-reported." },
+  { icon: "truck", title: "2–3 day shipping", body: "Orders are picked, packed and handed to the carrier with tracking, arriving in 2–3 business days." },
   { icon: "lock", title: "Secure checkout", body: "Card fields will be hosted by the payment provider, never stored by us." },
   { icon: "mail", title: "A real person replies", body: "Email support with an order number and a person replies within one business day." },
   { icon: "book", title: "COAs on every batch", body: "Certificates are published as the lab issued them, open to anyone." },
@@ -72,7 +73,7 @@ export const FAQ: FaqGroup[] = [
     id: "shipping",
     title: "Shipping Questions",
     items: [
-      { q: "When will my order ship?", a: "Orders placed on business days ship within one business day. Tracking is sent when the label is created." },
+      { q: "When will my order arrive?", a: "Shipping takes 2–3 business days. Tracking is sent when the label is created." },
       { q: "Do you ship internationally?", a: "Not yet. We currently ship to US addresses only." },
     ],
   },

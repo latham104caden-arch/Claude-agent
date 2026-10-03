@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHero } from "../../../components/ui";
 import { ClearCart } from "../../../components/checkout/ClearCart";
 import { getStripe } from "../../../lib/stripe";
+import { sendOrderConfirmation } from "../../../lib/email";
 
 export const metadata: Metadata = { title: "Order Confirmed", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -15,9 +16,11 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
   const stripe = getStripe();
   if (stripe && session_id?.startsWith("cs_")) {
     try {
-      const s = await stripe.checkout.sessions.retrieve(session_id);
+      const s = await stripe.checkout.sessions.retrieve(session_id, { expand: ["line_items"] });
       paid = s.payment_status === "paid";
       email = s.customer_details?.email ?? null;
+      // Webhook also sends it; the Idempotency-Key in sendOrderConfirmation keeps it to one email.
+      if (paid) await sendOrderConfirmation(s).catch((err) => console.error("[success] confirmation", err));
     } catch {}
   }
   return (
@@ -27,7 +30,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
         {paid ? <ClearCart /> : null}
         <p className="lead">
           {paid
-            ? <>We&apos;ve received your payment{email ? <> and sent a receipt to <b>{email}</b></> : null}. Your order ships within one business day.</>
+            ? <>We&apos;ve received your payment{email ? <> and emailed your order confirmation to <b>{email}</b></> : null}. Shipping takes 2–3 business days, and tracking is emailed when your label is created.</>
             : <>If your payment is still processing, you&apos;ll get a receipt by email once it clears.</>}
         </p>
         <p style={{ marginTop: 24 }}><Link href="/shop" className="btn btn--primary">Keep Browsing</Link></p>

@@ -136,7 +136,7 @@
 @media (max-width: 860px) { .coa-band-grid { grid-template-columns: 1fr; } }
 
 /* ── Quality control ─────────────────────────────────────────── */
-.qc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 18px; }
+.qc-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 18px; }
 .qc-stat { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm); }
 .qc-stat b { display: block; font-family: var(--font-display); font-size: clamp(40px, 4.4vw, 60px); font-weight: 500; color: var(--ink); line-height: 1; letter-spacing: -0.03em; }
 .qc-stat span { display: block; margin-top: 10px; font-size: 14px; color: var(--text-muted); }

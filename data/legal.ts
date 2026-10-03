@@ -30,7 +30,7 @@ export const LEGAL: Record<string, LegalDoc> = {
     title: "Shipping Policy",
     updated: "2026-09-28",
     sections: [
-      { heading: "Processing time", body: ["Orders placed on business days ship within one business day.", DRAFT] },
+      { heading: "Delivery time", body: ["Shipping takes 2–3 business days. Tracking is sent when the label is created.", DRAFT] },
       { heading: "Shipping methods and rates", body: [DRAFT] },
       { heading: "Lost or damaged packages", body: [DRAFT] },
     ],

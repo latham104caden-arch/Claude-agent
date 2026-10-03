@@ -130,7 +130,7 @@ export function ProductStage({
             </button>
           </div>
           <p className={"pdp-stock" + (v.inStock ? "" : " out")}>
-            {v.inStock ? "In stock — ships in one business day" : "Currently out of stock"}
+            {v.inStock ? "In stock · 2–3 day shipping" : "Currently out of stock"}
           </p>
 
           {/* Build your stack */}
@@ -159,8 +159,8 @@ export function ProductStage({
 
           <div className="pdp-assure">
             <div><Icon name="shield" /> ≥99% purity target</div>
-            <div><Icon name="cert" /> Third-party tested</div>
-            <div><Icon name="truck" /> Ships in 1 business day</div>
+            <div><Icon name="cert" /> 7x tested</div>
+            <div><Icon name="truck" /> 2–3 day shipping</div>
           </div>
           <p className="panel-ruo">{RUO_SHORT}</p>
         </div>

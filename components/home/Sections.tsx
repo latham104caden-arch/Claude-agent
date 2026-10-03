@@ -25,7 +25,7 @@ export function Hero() {
     <section className="hero">
       <div className="container hero-grid">
         <div className="hero-copy">
-          <p className="eyebrow" data-reveal="">Third-party tested · COA every lot</p>
+          <p className="eyebrow" data-reveal="">7x tested · COA every lot</p>
           <h1 className="h1" data-reveal="" data-reveal-delay="60">
             The research market<br />
             <em className="underline-accent">like you&apos;ve never seen.</em>
@@ -163,7 +163,7 @@ export function QualityControl() {
       <div className="container">
         <SectionHead
           eyebrow="Quality Control"
-          title={<>Every lot, <em>tested.</em></>}
+          title={<>Every product, <em>tested 7x.</em></>}
           lead="What happens to a batch between synthesis and your bench."
         />
         <div className="qc-stats">

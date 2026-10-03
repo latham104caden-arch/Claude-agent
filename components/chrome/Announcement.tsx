@@ -3,9 +3,9 @@ import { Icon } from "../Icon";
 
 const ITEMS = [
   "COA published for every lot",
-  "Third-party HPLC tested",
+  "7x tested, every product",
   "Lyophilized & sealed for stability",
-  "Ships in one business day",
+  "2–3 day shipping",
   `Free shipping on orders $${SITE.freeShippingThreshold}+`,
   "For laboratory research use only",
 ];
