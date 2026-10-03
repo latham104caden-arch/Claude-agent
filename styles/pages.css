@@ -108,3 +108,12 @@
 .coa-count-tile span { display: block; margin-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
 .coa-count-done { color: var(--ink-soft); }
 @media (max-width: 420px) { .coa-count-tiles { gap: 8px; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; } .coa-count-tile { padding: 12px 4px 10px; } }
+
+/* ── Checkout: discount code ─────────────────────────────────── */
+.code-apply { display: flex; gap: 10px; }
+.code-apply .input { flex: 1; min-width: 0; }
+.code-apply .btn { flex: none; height: auto; padding-inline: 22px; }
+.code-applied { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; padding: 10px 14px; border-radius: var(--radius); background: var(--accent-soft); color: var(--ink); font-size: 14px; }
+.code-applied svg { width: 18px; height: 18px; color: var(--accent-ink); flex: none; }
+.code-applied span { flex: 1; }
+.summary-discount span:last-child { color: var(--accent-ink); font-weight: 600; }

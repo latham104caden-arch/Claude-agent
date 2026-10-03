@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { attributionMetadata, readAttribution, validateCode } from "@adz/next";
+import { attributionMetadata, readAttribution } from "@adz/next";
 import { priceCart, shippingFor } from "../../../lib/orders";
 import { getStripe } from "../../../lib/stripe";
 import { currentEmail } from "../../../lib/auth";
-import { isRewardCode, rewardPromotionFor } from "../../../lib/rewards";
+import { resolveDiscount } from "../../../lib/discounts";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ const fail = (message: string, status = 400) => NextResponse.json({ ok: false, m
  * reward (lib/rewards.ts, signed-in owner only) or an adz creator code.
  */
 export async function POST(req: Request) {
-  let body: { lines?: unknown; code?: unknown; attest?: unknown; emailOptIn?: unknown };
+  let body: { lines?: unknown; code?: unknown; useLink?: unknown; attest?: unknown; emailOptIn?: unknown };
   try { body = await req.json(); } catch { return fail("Invalid request."); }
   if (body.attest !== true) return fail("Please confirm the research-use statement.");
 
@@ -37,28 +37,20 @@ export async function POST(req: Request) {
   // Signed-in shoppers check out under their account email (orders, rewards and Omnisend all key on it).
   const account = await currentEmail();
 
-  // One discount per order (Stripe rule). A typed code wins over a creator-link code.
+  // One discount per order (Stripe rule; no stacking). A typed code wins over a creator-link code.
   const typed = typeof body.code === "string" ? body.code.trim() : "";
   const discounts: ({ coupon: string } | { promotion_code: string })[] = [];
-  if (typed && isRewardCode(typed)) {
-    // $100 spend reward: only for the account it was earned on.
-    if (!account) return fail("Sign in to use a reward code. It only works for the account that earned it.");
-    const r = await rewardPromotionFor(account, typed);
-    if ("error" in r) return fail(r.error);
-    discounts.push({ promotion_code: r.id });
-    metadata.reward_code = typed.toUpperCase();
-  }
-  const code = discounts.length ? null : typed || attribution.code;
-  if (code) {
-    let check: Awaited<ReturnType<typeof validateCode>> | null = null;
-    try { check = await validateCode(code); } catch (err) { console.error("[checkout] adz code check failed", err); }
-    if (check?.valid && check.discount_pct && check.discount_pct > 0) {
-      const coupon = await stripe.coupons.create({ percent_off: check.discount_pct, duration: "once", max_redemptions: 1, name: check.code ?? code.toUpperCase() });
-      discounts.push({ coupon: coupon.id });
-      metadata.adz_code = check.code ?? code.toUpperCase();
-    } else if (typed) {
-      return fail(check ? `The code “${typed.toUpperCase()}” isn't valid.` : "We couldn't check that code right now. Try again, or check out without it.");
-    }
+  // The creator-link code applies only if the shopper kept it (they can remove it on the page).
+  const linkCode = body.useLink === true ? attribution.code : null;
+  const d = await resolveDiscount(typed || linkCode || "", { subtotal: cart.subtotal, account, explicit: !!typed });
+  if (d && "error" in d) return fail(d.error);
+  if (d?.kind === "reward") {
+    discounts.push({ promotion_code: d.promotionCode });
+    metadata.reward_code = d.code;
+  } else if (d?.kind === "creator") {
+    const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
+    discounts.push({ coupon: coupon.id });
+    metadata.adz_code = d.code;
   }
 
   const shipping = shippingFor(cart.subtotal);

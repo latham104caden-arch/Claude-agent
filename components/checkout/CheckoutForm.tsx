@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { money } from "../../lib/format";
 import { useCart } from "../cart/CartProvider";
 import { Icon } from "../Icon";
 import { PaymentForm } from "./PaymentForm";
-import { Summary } from "./Summary";
+import { Summary, type AppliedDiscount } from "./Summary";
 
 /**
  * Checkout: research attestation and an optional creator code, then Stripe's
@@ -22,6 +22,47 @@ export function CheckoutForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState("");
+  const [applied, setApplied] = useState<(AppliedDiscount & { fromLink?: boolean }) | null>(null);
+  const [applying, setApplying] = useState(false);
+  const [codeMsg, setCodeMsg] = useState("");
+
+  const preview = async (typed: string) => {
+    const res = await fetch("/api/checkout/code", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: typed || undefined }),
+    });
+    return { ok: res.ok, data: await res.json().catch(() => ({})) };
+  };
+
+  // Show a creator-link code that checkout will auto-apply; refresh the amount when the cart changes.
+  const cartKey = lines.map((l) => `${l.sku}x${l.qty}`).join(",");
+  useEffect(() => {
+    if (!ready || !lines.length) return;
+    let live = true;
+    preview(applied && !applied.fromLink ? applied.code : "").then(({ ok, data }) => {
+      if (!live) return;
+      if (ok && data.discount) setApplied(data.discount);
+      else if (!ok && applied) { setApplied(null); setCodeMsg(data.message || "That code no longer applies to this cart."); }
+    }).catch(() => {});
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, cartKey]);
+
+  const apply = async () => {
+    const typed = code.trim();
+    if (!typed || applying) return;
+    setApplying(true);
+    setCodeMsg("");
+    try {
+      const { ok, data } = await preview(typed);
+      if (ok && data.discount) { setApplied(data.discount); setCode(""); }
+      else setCodeMsg(data.message || "That code isn't valid.");
+    } catch {
+      setCodeMsg("Couldn't check the code. Check your connection and try again.");
+    }
+    setApplying(false);
+  };
 
   if (!ready) return <div style={{ minHeight: 400 }} />;
   if (lines.length === 0) {
@@ -51,7 +92,7 @@ export function CheckoutForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: code.trim() || undefined, attest, emailOptIn }),
+        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: applied && !applied.fromLink ? applied.code : undefined, useLink: !!applied?.fromLink, attest, emailOptIn }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.clientSecret) {
@@ -74,10 +115,20 @@ export function CheckoutForm() {
           <div className="form-grid">
             <div className="field span-2">
               <label htmlFor="co-code">Code (optional)</label>
-              <input id="co-code" className="input" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={64} placeholder="Enter a code" />
+              <div className="code-apply">
+                <input id="co-code" className="input" value={code} onChange={(e) => { setCode(e.target.value); setCodeMsg(""); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } }} autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={64} placeholder="Enter a code" />
+                <button type="button" className="btn btn--dark" onClick={apply} disabled={!code.trim() || applying}>{applying ? "Checking…" : "Apply"}</button>
+              </div>
             </div>
           </div>
-          <p className="drawer-note">Creator code or a $100 reward code from your account. Arrived from a creator link? That code is applied automatically.</p>
+          {applied ? (
+            <div className="code-applied" role="status">
+              <Icon name="check" strokeWidth={2.4} />
+              <span><b className="mono">{applied.code}</b> applied · {applied.label}{applied.fromLink ? " (from your creator link)" : ""}</span>
+              <button type="button" className="link-btn" onClick={() => setApplied(null)}>Remove</button>
+            </div>
+          ) : null}
+          {codeMsg ? <p className="drawer-note" role="alert" style={{ color: "var(--danger)" }}>{codeMsg}</p> : <p className="drawer-note">Creator code or a $100 reward code from your account. One code per order.</p>}
         </fieldset>
         <fieldset>
           <legend>Shipping and payment</legend>
@@ -93,7 +144,7 @@ export function CheckoutForm() {
         </label>
       </div>
       <div>
-        <Summary>
+        <Summary discount={applied}>
           <div style={{ marginTop: 14, display: "grid", gap: 6, fontSize: 14 }}>
             {lines.map((l) => (
               <div key={l.sku} className="summary-row" style={{ padding: 0 }}>
