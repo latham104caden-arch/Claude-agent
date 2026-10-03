@@ -33,8 +33,9 @@ export async function sendSignInCode(to: string, code: string): Promise<boolean>
 
 
 /**
- * Logo travels inside the email as an inline attachment (cid:), so it shows
- * without the mail app fetching anything from the site.
+ * Logo + wordmark travel inside the email as one inline image (cid:) on its own
+ * white badge, so they show without fetching anything and stay legible when a
+ * mail app switches to dark mode.
  */
 const LOGO = "cid:rr-logo";
 const LOGO_ATTACHMENT = { filename: "revised-research.png", content: LOGO_PNG_BASE64, content_id: "rr-logo", content_type: "image/png" };
@@ -71,12 +72,10 @@ export async function sendOrderConfirmation(session: Stripe.Checkout.Session): P
     row("Total", usd(session.amount_total), true),
   ].join("");
 
-  const html = `<div style="background:#EEF2F6;padding:28px 12px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#223044">
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"></head><body style="margin:0;background:#EEF2F6">
+<div style="background:#EEF2F6;padding:28px 12px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#223044">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid #E1E8F0;border-radius:20px">
-<tr><td style="padding:26px 32px 6px"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
-<td style="padding-right:10px;vertical-align:middle"><img src="${LOGO}" width="29" height="56" alt="" style="display:block;border:0;width:29px;height:56px"></td>
-<td style="vertical-align:middle"><p style="margin:0;font-family:Georgia,serif;font-size:24px;line-height:1;font-weight:600;color:#223044">Revised</p><p style="margin:4px 0 0;font-size:10px;line-height:1;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:#3F5874">Research</p></td>
-</tr></table></td></tr>
+<tr><td style="padding:20px 22px 0"><img src="${LOGO}" width="192" height="82" alt="Revised Research" style="display:block;border:0;width:192px;height:82px;font-family:Georgia,serif;font-size:22px;color:#223044"></td></tr>
 <tr><td style="padding:22px 32px 0"><p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#3F5874">Order ${number} confirmed</p>
 <p style="margin:0 0 10px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#223044">Thanks, ${esc(name)}. Your order is in.</p>
 <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#34465E">We've received your payment. Shipping takes 2–3 business days, and we'll email tracking when your label is created.</p></td></tr>
@@ -86,7 +85,7 @@ ${shipTo.length ? `<tr><td style="padding:18px 32px 0"><p style="margin:0 0 4px;
 <tr><td align="center" style="padding:24px 32px 6px"><a href="https://revisedresearch.com/my-account" style="display:inline-block;background:#3F5874;color:#FFFFFF;text-decoration:none;font-size:15px;font-weight:600;padding:12px 26px;border-radius:999px">View your orders</a></td></tr>
 <tr><td style="padding:16px 32px 26px"><p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#5E7894">Questions? Just reply to this email or write to support@revisedresearch.com with your order number.</p>
 <p style="margin:0;font-size:12px;line-height:1.6;color:#5E7894">All products are for laboratory research use only. Not for human or veterinary use.</p></td></tr>
-</table></div>`;
+</table></div></body></html>`;
   const text = [
     `Order ${number} confirmed`, "", `Thanks, ${name}. Your order is in. Shipping takes 2–3 business days; tracking is emailed when your label is created.`, "",
     ...items.map((li) => `${li.quantity ?? 1} x ${li.description}  ${usd(li.amount_subtotal)}`),
