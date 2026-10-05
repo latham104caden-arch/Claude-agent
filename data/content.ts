@@ -111,8 +111,3 @@ export const ARTICLES: Article[] = [
   },
 ];
 
-export const AFFILIATE_STEPS = [
-  { title: "Apply", body: "Tell us about your audience. Approval usually takes a few business days." },
-  { title: "Share", body: "Get a personal code and link to share with your research community." },
-  { title: "Earn", body: "Earn commission on qualifying orders placed with your code." },
-];

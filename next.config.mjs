@@ -4,7 +4,10 @@ const nextConfig = {
   poweredByHeader: false,
   trailingSlash: false,
   async redirects() {
-    return [{ source: "/membership", destination: "/shop", permanent: true }];
+    return [
+      { source: "/membership", destination: "/shop", permanent: true },
+      { source: "/affiliate", destination: "/", permanent: true },
+    ];
   },
   async headers() {
     return [

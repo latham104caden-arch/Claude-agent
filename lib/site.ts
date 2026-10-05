@@ -27,7 +27,6 @@ export const NAV: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Compounds" },
   { href: "/coas", label: "COAs" },
-  { href: "/affiliate", label: "Partner Program" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -50,7 +49,6 @@ export const FOOTER_COLUMNS: { title: string; links: NavItem[] }[] = [
     links: [
       { href: "/about", label: "About" },
       { href: "/research", label: "Research Library" },
-      { href: "/affiliate", label: "Partner Program" },
       { href: "/faq", label: "FAQ" },
       { href: "/contact", label: "Contact Us" },
     ],

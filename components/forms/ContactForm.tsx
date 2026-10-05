@@ -13,7 +13,7 @@ export function ContactForm() {
       <div className="field span-2">
         <label htmlFor="c-topic">Topic</label>
         <select id="c-topic" name="topic" className="select" defaultValue="General">
-          <option>General</option><option>Order status</option><option>Product question</option><option>Wholesale</option><option>Partner program</option>
+          <option>General</option><option>Order status</option><option>Product question</option><option>Wholesale</option>
         </select>
       </div>
       <div className="field span-2"><label htmlFor="c-msg">Message</label><textarea id="c-msg" name="message" className="textarea" required /></div>
