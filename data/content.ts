@@ -44,6 +44,10 @@ export const COAS: Coa[] = [
   { lot: "TB-10-080326", productSlug: "tb-500", productName: "TB-500", strength: "10 mg", purity: "99.96%", lab: "RUO Eagle", tested: "2026-08-04", report: "RUO-26-84F4D7FC", pdf: "/coas/TB-10-080326.png" },
   { lot: "TB-5-080326", productSlug: "tb-500", productName: "TB-500", strength: "5 mg", purity: "99.92%", lab: "RUO Eagle", tested: "2026-08-12", report: "RUO-26-A7016082", pdf: "/coas/TB-5-080326.png" },
   { lot: "GH-50-080326", productSlug: "ghk-cu", productName: "GHK-Cu", strength: "50 mg", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-07", report: "RUO-26-1213B63D", pdf: "/coas/GH-50-080326.png" },
+  { lot: "GH-100-080326", productSlug: "ghk-cu", productName: "GHK-Cu", strength: "100 mg", purity: "99.96%", lab: "RUO Eagle", tested: "2026-08-10", report: "RUO-26-B06B9A72", pdf: "/coas/GH-100-080326.png" },
+  { lot: "GW-70-080326", productSlug: "glow-blend", productName: "GLOW Blend", strength: "50/10/10 mg", purity: "99.95%", lab: "RUO Eagle", tested: "2026-08-07", report: "RUO-26-0084965E", pdf: "/coas/GW-70-080326.png" },
+  { lot: "KP-5-080326", productSlug: "kpv", productName: "KPV", strength: "5 mg", purity: "99.95%", lab: "RUO Eagle", tested: "2026-08-14", report: "RUO-26-33F3A4FE", pdf: "/coas/KP-5-080326.png" },
+  { lot: "MO-40-080326", productSlug: "mots-c", productName: "MOTS-C", strength: "40 mg", purity: "99.97%", lab: "RUO Eagle", tested: "2026-08-04", report: "RUO-26-FC9846C7", pdf: "/coas/MO-40-080326.png" },
   { lot: "NA-500-080326", productSlug: "nad-plus", productName: "NAD+", strength: "500 mg", purity: "99.97%", lab: "RUO Eagle", tested: "2026-08-11", report: "RUO-26-BD6D7CDD", pdf: "/coas/NA-500-080326.png" },
   { lot: "NA-1000-080326", productSlug: "nad-plus", productName: "NAD+", strength: "1000 mg", purity: "99.93%", lab: "RUO Eagle", tested: "2026-08-14", report: "RUO-26-E3B2630E", pdf: "/coas/NA-1000-080326.png" },
   { lot: "SR-10-080326", productSlug: "sermorelin", productName: "Sermorelin", strength: "10 mg", purity: "99.97%", lab: "RUO Eagle", tested: "2026-08-07", report: "RUO-26-0B5318F3", pdf: "/coas/SR-10-080326.png" },
@@ -51,6 +55,7 @@ export const COAS: Coa[] = [
   { lot: "SL-5-080326", productSlug: "selank", productName: "Selank", strength: "5 mg", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-06", report: "RUO-26-71683AA4", pdf: "/coas/SL-5-080326.png" },
   { lot: "SX-10-080326", productSlug: "semax", productName: "Semax", strength: "10 mg", purity: "99.95%", lab: "RUO Eagle", tested: "2026-08-14", report: "RUO-26-F2A5166D", pdf: "/coas/SX-10-080326.png" },
   { lot: "SX-5-080326", productSlug: "semax", productName: "Semax", strength: "5 mg", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-11", report: "RUO-26-B423D3FA", pdf: "/coas/SX-5-080326.png" },
+  { lot: "HC-5000-080326", productSlug: "hcg", productName: "HCG", strength: "5,000 IU", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-12", report: "RUO-26-B95FD469", pdf: "/coas/HC-5000-080326.png" },
   { lot: "TH-10-080326", productName: "Thymalin", strength: "10 mg", purity: "99.93%", lab: "RUO Eagle", tested: "2026-08-11", report: "RUO-26-DCD0984F", pdf: "/coas/TH-10-080326.png" },
 ];
 
