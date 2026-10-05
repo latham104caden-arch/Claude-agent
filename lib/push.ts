@@ -3,7 +3,8 @@
  * under push/, keyed by a hash of the endpoint, so re-subscribing overwrites.
  *
  * Env: NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (mailto:),
- * BLOB_READ_WRITE_TOKEN (added by Vercel when a Blob store is connected).
+ * and the connected Blob store: BLOB_STORE_ID (newer stores, signed in with
+ * Vercel OIDC automatically) or BLOB_READ_WRITE_TOKEN (older stores).
  */
 import { createHash } from "node:crypto";
 import webpush from "web-push";
@@ -26,7 +27,7 @@ export function isPushSub(x: unknown): x is PushSub {
   } catch { return false; }
 }
 
-export const storageReady = () => !!process.env.BLOB_READ_WRITE_TOKEN;
+export const storageReady = () => !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
 export const senderReady = () => !!(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY && storageReady());
 
 const pathFor = (endpoint: string) => `${PREFIX}${createHash("sha256").update(endpoint).digest("hex").slice(0, 40)}.json`;

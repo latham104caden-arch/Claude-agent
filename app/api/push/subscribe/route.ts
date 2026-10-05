@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false }, { status: 400 }); }
   if (!isPushSub(body.subscription)) return NextResponse.json({ ok: false }, { status: 400 });
   if (!storageReady()) {
-    console.error("[push] BLOB_READ_WRITE_TOKEN is not set; subscription not saved");
+    console.error("[push] no Blob store connected (BLOB_STORE_ID / BLOB_READ_WRITE_TOKEN); subscription not saved");
     return NextResponse.json({ ok: false }, { status: 503 });
   }
   try {
