@@ -1,7 +1,8 @@
 "use client";
 
 /**
- * "25% off your first order" offer, unlocked by turning on drop alerts.
+ * First-order discount offer, unlocked by turning on drop alerts. The amount
+ * stays hidden until the code screen (owner's call).
  *
  * Flow: offer → (iPhone) add to home screen → open the home-screen app →
  * turn on alerts → code RR25. iPhone only allows notifications from a
@@ -162,9 +163,9 @@ export function FirstOrderOffer() {
             {step !== "code" ? (
               <div className="offer-head">
                 <span className="offer-ic"><Icon name={step === "alerts" ? "bell" : "phone"} /></span>
-                <h2 id="offer-title">{step === "alerts" ? "One more step" : step === "unsupported" ? "Alerts aren't available here" : "Get 25% off"}</h2>
+                <h2 id="offer-title">{step === "alerts" ? "One more step" : step === "unsupported" ? "Alerts aren't available here" : "Unlock a secret discount"}</h2>
                 <p>
-                  {step === "intro" && "Add Revised Research to your home screen and turn on drop alerts to unlock 25% off your first order."}
+                  {step === "intro" && "Add Revised Research to your home screen and turn on drop alerts to unlock a members-only discount on your first order."}
                   {step === "install" && "Add the app to your home screen, then open it and turn on alerts. Your code unlocks there."}
                   {step === "alerts" && "Last step: turn on drop alerts to unlock your code."}
                   {step === "unsupported" && "This browser can't receive alerts. Open revisedresearch.com in Safari on iPhone (iOS 16.4 or later) or Chrome on Android to claim your code."}
@@ -178,7 +179,7 @@ export function FirstOrderOffer() {
               </div>
             ) : (
               <div className="offer-head">
-                <h2 id="offer-title">Your code is ready</h2>
+                <h2 id="offer-title">You unlocked 25% off</h2>
                 <div className="offer-code">
                   <span className="offer-code-label">Your code</span>
                   <b>{CODE}</b>
