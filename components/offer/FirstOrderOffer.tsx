@@ -21,13 +21,11 @@ import { Icon } from "../Icon";
 const CODE = "RR25";
 const KEY = "rr-offer-v1";
 const GATE_KEY = "rr-gate-v1";
-const SNOOZE_DAYS = 7;
-const AUTO_OPEN_MS = 8000;
 const HIDDEN_ON = ["/checkout"];
 const VAPID = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
 
 type Step = "intro" | "install" | "alerts" | "code" | "unsupported";
-type Saved = { claimed?: boolean; snoozeUntil?: number };
+type Saved = { claimed?: boolean };
 type InstallPrompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
 const load = (): Saved => { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; } };
@@ -63,23 +61,22 @@ export function FirstOrderOffer() {
     const onPrompt = (e: Event) => { e.preventDefault(); installEvt.current = e as InstallPrompt; };
     window.addEventListener("beforeinstallprompt", onPrompt);
 
-    // Opened from the home screen: go straight to the alerts step. Otherwise offer once, after the entry gate.
-    const standalone = isStandalone();
+    // In the browser the offer only opens from the corner button. Opened from the
+    // home screen (step 2 of the flow), it goes straight to "turn on alerts".
+    if (!isStandalone()) return () => window.removeEventListener("beforeinstallprompt", onPrompt);
     const t = window.setInterval(() => {
       if (!gatePassed() || HIDDEN_ON.some((p) => location.pathname.startsWith(p))) return;
       window.clearInterval(t);
-      const s = load();
-      if (s.claimed) return;
-      if (standalone) { setStep(pushSupported() ? "alerts" : "unsupported"); setOpen(true); }
-      else if (!s.snoozeUntil || s.snoozeUntil < Date.now()) { setStep("intro"); setOpen(true); }
-    }, standalone ? 600 : AUTO_OPEN_MS);
+      if (load().claimed) return;
+      setStep(pushSupported() ? "alerts" : "unsupported");
+      setOpen(true);
+    }, 600);
     return () => { window.clearInterval(t); window.removeEventListener("beforeinstallprompt", onPrompt); };
   }, []);
 
   const close = useCallback(() => {
     setOpen(false);
     setNote("");
-    if (!load().claimed) save({ snoozeUntil: Date.now() + SNOOZE_DAYS * 864e5 });
   }, []);
 
   useEffect(() => {
