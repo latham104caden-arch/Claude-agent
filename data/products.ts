@@ -102,11 +102,11 @@ const ROWS: Row[] = [
   { slug: "hcg", name: "HCG", category: "cognitive-longevity", subtitle: "Signalling Research", description: "Human chorionic gonadotropin is a glycoprotein hormone studied in LHCGR receptor-signalling research.", sizes: [["5000 IU", 75]], popularity: 47, coaLot: "HC-5000-080326" },
 
   // ── Nasal ───────────────────────────────────────────────────
-  { slug: "semax-nasal", name: "Semax Nasal Spray", category: "nasal", subtitle: "Cognitive Research", description: "Semax, a synthetic ACTH(4-10) analog, supplied in a research nasal format.", sizes: [["10 mL", 100]], popularity: 71, form: "nasal" },
-  { slug: "selank-nasal", name: "Selank Nasal Spray", category: "nasal", subtitle: "Cognitive Research", description: "Selank, a synthetic tuftsin analog, supplied in a research nasal format.", sizes: [["10 mL", 100]], popularity: 72, form: "nasal" },
+  { slug: "semax-nasal", name: "Semax Nasal Spray", category: "nasal", subtitle: "Cognitive Research", description: "Semax, a synthetic ACTH(4-10) analog, supplied in a research nasal format.", sizes: [["10 mL", 100]], popularity: 71, form: "nasal", coaLot: "SX-10-080326" },
+  { slug: "selank-nasal", name: "Selank Nasal Spray", category: "nasal", subtitle: "Cognitive Research", description: "Selank, a synthetic tuftsin analog, supplied in a research nasal format.", sizes: [["10 mL", 100]], popularity: 72, form: "nasal", coaLot: "SL-10-080326" },
   { slug: "selank-semax-nasal", name: "Selank + Semax Nasal Spray", category: "nasal", subtitle: "Cognitive Research", description: "Selank and Semax combined in a research nasal format.", sizes: [["10 mL", 120]], popularity: 79, form: "nasal" },
-  { slug: "ghk-cu-nasal", name: "GHK-Cu Nasal Spray", category: "nasal", subtitle: "Dermal Research", description: "GHK-Cu, a copper-binding tripeptide, supplied in a research nasal format.", sizes: [["10 mL", 90]], popularity: 62, form: "nasal" },
-  { slug: "nad-plus-nasal", name: "NAD+ Nasal Spray", category: "nasal", subtitle: "Cellular Research", description: "NAD+ supplied in a research nasal format.", sizes: [["10 mL", 120]], popularity: 58, form: "nasal" },
+  { slug: "ghk-cu-nasal", name: "GHK-Cu Nasal Spray", category: "nasal", subtitle: "Dermal Research", description: "GHK-Cu, a copper-binding tripeptide, supplied in a research nasal format.", sizes: [["10 mL", 90]], popularity: 62, form: "nasal", coaLot: "GH-50-080326" },
+  { slug: "nad-plus-nasal", name: "NAD+ Nasal Spray", category: "nasal", subtitle: "Cellular Research", description: "NAD+ supplied in a research nasal format.", sizes: [["10 mL", 120]], popularity: 58, form: "nasal", coaLot: "NA-500-080326" },
 
   // ── Lab Supplies ────────────────────────────────────────────
   { slug: "reconstitution-solution", name: "Reconstitution Solution", category: "supplies", subtitle: "Lab Supplies", description: "Bacteriostatic water (sterile water with 0.9% benzyl alcohol) for reconstituting lyophilized research compounds.", sizes: [["3 mL", 10], ["10 mL", 15], ["30 mL", 30]], popularity: 99 },

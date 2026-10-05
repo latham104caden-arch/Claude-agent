@@ -35,6 +35,8 @@ export function ProductStage({
   const [qty, setQty] = useState(1);
   const [picked, setPicked] = useState<string[]>([]);
   const v = product.variants[idx];
+  /** Nasal sprays are filled from a tested powder lot; their certificate is that powder's. */
+  const fromPowder = product.category === "nasal";
 
   const togglePick = (slug: string) =>
     setPicked((cur) => (cur.includes(slug) ? cur.filter((s) => s !== slug) : [...cur, slug]));
@@ -72,7 +74,7 @@ export function ProductStage({
             </div>
             <div className="stage-pedestal" aria-hidden="true" />
             <div className="stage-meta stage-meta--bl mono">
-              {product.coaLot ? <>LOT {product.coaLot}<br /></> : null}
+              {product.coaLot && !fromPowder ? <>LOT {product.coaLot}<br /></> : null}
               {v.sku} · {v.option.toUpperCase()}
             </div>
             <div className="stage-meta stage-meta--br mono" aria-hidden="true">
@@ -90,7 +92,7 @@ export function ProductStage({
 
           <h1 className="panel-title">{product.name}</h1>
           <div className="pdp-badges">
-            {product.coaLot ? <Link href={`/coas#${product.coaLot}`} className="badge badge--dark"><Icon name="coa" /> COA available</Link> : null}
+            {product.coaLot ? <Link href={`/coas#${product.coaLot}`} className="badge badge--dark"><Icon name="coa" /> {fromPowder ? "Source powder COA" : "COA available"}</Link> : null}
             {product.badge ? <span className="badge">{product.badge}</span> : null}
             <span className="badge badge--muted">≥99% HPLC</span>
           </div>
@@ -159,7 +161,7 @@ export function ProductStage({
 
           <div className="pdp-assure">
             <div><Icon name="shield" /> ≥99% purity target</div>
-            {product.coaLot ? <div><Icon name="cert" /> 10x tested</div> : null}
+            {product.coaLot ? <div><Icon name="cert" /> {fromPowder ? "Source powder 10x tested" : "10x tested"}</div> : null}
             <div><Icon name="truck" /> 2–3 day shipping</div>
           </div>
           <p className="panel-ruo">{RUO_SHORT}</p>
