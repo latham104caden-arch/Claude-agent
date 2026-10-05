@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { COAS } from "../../data/content";
+import { COAS, COA_COUNT } from "../../data/coas";
 import { PageHero } from "../../components/ui";
 
 export const metadata: Metadata = {
   title: "Certificates of Analysis",
-  description: "Independent lab certificates of analysis for every Revised Research lot, published in full.",
+  description: "Independent lab certificates of analysis for Revised Research lots, published in full.",
   alternates: { canonical: "/coas" },
 };
 
@@ -15,7 +15,7 @@ export default function CoasPage() {
       <PageHero
         crumbs={[{ label: "COAs" }]}
         eyebrow="Certificate of Analysis"
-        title={<>COAs on every <em>batch.</em></>}
+        title={<>{COA_COUNT} COAs, <em>published in full.</em></>}
         lead="Match the lot number on your vial to the certificate below. Every certificate opens in full, with no login and no request form."
       />
       <section className="container" style={{ padding: "40px var(--gutter) var(--section-y)" }}>

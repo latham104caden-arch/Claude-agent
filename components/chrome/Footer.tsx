@@ -9,13 +9,13 @@ export function Footer() {
     <footer className="footer">
       <div className="container">
         <div className="footer-top">
-          <h2>Research with <em>proof</em> on every vial.</h2>
+          <h2>Research with <em>proof</em> you can read.</h2>
           <Link href="/shop" className="btn btn--primary">Shop Compounds <Icon name="arrow" /></Link>
         </div>
         <div className="footer-grid">
           <div>
             <Brand light />
-            <p className="footer-desc">Independent laboratory certificates, published lot by lot, before the batch ships.</p>
+            <p className="footer-desc">Independent laboratory certificates, published in full by lot.</p>
             <a className="footer-mail" href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>
           </div>
           {FOOTER_COLUMNS.map((col) => (

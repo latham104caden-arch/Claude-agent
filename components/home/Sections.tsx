@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCatalog, getCategories, bestSellers, summarize } from "../../lib/catalog";
-import { COAS, QC_PILLARS, QC_STATS, TICKER, WHY_US } from "../../data/content";
+import { COAS, COA_COUNT, TESTED_COUNT, QC_PILLARS, QC_STATS, TICKER, WHY_US } from "../../data/content";
 import { REVIEWS, REVIEWS_SOURCE } from "../../data/reviews";
 import { RUO_SHORT } from "../../lib/site";
 import { Icon } from "../Icon";
@@ -25,13 +25,13 @@ export function Hero() {
     <section className="hero">
       <div className="container hero-grid">
         <div className="hero-copy">
-          <p className="eyebrow" data-reveal="">10x tested · COA every lot</p>
+          <p className="eyebrow" data-reveal="">{TESTED_COUNT} compounds 10x tested · {COA_COUNT} COAs</p>
           <h1 className="h1" data-reveal="" data-reveal-delay="60">
             The research market<br />
             <em className="underline-accent">like you&apos;ve never seen.</em>
           </h1>
           <p className="lead" data-reveal="" data-reveal-delay="120">
-            Independently tested compounds, with the certificate published before every lot ships.
+            Independently tested compounds, with every certificate published in full.
           </p>
           <div className="hero-ctas" data-reveal="" data-reveal-delay="180">
             <Link href="/shop" className="btn btn--dark">Shop Compounds <Icon name="arrow" /></Link>
@@ -48,7 +48,7 @@ export function Hero() {
           </Link>
           <span className="hero-floor" />
           <span className="hero-callout hero-callout--a"><i />≥99% HPLC purity</span>
-          <span className="hero-callout hero-callout--b"><i />COA on every lot</span>
+          <span className="hero-callout hero-callout--b"><i />{COA_COUNT} COAs published</span>
         </div>
       </div>
     </section>
@@ -114,7 +114,7 @@ export function CoaBand() {
       <div className="container coa-band-grid">
         <div>
           <p className="eyebrow" data-reveal="">Certificate of Analysis</p>
-          <h2 className="h2" data-reveal="" data-reveal-delay="60">COAs on every <em>batch.</em></h2>
+          <h2 className="h2" data-reveal="" data-reveal-delay="60">{COA_COUNT} COAs, <em>published in full.</em></h2>
           <p className="lead" data-reveal="" data-reveal-delay="100">Independent laboratory results, published by lot. Open in full — no login, no request form.</p>
           <p style={{ marginTop: 28 }} data-reveal="" data-reveal-delay="140">
             <Link href="/coas" className="btn btn--primary">View COAs <Icon name="arrow" /></Link>
@@ -163,7 +163,7 @@ export function QualityControl() {
       <div className="container">
         <SectionHead
           eyebrow="Quality Control"
-          title={<>Every product, <em>tested 10x.</em></>}
+          title={<>{TESTED_COUNT} compounds, <em>tested 10x.</em></>}
           lead="What happens to a batch between synthesis and your bench."
         />
         <div className="qc-stats">

@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { byCategory, getCatalog, getCategories, getProduct, summarize } from "../../lib/catalog";
 import type { ProductSummary } from "../../lib/catalog";
 import { Crumbs } from "../../components/ui";
+import { COA_COUNT } from "../../data/coas";
 import { Icon } from "../../components/Icon";
 import { Vial } from "../../components/Vial";
 import { ShopBrowser, type BundleInfo } from "../../components/product/ShopBrowser";
 
 export const metadata: Metadata = {
   title: "Shop Research Compounds",
-  description: "Browse high-purity research compounds, nasal research formats and lab supplies. COAs published for every lot.",
+  description: "Browse high-purity research compounds, nasal research formats and lab supplies. Independent COAs published by lot.",
   alternates: { canonical: "/shop" },
 };
 
@@ -42,7 +43,7 @@ export default function ShopPage() {
             </p>
             <div className="hero-chips">
               <span className="chip"><Icon name="shield" /> ≥99% HPLC purity</span>
-              <span className="chip"><Icon name="coa" /> COA every lot</span>
+              <span className="chip"><Icon name="coa" /> {COA_COUNT} COAs published</span>
               <span className="chip"><Icon name="truck" /> 2–3 day shipping</span>
             </div>
           </div>

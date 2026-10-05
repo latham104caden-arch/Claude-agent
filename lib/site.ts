@@ -9,7 +9,7 @@ export const SITE = {
   legalName: "Revised Research LLC",
   tagline: "Research compounds, verified by lot.",
   description:
-    "Revised Research supplies high-purity research compounds with independent certificates of analysis published for every lot. For laboratory research use only.",
+    "Revised Research supplies high-purity research compounds with independent certificates of analysis published by lot. For laboratory research use only.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://revisedresearch.com",
   // TODO: confirm real inbox before launch.
   supportEmail: "support@revisedresearch.com",
