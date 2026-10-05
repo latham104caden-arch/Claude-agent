@@ -5,6 +5,7 @@ import { priceCart, shippingFor } from "../../../lib/orders";
 import { getStripe } from "../../../lib/stripe";
 import { currentEmail } from "../../../lib/auth";
 import { resolveDiscount } from "../../../lib/discounts";
+import { BULK_NO_CODES, bulkFor, bulkLabel } from "../../../lib/bulk";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,7 +18,8 @@ const fail = (message: string, status = 400) => NextResponse.json({ ok: false, m
  * mounts on our checkout page). Prices, shipping and the creator-code discount
  * are all decided here; Stripe's form collects the address and card. Attribution
  * rides on the session so the webhook can report the order. Codes: a $100 spend
- * reward (lib/rewards.ts, signed-in owner only) or an adz creator code.
+ * reward (lib/rewards.ts, signed-in owner only) or an adz creator code. Bulk
+ * orders (lib/bulk.ts) get the bulk discount and free shipping instead of a code.
  */
 export async function POST(req: Request) {
   let body: { lines?: unknown; code?: unknown; useLink?: unknown; attest?: unknown; emailOptIn?: unknown };
@@ -37,23 +39,31 @@ export async function POST(req: Request) {
   // Signed-in shoppers check out under their account email (orders, rewards and Omnisend all key on it).
   const account = await currentEmail();
 
-  // One discount per order (Stripe rule; no stacking). A typed code wins over a creator-link code.
+  // One discount per order (Stripe rule; no stacking). Bulk pricing wins; otherwise a typed code wins over a creator-link code.
   const typed = typeof body.code === "string" ? body.code.trim() : "";
   const discounts: ({ coupon: string } | { promotion_code: string })[] = [];
-  // The creator-link code applies only if the shopper kept it (they can remove it on the page).
-  const linkCode = body.useLink === true ? attribution.code : null;
-  const d = await resolveDiscount(typed || linkCode || "", { subtotal: cart.subtotal, account, explicit: !!typed });
-  if (d && "error" in d) return fail(d.error);
-  if (d?.kind === "reward") {
-    discounts.push({ promotion_code: d.promotionCode });
-    metadata.reward_code = d.code;
-  } else if (d?.kind === "creator") {
-    const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
+  const bulk = bulkFor(cart.lines.map((l) => ({ slug: l.product.slug, price: l.variant.price, qty: l.qty })));
+  if (bulk.tier) {
+    if (typed) return fail(BULK_NO_CODES);
+    const coupon = await stripe.coupons.create({ amount_off: cents(bulk.amount), currency: "usd", duration: "once", max_redemptions: 1, name: bulkLabel(bulk.tier) });
     discounts.push({ coupon: coupon.id });
-    metadata.adz_code = d.code;
+    metadata.bulk_tier = String(bulk.tier.min);
+  } else {
+    // The creator-link code applies only if the shopper kept it (they can remove it on the page).
+    const linkCode = body.useLink === true ? attribution.code : null;
+    const d = await resolveDiscount(typed || linkCode || "", { subtotal: cart.subtotal, account, explicit: !!typed });
+    if (d && "error" in d) return fail(d.error);
+    if (d?.kind === "reward") {
+      discounts.push({ promotion_code: d.promotionCode });
+      metadata.reward_code = d.code;
+    } else if (d?.kind === "creator") {
+      const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
+      discounts.push({ coupon: coupon.id });
+      metadata.adz_code = d.code;
+    }
   }
 
-  const shipping = shippingFor(cart.subtotal);
+  const shipping = bulk.tier ? 0 : shippingFor(cart.subtotal);
   const origin = new URL(req.url).origin;
   try {
     const session = await stripe.checkout.sessions.create({

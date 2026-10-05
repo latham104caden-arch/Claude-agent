@@ -107,3 +107,9 @@
 .code-applied svg { width: 18px; height: 18px; color: var(--accent-ink); flex: none; }
 .code-applied span { flex: 1; }
 .summary-discount span:last-child { color: var(--accent-ink); font-weight: 600; }
+
+/* ── Bulk pricing ────────────────────────────────────────────── */
+.card-grid .bulk-tier .bulk-save { font-family: var(--font-display); font-size: clamp(26px, 2.4vw, 32px); line-height: 1.15; color: var(--accent-ink); margin: 2px 0 10px; white-space: nowrap; }
+.card-grid .bulk-tier .bulk-ship { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.bulk-ship svg { width: 16px; height: 16px; flex: none; }
+.bulk-rules { display: grid; gap: 12px; padding-left: 20px; color: var(--ink-soft); }

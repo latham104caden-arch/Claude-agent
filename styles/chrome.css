@@ -90,6 +90,8 @@
 .drawer-head h2 { font-size: 26px; }
 .drawer-ship { padding: 14px 22px; border-bottom: 1px solid var(--border-soft); font-size: 13px; color: var(--text-muted); background: var(--surface-soft); }
 .drawer-ship b { color: var(--accent-ink); }
+.drawer-bulk { margin-top: 10px; color: var(--ink-soft); }
+.drawer-bulk a { color: var(--accent-ink); font-weight: 600; text-decoration: underline; }
 .meter { height: 6px; background: var(--surface-alt); border-radius: 3px; margin-top: 8px; overflow: hidden; }
 .meter i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-ink), var(--accent-bright)); border-radius: 3px; transition: width 0.4s var(--ease); }
 .drawer-body { flex: 1; overflow-y: auto; padding: 8px 22px; }

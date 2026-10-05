@@ -7,6 +7,7 @@ import { money } from "../../lib/format";
 import { Icon } from "../Icon";
 import { Vial } from "../Vial";
 import { useCart } from "./CartProvider";
+import { bulkFor, bulkLabel } from "../../lib/bulk";
 import { QtyStepper } from "./QtyStepper";
 
 export function CartDrawer() {
@@ -21,7 +22,8 @@ export function CartDrawer() {
     return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
   }, [open, setOpen]);
 
-  const toFree = Math.max(0, SITE.freeShippingThreshold - subtotal);
+  const bulk = bulkFor(lines);
+  const toFree = bulk.tier ? 0 : Math.max(0, SITE.freeShippingThreshold - subtotal);
   const pct = Math.min(100, (subtotal / SITE.freeShippingThreshold) * 100);
 
   return (
@@ -42,7 +44,9 @@ export function CartDrawer() {
             ) : (
               <><b>You&apos;ve unlocked free shipping.</b></>
             )}
-            <div className="meter"><i style={{ width: `${pct}%` }} /></div>
+            <div className="meter"><i style={{ width: `${bulk.tier ? 100 : pct}%` }} /></div>
+            {bulk.tier ? <p className="drawer-bulk"><b>{bulkLabel(bulk.tier)}:</b> you save {money(bulk.amount)}.</p> : null}
+            {bulk.next && bulk.units > 0 ? <p className="drawer-bulk">Add <b>{bulk.toNext}</b> more compound{bulk.toNext === 1 ? "" : "s"} for {bulk.tier ? "the next tier" : "bulk pricing"}. <Link href="/bulk" onClick={() => setOpen(false)}>See tiers</Link></p> : null}
           </div>
         ) : null}
 
@@ -75,6 +79,7 @@ export function CartDrawer() {
         {lines.length > 0 ? (
           <div className="drawer-foot">
             <div className="drawer-total"><span>Subtotal</span><span>{money(subtotal)}</span></div>
+            {bulk.tier ? <div className="drawer-total summary-discount"><span>Bulk savings</span><span>−{money(bulk.amount)}</span></div> : null}
             <Link href="/checkout" className="btn btn--primary btn--block" onClick={() => setOpen(false)}>
               Checkout <Icon name="arrow" />
             </Link>
