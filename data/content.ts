@@ -41,6 +41,11 @@ export const COAS: Coa[] = [
   { lot: "WO-10-080326", productSlug: "bpc-157-tb-500-blend", productName: "BPC-157 + TB-500", strength: "5/5 mg", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-13", report: "RUO-26-98B10E65", pdf: "/coas/WO-10-080326.png" },
   { lot: "TB-10-080326", productSlug: "tb-500", productName: "TB-500", strength: "10 mg", purity: "99.96%", lab: "RUO Eagle", tested: "2026-08-04", report: "RUO-26-84F4D7FC", pdf: "/coas/TB-10-080326.png" },
   { lot: "TB-5-080326", productSlug: "tb-500", productName: "TB-500", strength: "5 mg", purity: "99.92%", lab: "RUO Eagle", tested: "2026-08-12", report: "RUO-26-A7016082", pdf: "/coas/TB-5-080326.png" },
+  { lot: "NA-500-080326", productSlug: "nad-plus", productName: "NAD+", strength: "500 mg", purity: "99.97%", lab: "RUO Eagle", tested: "2026-08-11", report: "RUO-26-BD6D7CDD", pdf: "/coas/NA-500-080326.png" },
+  { lot: "NA-1000-080326", productSlug: "nad-plus", productName: "NAD+", strength: "1000 mg", purity: "99.93%", lab: "RUO Eagle", tested: "2026-08-14", report: "RUO-26-E3B2630E", pdf: "/coas/NA-1000-080326.png" },
+  { lot: "SR-10-080326", productSlug: "sermorelin", productName: "Sermorelin", strength: "10 mg", purity: "99.97%", lab: "RUO Eagle", tested: "2026-08-07", report: "RUO-26-0B5318F3", pdf: "/coas/SR-10-080326.png" },
+  { lot: "SL-10-080326", productSlug: "selank", productName: "Selank", strength: "10 mg", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-04", report: "RUO-26-117A33A2", pdf: "/coas/SL-10-080326.png" },
+  { lot: "SL-5-080326", productSlug: "selank", productName: "Selank", strength: "5 mg", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-06", report: "RUO-26-71683AA4", pdf: "/coas/SL-5-080326.png" },
   { lot: "TH-10-080326", productName: "Thymalin", strength: "10 mg", purity: "99.93%", lab: "RUO Eagle", tested: "2026-08-11", report: "RUO-26-DCD0984F", pdf: "/coas/TH-10-080326.png" },
 ];
 
