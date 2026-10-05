@@ -11,6 +11,9 @@ export function SignIn() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
+  // Email pre-ticked per the owner (untickable). SMS must be ticked by the shopper (TCPA express consent).
+  const [emailOptIn, setEmailOptIn] = useState(true);
+  const [smsOptIn, setSmsOptIn] = useState(false);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -31,7 +34,7 @@ export function SignIn() {
 
   const sendCode = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    const r = await post("/api/auth/request", { email, firstName, lastName, phone });
+    const r = await post("/api/auth/request", { email, firstName, lastName, phone, emailOptIn, smsOptIn });
     if (r.ok) { setStep("code"); setCode(""); setMsg(r.message ?? "Code sent."); }
     else { setErr(true); setMsg(r.message ?? "Something went wrong."); }
   };
@@ -65,6 +68,14 @@ export function SignIn() {
             <label htmlFor="acct-phone">Phone (optional)</label>
             <input id="acct-phone" type="tel" className="input" placeholder="(405) 555-0101" autoComplete="tel" maxLength={30} value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
+          <label className="check" style={{ marginBottom: 12 }}>
+            <input type="checkbox" checked={emailOptIn} onChange={(e) => setEmailOptIn(e.target.checked)} />
+            <span>Email me new compounds, restocks and offers. Unsubscribe any time.</span>
+          </label>
+          <label className="check" style={{ marginBottom: 18 }}>
+            <input type="checkbox" checked={smsOptIn} onChange={(e) => setSmsOptIn(e.target.checked)} />
+            <span className="sms-consent">Text me drops and offers at the number above. By checking this box you agree to receive recurring automated marketing texts from Revised Research. Consent isn&apos;t a condition of purchase. Msg frequency varies; msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. See our <a href="/privacy-policy">Privacy Policy</a>.</span>
+          </label>
           <button type="submit" className="btn btn--dark btn--block" disabled={busy}>{busy ? "Sending…" : "Email me a sign-in code"}</button>
           <p className="drawer-note" style={{ marginTop: 12 }}>Use the email you check out with. No password needed.</p>
         </form>

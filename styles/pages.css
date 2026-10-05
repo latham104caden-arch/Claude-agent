@@ -113,3 +113,7 @@
 .card-grid .bulk-tier .bulk-ship { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
 .bulk-ship svg { width: 16px; height: 16px; flex: none; }
 .bulk-rules { display: grid; gap: 12px; padding-left: 20px; color: var(--ink-soft); }
+
+/* ── Sign-in consent ──────────────────────────────────────────── */
+.sms-consent { font-size: 12.5px; line-height: 1.5; color: var(--text-muted); }
+.sms-consent a { color: var(--accent-ink); text-decoration: underline; }

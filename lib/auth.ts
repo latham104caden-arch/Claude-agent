@@ -56,7 +56,8 @@ const codeHash = (email: string, code: string, exp: number) =>
 export const cleanCode = (s: string) => s.toUpperCase().replace(/[^0-9A-Z]/g, "");
 
 /** Optional details typed on the sign-in form; carried in the challenge until the code checks out. */
-export type Profile = { firstName?: string; lastName?: string; phone?: string };
+/** Typed at sign-in. emailOptIn defaults on (shopper can untick); smsOptIn only when they tick it. */
+export type Profile = { firstName?: string; lastName?: string; phone?: string; emailOptIn?: boolean; smsOptIn?: boolean };
 
 /** New 8-character code (~31^8 ≈ 8.5×10^11 combinations) and the cookie that remembers it. */
 export function newChallenge(email: string, profile: Profile = {}): { code: string; token: string; maxAge: number } {

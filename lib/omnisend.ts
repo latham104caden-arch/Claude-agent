@@ -1,7 +1,7 @@
 /**
  * Omnisend contacts (owner-approved). Upserts by email. `subscribe: true`
- * marks email marketing as opted in; otherwise no channel status is sent, so
- * an existing subscriber is never downgraded and nobody is opted in silently.
+ * marks email marketing as opted in and `smsSubscribe: true` marks SMS; otherwise
+ * no channel status is sent, so an existing subscriber is never downgraded.
  */
 export type ContactInput = {
   email: string;
@@ -10,9 +10,14 @@ export type ContactInput = {
   phone?: string | null;
   address?: { line1?: string | null; line2?: string | null; city?: string | null; state?: string | null; postalCode?: string | null; country?: string | null } | null;
   tags: string[];
-  /** Email marketing opt-in. Phones are saved for contact only; no SMS opt-in is collected. */
+  /** Email marketing opt-in. */
   subscribe?: boolean;
+  /** SMS marketing opt-in: only from an unticked box the shopper ticked, with the TCPA disclosure shown. */
+  smsSubscribe?: boolean;
   consentSource?: string;
+  /** Recorded with the consent (proof of opt-in). */
+  consentIp?: string | null;
+  consentUserAgent?: string | null;
 };
 
 /** US-first phone normaliser: "(405) 555-0101" → "+14055550101". Null if it can't be made E.164. */
@@ -30,16 +35,27 @@ export async function upsertContact(c: ContactInput): Promise<boolean> {
   const key = process.env.OMNISEND_API_KEY;
   if (!key) return false;
   const now = new Date().toISOString();
+  const consent = () => ({
+    source: c.consentSource ?? "website", createdAt: now,
+    ...(c.consentIp ? { ip: c.consentIp } : {}), ...(c.consentUserAgent ? { userAgent: c.consentUserAgent.slice(0, 500) } : {}),
+  });
   const identifiers: Record<string, unknown>[] = [{
     type: "email",
     id: c.email,
     ...(c.subscribe ? {
       channels: { email: { status: "subscribed", statusChangedAt: now } },
-      consent: { source: c.consentSource ?? "website", createdAt: now },
+      consent: consent(),
     } : {}),
   }];
   const phone = toE164(c.phone);
-  if (phone) identifiers.push({ type: "phone", id: phone });
+  if (phone) identifiers.push({
+    type: "phone",
+    id: phone,
+    ...(c.smsSubscribe ? {
+      channels: { sms: { status: "subscribed", statusChangedAt: now } },
+      consent: consent(),
+    } : {}),
+  });
   const a = c.address;
   const body = {
     identifiers,

@@ -15,8 +15,12 @@ export async function POST(req: Request) {
   if (!ok) return NextResponse.json({ ok: false, message: "That code is wrong or has expired. Check it, or send a new one." }, { status: 400 });
 
   const { email, profile } = ok;
-  // Account holders appear in Omnisend with what they typed (no marketing opt-in implied).
-  await upsertContact({ email, firstName: profile.firstName, lastName: profile.lastName, phone: profile.phone, tags: ["account"] });
+  // Account holders appear in Omnisend with what they typed. Email/SMS marketing only per the boxes they left ticked.
+  await upsertContact({
+    email, firstName: profile.firstName, lastName: profile.lastName, phone: profile.phone, tags: ["account"],
+    subscribe: profile.emailOptIn === true, smsSubscribe: profile.smsOptIn === true, consentSource: "account sign-up form",
+    consentIp: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null, consentUserAgent: req.headers.get("user-agent"),
+  });
 
   const { token, maxAge } = newSession(email);
   const res = NextResponse.json({ ok: true });

@@ -14,10 +14,11 @@ export async function POST(req: Request) {
     const b = await req.json();
     email = String(b?.email ?? "").trim().toLowerCase();
     const s = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n) || undefined;
-    profile = { firstName: s(b?.firstName, 60), lastName: s(b?.lastName, 60), phone: s(b?.phone, 30) };
+    profile = { firstName: s(b?.firstName, 60), lastName: s(b?.lastName, 60), phone: s(b?.phone, 30), emailOptIn: b?.emailOptIn === true, smsOptIn: b?.smsOptIn === true };
   } catch {}
   if (!EMAIL.test(email) || email.length > 254) return NextResponse.json({ ok: false, message: "Please enter a valid email address." }, { status: 400 });
 
+  if (profile.smsOptIn && !profile.phone) return NextResponse.json({ ok: false, message: "Add your phone number to get texts, or untick the text box." }, { status: 400 });
   if (profile.phone && !toE164(profile.phone)) return NextResponse.json({ ok: false, message: "Please enter a valid US phone number, or leave it blank." }, { status: 400 });
   const { code, token, maxAge } = newChallenge(email, profile);
   if (!(await sendSignInCode(email, code))) {
