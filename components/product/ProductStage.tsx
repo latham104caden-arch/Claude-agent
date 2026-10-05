@@ -159,7 +159,7 @@ export function ProductStage({
 
           <div className="pdp-assure">
             <div><Icon name="shield" /> ≥99% purity target</div>
-            <div><Icon name="cert" /> 7x tested</div>
+            <div><Icon name="cert" /> 10x tested</div>
             <div><Icon name="truck" /> 2–3 day shipping</div>
           </div>
           <p className="panel-ruo">{RUO_SHORT}</p>

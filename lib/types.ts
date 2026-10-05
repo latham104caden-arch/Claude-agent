@@ -65,12 +65,15 @@ export interface CartLine {
 
 export interface Coa {
   lot: string;
-  productSlug: string;
+  /** Store product this lot belongs to; omit when it isn't listed. */
+  productSlug?: string;
   productName: string;
   strength: string;
   purity: string;
   lab: string;
   tested: string;
-  /** Path under /public or external URL. Empty until real PDFs arrive. */
+  /** The lab's report number, as printed on the certificate. */
+  report?: string;
+  /** Path under /public or external URL of the certificate. */
   pdf?: string;
 }

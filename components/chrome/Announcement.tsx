@@ -3,7 +3,7 @@ import { Icon } from "../Icon";
 
 const ITEMS = [
   "COA published for every lot",
-  "7x tested, every product",
+  "10x tested, every product",
   "Lyophilized & sealed for stability",
   "2–3 day shipping",
   `Free shipping on orders $${SITE.freeShippingThreshold}+`,

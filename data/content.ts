@@ -7,7 +7,7 @@ import type { Coa } from "../lib/types";
 export const TICKER = [
   "COAs on every batch",
   "≥ 99% purity",
-  "7x tested, every product",
+  "10x tested, every product",
   "2–3 day shipping",
   "Secure checkout",
   "Research use only",
@@ -16,7 +16,7 @@ export const TICKER = [
 export const QC_STATS = [
   { value: "≥99%", label: "HPLC purity target" },
   { value: "100%", label: "Lots with a published COA" },
-  { value: "7x", label: "Tests on every product" },
+  { value: "10x", label: "Tests on every product" },
   { value: "2–3 days", label: "Shipping" },
 ];
 
@@ -29,24 +29,19 @@ export const QC_PILLARS = [
 
 export const WHY_US = [
   { icon: "flask", title: "US-sourced materials", body: "Compounds are synthesized from US-sourced raw materials." },
-  { icon: "cert", title: "7x tested", body: "Every product goes through seven tests, run by an outside lab, so results are not self-reported." },
+  { icon: "cert", title: "10x tested", body: "Every product goes through a 10-test panel at an outside lab: identity, purity, content, endotoxin, heavy metals, solvents and more." },
   { icon: "truck", title: "2–3 day shipping", body: "Orders are picked, packed and handed to the carrier with tracking, arriving in 2–3 business days." },
   { icon: "lock", title: "Secure checkout", body: "Card fields will be hosted by the payment provider, never stored by us." },
   { icon: "mail", title: "A real person replies", body: "Email support with an order number and a person replies within one business day." },
   { icon: "book", title: "COAs on every batch", body: "Certificates are published as the lab issued them, open to anyone." },
 ];
 
-/** When the next batch of certificates goes up (drives the countdown on /coas). */
-export const NEW_COAS_AT = "2026-10-04T22:00:00Z";
-
 export const COAS: Coa[] = [
-  { lot: "RR-BPC-0001", productSlug: "bpc-157", productName: "BPC-157", strength: "10 mg", purity: "99.4%", lab: "Independent lab (TBD)", tested: "2026-09-01" },
-  { lot: "RR-TB-0001", productSlug: "tb-500", productName: "TB-500", strength: "10 mg", purity: "99.2%", lab: "Independent lab (TBD)", tested: "2026-09-01" },
-  { lot: "RR-GHK-0001", productSlug: "ghk-cu", productName: "GHK-Cu", strength: "50 mg", purity: "99.6%", lab: "Independent lab (TBD)", tested: "2026-09-03" },
-  { lot: "RR-MOT-0001", productSlug: "mots-c", productName: "MOTS-C", strength: "10 mg", purity: "99.1%", lab: "Independent lab (TBD)", tested: "2026-09-05" },
-  { lot: "RR-NAD-0001", productSlug: "nad-plus", productName: "NAD+", strength: "500 mg", purity: "99.3%", lab: "Independent lab (TBD)", tested: "2026-09-05" },
-  { lot: "RR-EPI-0001", productSlug: "epitalon", productName: "Epitalon", strength: "10 mg", purity: "99.5%", lab: "Independent lab (TBD)", tested: "2026-09-08" },
-  { lot: "RR-SMX-0001", productSlug: "semax-nasal", productName: "Semax", strength: "10 mL", purity: "99.0%", lab: "Independent lab (TBD)", tested: "2026-09-10" },
+  { lot: "WO-20-080326", productSlug: "bpc-157-tb-500-blend", productName: "BPC-157 + TB-500", strength: "10/10 mg", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-05", report: "RUO-26-B1E70C41", pdf: "/coas/WO-20-080326.png" },
+  { lot: "WO-10-080326", productSlug: "bpc-157-tb-500-blend", productName: "BPC-157 + TB-500", strength: "5/5 mg", purity: "99.94%", lab: "RUO Eagle", tested: "2026-08-13", report: "RUO-26-98B10E65", pdf: "/coas/WO-10-080326.png" },
+  { lot: "TB-10-080326", productSlug: "tb-500", productName: "TB-500", strength: "10 mg", purity: "99.96%", lab: "RUO Eagle", tested: "2026-08-04", report: "RUO-26-84F4D7FC", pdf: "/coas/TB-10-080326.png" },
+  { lot: "TB-5-080326", productSlug: "tb-500", productName: "TB-500", strength: "5 mg", purity: "99.92%", lab: "RUO Eagle", tested: "2026-08-12", report: "RUO-26-A7016082", pdf: "/coas/TB-5-080326.png" },
+  { lot: "TH-10-080326", productName: "Thymalin", strength: "10 mg", purity: "99.93%", lab: "RUO Eagle", tested: "2026-08-11", report: "RUO-26-DCD0984F", pdf: "/coas/TH-10-080326.png" },
 ];
 
 export type FaqGroup = { id: string; title: string; items: { q: string; a: string }[] };
