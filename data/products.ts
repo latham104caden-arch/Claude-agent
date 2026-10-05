@@ -52,10 +52,10 @@ type Row = {
 
 const ROWS: Row[] = [
   // ── Repair & Immune ─────────────────────────────────────────
-  { slug: "bpc-157", name: "BPC-157", category: "repair-immune", subtitle: "Recovery Research", description: "BPC-157 is a synthetic pentadecapeptide studied in laboratory models of tissue repair and angiogenesis.", sizes: [["10 mg", 65]], popularity: 88, badge: "Best Seller", featured: true },
+  { slug: "bpc-157", name: "BPC-157", category: "repair-immune", subtitle: "Recovery Research", description: "BPC-157 is a synthetic pentadecapeptide studied in laboratory models of tissue repair and angiogenesis.", sizes: [["10 mg", 65]], popularity: 88, badge: "Best Seller", featured: true, coaLot: "BP-10-080326" },
   { slug: "tb-500", name: "TB-500", category: "repair-immune", subtitle: "Recovery Research", description: "TB-500 is a synthetic fragment of thymosin beta-4 studied in cell-migration research.", sizes: [["10 mg", 60]], popularity: 50, featured: true, coaLot: "TB-10-080326" },
   { slug: "bpc-157-tb-500-blend", name: "BPC-157 + TB-500", category: "repair-immune", subtitle: "Recovery Blend", description: "A single research vial combining BPC-157 and TB-500.", sizes: [["10/10 mg", 120, 135]], popularity: 87, coaLot: "WO-20-080326" },
-  { slug: "ghk-cu", name: "GHK-Cu", category: "repair-immune", subtitle: "Dermal Research", description: "GHK-Cu is a copper-binding tripeptide studied in extracellular-matrix research.", sizes: [["50 mg", 50], ["100 mg", 85]], popularity: 95, featured: true },
+  { slug: "ghk-cu", name: "GHK-Cu", category: "repair-immune", subtitle: "Dermal Research", description: "GHK-Cu is a copper-binding tripeptide studied in extracellular-matrix research.", sizes: [["50 mg", 50], ["100 mg", 85]], popularity: 95, featured: true, coaLot: "GH-50-080326" },
   { slug: "glow-blend", name: "GLOW Blend", category: "repair-immune", subtitle: "Dermal Research Blend", description: "A research blend of GHK-Cu, BPC-157 and TB-500 in one vial.", sizes: [["50/10/10 mg", 100, 119], ["70/10/10 mg", 125, 155]], popularity: 82 },
   { slug: "klow-blend", name: "KLOW Blend", category: "repair-immune", subtitle: "Dermal Research Blend", description: "A research blend of GHK-Cu, BPC-157, TB-500 and KPV in one vial.", sizes: [["50/10/10/10 mg", 100, 139]], popularity: 98 },
   { slug: "kpv", name: "KPV", category: "repair-immune", subtitle: "Inflammation Research", description: "KPV is a C-terminal tripeptide of α-MSH studied in inflammatory-pathway research.", sizes: [["10 mg", 50, 60]], popularity: 84 },
@@ -87,7 +87,7 @@ const ROWS: Row[] = [
 
   // ── Cognitive & Longevity ───────────────────────────────────
   { slug: "selank", name: "Selank", category: "cognitive-longevity", subtitle: "Cognitive Research", description: "Selank is a synthetic heptapeptide analog of tuftsin, studied in neuropeptide research.", sizes: [["10 mg", 66]], popularity: 73, coaLot: "SL-10-080326" },
-  { slug: "semax", name: "Semax", category: "cognitive-longevity", subtitle: "Cognitive Research", description: "Semax is a synthetic heptapeptide analog of ACTH(4-10), studied in neuropeptide research.", sizes: [["10 mg", 65]], popularity: 78 },
+  { slug: "semax", name: "Semax", category: "cognitive-longevity", subtitle: "Cognitive Research", description: "Semax is a synthetic heptapeptide analog of ACTH(4-10), studied in neuropeptide research.", sizes: [["10 mg", 65]], popularity: 78, coaLot: "SX-10-080326" },
   { slug: "selank-semax-blend", name: "Selank + Semax", category: "cognitive-longevity", subtitle: "Cognitive Research Blend", description: "A single research vial combining Selank and Semax.", sizes: [["10 mg", 80]], popularity: 53 },
   { slug: "dihexa", name: "Dihexa", category: "cognitive-longevity", subtitle: "Cognitive Research", description: "Dihexa is a small angiotensin-IV-derived peptide studied in synaptogenesis research.", sizes: [["10 mg", 70], ["20 mg", 80]], popularity: 65 },
   { slug: "pinealon", name: "Pinealon", category: "cognitive-longevity", subtitle: "Cognitive Research", description: "Pinealon is a synthetic tripeptide studied in neuronal gene-expression research.", sizes: [["10 mg", 60], ["20 mg", 70]], popularity: 55 },
