@@ -25,6 +25,10 @@ const PATHS: Record<string, React.ReactNode> = {
   snow: (<><path d="M12 2v20M4.9 7l14.2 10M4.9 17 19.1 7" /></>),
   sun: (<><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>),
   info: (<><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>),
+  phone: (<><rect x="6.5" y="2.6" width="11" height="18.8" rx="2.4" /><path d="M11.4 18.2h1.2" /></>),
+  bell: (<><path d="M6 9.5a6 6 0 0 1 12 0c0 6.2 2.4 7.6 2.4 7.6H3.6S6 15.7 6 9.5" /><path d="M10.2 20.4a1.9 1.9 0 0 0 3.6 0" /></>),
+  copy: (<><rect x="8.6" y="8.6" width="12" height="12" rx="2.2" /><path d="M15.4 8.6V5.6a2.2 2.2 0 0 0-2.2-2.2H5.6a2.2 2.2 0 0 0-2.2 2.2v7.6a2.2 2.2 0 0 0 2.2 2.2h3" /></>),
+  share: (<><path d="M12 3v12" /><path d="m7.8 7.2 4.2-4.2 4.2 4.2" /><path d="M8.6 10.6H6.4a1.6 1.6 0 0 0-1.6 1.6v7.2A1.6 1.6 0 0 0 6.4 21h11.2a1.6 1.6 0 0 0 1.6-1.6v-7.2a1.6 1.6 0 0 0-1.6-1.6h-2.2" /></>),
 };
 
 export type IconName = keyof typeof PATHS;

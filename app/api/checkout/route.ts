@@ -56,6 +56,10 @@ export async function POST(req: Request) {
     if (d?.kind === "reward") {
       discounts.push({ promotion_code: d.promotionCode });
       metadata.reward_code = d.code;
+    } else if (d?.kind === "first") {
+      const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: `${d.code} first order` });
+      discounts.push({ coupon: coupon.id });
+      metadata.first_order_code = d.code;
     } else if (d?.kind === "creator") {
       const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
       discounts.push({ coupon: coupon.id });

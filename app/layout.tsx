@@ -6,6 +6,7 @@ import { CartDrawer } from "../components/cart/CartDrawer";
 import { Header } from "../components/chrome/Header";
 import { Footer } from "../components/chrome/Footer";
 import { EntryGate } from "../components/chrome/EntryGate";
+import { FirstOrderOffer } from "../components/offer/FirstOrderOffer";
 import { Reveal } from "../components/chrome/Reveal";
 import { Announcement } from "../components/chrome/Announcement";
 import { Omnisend } from "../components/chrome/Omnisend";
@@ -30,6 +31,8 @@ export const metadata: Metadata = {
   openGraph: { type: "website", siteName: SITE.name, url: SITE.url, title: SITE.name, description: SITE.description },
   twitter: { card: "summary_large_image", title: SITE.name, description: SITE.description },
   robots: { index: true, follow: true },
+  // Home-screen app (needed on iPhone for drop alerts); manifest is app/manifest.ts.
+  appleWebApp: { capable: true, title: "Revised", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
@@ -55,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <CartDrawer />
           <EntryGate />
+          <FirstOrderOffer />
           <Reveal />
         </CartProvider>
         <Omnisend />

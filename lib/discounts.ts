@@ -1,10 +1,15 @@
 import { validateCode } from "@adz/next";
 import { REWARD_VALUE, isRewardCode, rewardPromotionFor } from "./rewards";
+import { hasPaidOrder } from "./account";
+
+/** First-order code from the drop-alerts offer (components/offer). */
+export const FIRST_ORDER = { code: "RR25", percent: 25, minimum: 100 } as const;
 
 /** What a code is worth on this cart. One per order (no stacking). Shared by the preview and the real charge. */
 export type Discount =
   | { kind: "reward"; code: string; label: string; amount: number; promotionCode: string }
-  | { kind: "creator"; code: string; label: string; amount: number; percent: number };
+  | { kind: "creator"; code: string; label: string; amount: number; percent: number }
+  | { kind: "first"; code: string; label: string; amount: number; percent: number };
 
 const round = (n: number) => Math.round(n * 100) / 100;
 
@@ -23,6 +28,16 @@ export async function resolveDiscount(raw: string, opts: { subtotal: number; acc
     const r = await rewardPromotionFor(opts.account, code);
     if ("error" in r) return { error: r.error };
     return { kind: "reward", code, label: `$${REWARD_VALUE} reward`, amount: REWARD_VALUE, promotionCode: r.id };
+  }
+
+  if (code === FIRST_ORDER.code) {
+    if (!opts.account) return { error: `Sign in to use ${FIRST_ORDER.code}. It's for a first order, so we check your order history.` };
+    if (opts.subtotal < FIRST_ORDER.minimum) return { error: `${FIRST_ORDER.code} works on orders of $${FIRST_ORDER.minimum} or more.` };
+    let ordered: boolean | null = null;
+    try { ordered = await hasPaidOrder(opts.account); } catch (err) { console.error("[discounts] order history check failed", err); }
+    if (ordered === null) return { error: "We couldn't check your order history right now. Try again in a minute." };
+    if (ordered) return { error: `${FIRST_ORDER.code} is for a first order, and this account already has one.` };
+    return { kind: "first", code, label: `${FIRST_ORDER.percent}% off your first order`, amount: round((opts.subtotal * FIRST_ORDER.percent) / 100), percent: FIRST_ORDER.percent };
   }
 
   let check: Awaited<ReturnType<typeof validateCode>> | null = null;

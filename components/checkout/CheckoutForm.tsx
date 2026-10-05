@@ -141,7 +141,7 @@ export function CheckoutForm() {
               <button type="button" className="link-btn" onClick={() => setApplied(null)}>Remove</button>
             </div>
           ) : null}
-          {codeMsg ? <p className="drawer-note" role="alert" style={{ color: "var(--danger)" }}>{codeMsg}</p> : <p className="drawer-note">Creator code or a $100 reward code from your account. One code per order.</p>}
+          {codeMsg ? <p className="drawer-note" role="alert" style={{ color: "var(--danger)" }}>{codeMsg}</p> : <p className="drawer-note">Creator code, RR25 on a first order, or a $100 reward code from your account. One code per order.</p>}
         </fieldset>
         )}
         <fieldset>

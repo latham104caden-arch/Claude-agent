@@ -59,7 +59,7 @@ export async function sendOrderConfirmation(session: Stripe.Checkout.Session): P
   const ship = session.collected_information?.shipping_details;
   const a = ship?.address;
   const shipTo = a ? [ship?.name, a.line1, a.line2, `${a.city ?? ""}, ${a.state ?? ""} ${a.postal_code ?? ""}`.trim()].filter(Boolean) : [];
-  const code = session.metadata?.reward_code || session.metadata?.adz_code || (session.metadata?.bulk_tier ? `bulk ${session.metadata.bulk_tier}+` : undefined);
+  const code = session.metadata?.reward_code || session.metadata?.first_order_code || session.metadata?.adz_code || (session.metadata?.bulk_tier ? `bulk ${session.metadata.bulk_tier}+` : undefined);
 
   const row = (l: string, r: string, strong = false) =>
     `<tr><td style="padding:6px 0;font-size:14px;color:${strong ? "#223044" : "#34465E"};${strong ? "font-weight:700;" : ""}">${l}</td><td align="right" style="padding:6px 0;font-size:14px;color:#223044;${strong ? "font-weight:700;" : ""}">${r}</td></tr>`;

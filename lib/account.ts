@@ -16,6 +16,14 @@ export type Order = {
   reorder: CartLine[];
 };
 
+/** Whether this email has any paid order (null if Stripe isn't connected). Used for first-order codes. */
+export async function hasPaidOrder(email: string): Promise<boolean | null> {
+  const stripe = getStripe();
+  if (!stripe) return null;
+  const sessions = await stripe.checkout.sessions.list({ customer_details: { email }, limit: 100 });
+  return sessions.data.some((s) => s.payment_status === "paid");
+}
+
 /** A shopper's paid orders, newest first, straight from Stripe (no local copy). */
 export async function ordersFor(email: string, limit = 10): Promise<Order[] | null> {
   const stripe = getStripe();
