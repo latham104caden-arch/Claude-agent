@@ -141,13 +141,27 @@ const TONE: Partial<Record<Product["category"], string>> = {
 
 const sku = (slug: string, option: string) => `RR-${slug.toUpperCase()}-${option.replace(/[\s/]+/g, "").toUpperCase()}`;
 
+/**
+ * Whole-dollar list prices end in .99, .89 or .45 (1¢, 11¢ or 55¢ under).
+ * Which one is fixed per SKU (a hash, not Math.random), so a price never
+ * changes between deploys or between the cart and the server. Prices that
+ * already have cents are left alone.
+ */
+const CENTS_OFF = [1, 11, 55];
+function listPrice(skuId: string, dollars: number): number {
+  if (!Number.isInteger(dollars)) return dollars;
+  let h = 2166136261;
+  for (const ch of skuId) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  return (dollars * 100 - CENTS_OFF[(h >>> 0) % CENTS_OFF.length]) / 100;
+}
+
 export const PRODUCTS: Product[] = ROWS.map((r) => ({
   slug: r.slug,
   name: r.name,
   category: r.category,
   subtitle: r.subtitle,
   description: r.description,
-  variants: r.sizes.map(([option, price, compareAt]) => ({ sku: sku(r.slug, option), option, price, ...(compareAt ? { compareAt } : {}), inStock: true })),
+  variants: r.sizes.map(([option, price, compareAt]) => ({ sku: sku(r.slug, option), option, price: listPrice(sku(r.slug, option), price), ...(compareAt ? { compareAt } : {}), inStock: true })),
   popularity: r.popularity,
   ...(r.featured ? { featured: true } : {}),
   ...(r.badge ? { badge: r.badge } : {}),
