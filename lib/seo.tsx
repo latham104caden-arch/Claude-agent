@@ -17,6 +17,11 @@ export function organizationLd() {
   };
 }
 
+/** Square PNG of the product's vial (public/email), used for link previews, Omnisend's product picker and JSON-LD. */
+export function productImage(p: Product) {
+  return `${SITE.url}/email/vial-${p.accent ?? "repair"}.png`;
+}
+
 export function productLd(p: Product) {
   const { amount } = displayPrice(p);
   return {
@@ -25,6 +30,7 @@ export function productLd(p: Product) {
     name: p.name,
     description: p.description,
     sku: p.variants[0]?.sku,
+    image: productImage(p),
     brand: { "@type": "Brand", name: SITE.name },
     url: `${SITE.url}/product/${p.slug}`,
     offers: {

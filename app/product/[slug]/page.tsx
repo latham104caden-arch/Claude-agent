@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCatalog, getCategory, getProduct, related, summarize } from "../../../lib/catalog";
-import { JsonLd, productLd } from "../../../lib/seo";
+import { displayPrice, getCatalog, getCategory, getProduct, related, summarize } from "../../../lib/catalog";
+import { JsonLd, productImage, productLd } from "../../../lib/seo";
+import { SITE } from "../../../lib/site";
 import { SectionHead } from "../../../components/ui";
 import { ProductCard } from "../../../components/product/ProductCard";
 import { ProductStage } from "../../../components/product/ProductStage";
@@ -16,10 +17,15 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = getProduct((await params).slug);
   if (!p) return {};
+  const description = `${p.description} For laboratory research use only.`;
+  const image = productImage(p);
   return {
     title: `${p.name} — ${p.subtitle}`,
-    description: `${p.description} For laboratory research use only.`,
+    description,
     alternates: { canonical: `/product/${p.slug}` },
+    // Open Graph basics here; product price tags are rendered in the page body (hoisted to <head>).
+    openGraph: { siteName: SITE.name, url: `${SITE.url}/product/${p.slug}`, title: `${p.name} — ${p.subtitle}`, description, images: [{ url: image, width: 360, height: 360, alt: `${p.name} vial` }] },
+    twitter: { card: "summary", title: p.name, description, images: [image] },
   };
 }
 
@@ -32,6 +38,13 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <JsonLd data={productLd(p)} />
+      {/* Product Open Graph tags (React hoists these into <head>): Omnisend's product picker and link previews read them. */}
+      <meta property="og:type" content="product" />
+      <meta property="product:price:amount" content={displayPrice(p).amount.toFixed(2)} />
+      <meta property="product:price:currency" content="USD" />
+      <meta property="og:price:amount" content={displayPrice(p).amount.toFixed(2)} />
+      <meta property="og:price:currency" content="USD" />
+      <meta property="product:availability" content={p.variants.some((v) => v.inStock) ? "in stock" : "out of stock"} />
       <ProductStage
         product={p}
         categoryName={cat?.name}
