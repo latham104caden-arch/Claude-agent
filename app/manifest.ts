@@ -8,7 +8,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Revised Research",
-    short_name: "Revised",
+    short_name: "Revised Research",
     description: "Research compounds with published certificates of analysis. For laboratory research use only.",
     start_url: "/?source=app",
     scope: "/",

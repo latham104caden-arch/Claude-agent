@@ -110,7 +110,7 @@ export function FirstOrderOffer() {
       const perm = await Notification.requestPermission();
       if (perm !== "granted") {
         setNote(isIOS()
-          ? "Alerts are off. Turn them on in Settings › Notifications › Revised, then tap the button again."
+          ? "Alerts are off. Turn them on in Settings › Notifications › Revised Research, then tap the button again."
           : "Alerts are blocked. Allow notifications for this site in your browser settings, then tap the button again.");
         setBusy(false);
         return;

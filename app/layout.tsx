@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: SITE.name, description: SITE.description },
   robots: { index: true, follow: true },
   // Home-screen app (needed on iPhone for drop alerts); manifest is app/manifest.ts.
-  appleWebApp: { capable: true, title: "Revised", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Revised Research", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
