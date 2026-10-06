@@ -44,7 +44,7 @@ The owner is Caden Latham. Follow `CLAUDE.md` in the repo root; the rules below 
 | Bulk pricing: 10+/20+/30+ compounds, free shipping, shown in **dollars saved, never percent** | `lib/bulk.ts` |
 | First-order code RR25 (25% off, $100 min, signed in, first paid order, not with bulk/other codes); amount stays hidden until it's unlocked via drop alerts | `lib/discounts.ts`, `components/offer/FirstOrderOffer.tsx` |
 | Spend rewards: $100 code for every $999 spent | `lib/rewards.ts` |
-| Shipping: 2–3 business days, free over $249, otherwise $15 | `lib/site.ts`, `data/content.ts` |
+| Shipping: 2–3 business days, free over $245 (FALL32: over $195), otherwise $15 | `lib/site.ts`, `data/content.ts` |
 | Brand copy, FAQ, ticker lines | `data/content.ts`, `components/home/Sections.tsx` |
 | RUO wording | `lib/site.ts` (`RUO_SHORT`), `lib/ruo.ts` |
 

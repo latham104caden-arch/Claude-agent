@@ -29,7 +29,7 @@ export const QC_PILLARS = [
 ];
 
 export const WHY_US = [
-  { icon: "flask", title: "US-sourced materials", body: "Compounds are synthesized from US-sourced raw materials." },
+  { icon: "flask", title: "Synthesized in the USA", body: "Compounds are synthesized in the United States." },
   { icon: "cert", title: `${TESTED_COUNT} compounds 10x tested`, body: "Tested lots go through a 10-test panel at an outside lab: identity, purity, content, endotoxin, heavy metals, solvents and more." },
   { icon: "truck", title: "2–3 day shipping", body: "Orders are picked, packed and handed to the carrier with tracking, arriving in 2–3 business days." },
   { icon: "lock", title: "Secure checkout", body: "Card fields will be hosted by the payment provider, never stored by us." },

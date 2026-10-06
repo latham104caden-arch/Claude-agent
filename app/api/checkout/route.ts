@@ -6,6 +6,7 @@ import { getStripe } from "../../../lib/stripe";
 import { currentEmail } from "../../../lib/auth";
 import { resolveDiscount } from "../../../lib/discounts";
 import { BULK_NO_CODES, bulkFor, bulkLabel } from "../../../lib/bulk";
+import { SALE } from "../../../lib/sale";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,10 +45,20 @@ export async function POST(req: Request) {
   const discounts: ({ coupon: string } | { promotion_code: string })[] = [];
   const bulk = bulkFor(cart.lines.map((l) => ({ slug: l.product.slug, price: l.variant.price, qty: l.qty })));
   if (bulk.tier) {
-    if (typed) return fail(BULK_NO_CODES);
-    const coupon = await stripe.coupons.create({ amount_off: cents(bulk.amount), currency: "usd", duration: "once", max_redemptions: 1, name: bulkLabel(bulk.tier) });
-    discounts.push({ coupon: coupon.id });
-    metadata.bulk_tier = String(bulk.tier.min);
+    // Bulk orders take no code, except a live sitewide sale code: whichever saves more wins.
+    if (typed && typed.toUpperCase() !== SALE.code) return fail(BULK_NO_CODES);
+    const sale = typed ? await resolveDiscount(typed, { subtotal: cart.subtotal, account, explicit: true }) : null;
+    if (sale && "error" in sale) return fail(sale.error);
+    if (sale && sale.kind !== "sale") return fail(BULK_NO_CODES);
+    if (sale && sale.amount > bulk.amount) {
+      const coupon = await stripe.coupons.create({ percent_off: sale.percent, duration: "once", max_redemptions: 1, name: sale.code });
+      discounts.push({ coupon: coupon.id });
+      metadata.sale_code = sale.code;
+    } else {
+      const coupon = await stripe.coupons.create({ amount_off: cents(bulk.amount), currency: "usd", duration: "once", max_redemptions: 1, name: bulkLabel(bulk.tier) });
+      discounts.push({ coupon: coupon.id });
+      metadata.bulk_tier = String(bulk.tier.min);
+    }
   } else {
     // The creator-link code applies only if the shopper kept it (they can remove it on the page).
     const linkCode = body.useLink === true ? attribution.code : null;
@@ -56,6 +67,10 @@ export async function POST(req: Request) {
     if (d?.kind === "reward") {
       discounts.push({ promotion_code: d.promotionCode });
       metadata.reward_code = d.code;
+    } else if (d?.kind === "sale") {
+      const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
+      discounts.push({ coupon: coupon.id });
+      metadata.sale_code = d.code;
     } else if (d?.kind === "first") {
       const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: `${d.code} first order` });
       discounts.push({ coupon: coupon.id });
@@ -67,7 +82,9 @@ export async function POST(req: Request) {
     }
   }
 
-  const shipping = bulk.tier ? 0 : shippingFor(cart.subtotal);
+  // Free shipping: bulk orders, the normal threshold, or the sale code's lower threshold.
+  const saleShip = metadata.sale_code === SALE.code && cart.subtotal >= SALE.freeShippingOver;
+  const shipping = bulk.tier || saleShip ? 0 : shippingFor(cart.subtotal);
   const origin = new URL(req.url).origin;
   try {
     const session = await stripe.checkout.sessions.create({

@@ -5,6 +5,7 @@ import { currentEmail } from "../../../../lib/auth";
 import { resolveDiscount } from "../../../../lib/discounts";
 import { priceCart } from "../../../../lib/orders";
 import { BULK_NO_CODES, bulkFor } from "../../../../lib/bulk";
+import { SALE } from "../../../../lib/sale";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,9 +24,13 @@ export async function POST(req: Request) {
 
   const typed = typeof body.code === "string" ? body.code.trim() : "";
   if (bulkFor(cart.lines.map((l) => ({ slug: l.product.slug, price: l.variant.price, qty: l.qty }))).tier) {
-    return typed
-      ? NextResponse.json({ ok: false, message: BULK_NO_CODES }, { status: 400 })
-      : NextResponse.json({ ok: true, discount: null });
+    // Bulk carts take no code except a live sale code (the summary shows whichever saves more).
+    if (!typed) return NextResponse.json({ ok: true, discount: null });
+    if (typed.toUpperCase() !== SALE.code) return NextResponse.json({ ok: false, message: BULK_NO_CODES }, { status: 400 });
+    const s = await resolveDiscount(typed, { subtotal: cart.subtotal, account: await currentEmail(), explicit: true });
+    if (s && "error" in s) return NextResponse.json({ ok: false, message: s.error }, { status: 400 });
+    if (!s || s.kind !== "sale") return NextResponse.json({ ok: false, message: BULK_NO_CODES }, { status: 400 });
+    return NextResponse.json({ ok: true, discount: { code: s.code, label: s.label, amount: s.amount, kind: s.kind, fromLink: false } });
   }
   const link = typed ? null : readAttribution(await cookies()).code;
   const d = await resolveDiscount(typed || link || "", { subtotal: cart.subtotal, account: await currentEmail(), explicit: !!typed });

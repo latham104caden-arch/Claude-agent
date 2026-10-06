@@ -95,7 +95,7 @@ export function CheckoutForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: !bulk.tier && applied && !applied.fromLink ? applied.code : undefined, useLink: !bulk.tier && !!applied?.fromLink, attest, emailOptIn }),
+        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: applied && !applied.fromLink ? applied.code : undefined, useLink: !bulk.tier && !!applied?.fromLink, attest, emailOptIn }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.clientSecret) {
@@ -120,9 +120,9 @@ export function CheckoutForm() {
             <Icon name="check" strokeWidth={2.4} />
             <span><b>{bulkLabel(bulk.tier)}</b> applied · you save {money(bulk.amount)} and shipping is free</span>
           </div>
-          <p className="drawer-note">Bulk pricing can&apos;t be combined with a code. <Link href="/bulk">How bulk pricing works</Link></p>
+          <p className="drawer-note">Bulk pricing can&apos;t be combined with other codes. A sitewide sale code still works, and you get whichever saves more. <Link href="/bulk">How bulk pricing works</Link></p>
         </fieldset>
-        ) : (
+        ) : null}
         <fieldset>
           <legend>Discount code</legend>
           <div className="form-grid">
@@ -143,7 +143,6 @@ export function CheckoutForm() {
           ) : null}
           {codeMsg ? <p className="drawer-note" role="alert" style={{ color: "var(--danger)" }}>{codeMsg}</p> : <p className="drawer-note">Creator code, RR25 on a first order, or a $100 reward code from your account. One code per order.</p>}
         </fieldset>
-        )}
         <fieldset>
           <legend>Shipping and payment</legend>
           <p className="muted">Your address and card are entered on the next step, in a secure form from Stripe. US shipping only.</p>
@@ -158,7 +157,7 @@ export function CheckoutForm() {
         </label>
       </div>
       <div>
-        <Summary discount={bulk.tier ? null : applied}>
+        <Summary discount={applied}>
           <div style={{ marginTop: 14, display: "grid", gap: 6, fontSize: 14 }}>
             {lines.map((l) => (
               <div key={l.sku} className="summary-row" style={{ padding: 0 }}>

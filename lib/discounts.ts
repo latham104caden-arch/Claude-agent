@@ -1,6 +1,7 @@
 import { validateCode } from "@adz/next";
 import { REWARD_VALUE, isRewardCode, rewardPromotionFor } from "./rewards";
 import { hasPaidOrder } from "./account";
+import { SALE, saleState } from "./sale";
 
 /** First-order code from the drop-alerts offer (components/offer). */
 export const FIRST_ORDER = { code: "RR25", percent: 25, minimum: 100 } as const;
@@ -9,7 +10,8 @@ export const FIRST_ORDER = { code: "RR25", percent: 25, minimum: 100 } as const;
 export type Discount =
   | { kind: "reward"; code: string; label: string; amount: number; promotionCode: string }
   | { kind: "creator"; code: string; label: string; amount: number; percent: number }
-  | { kind: "first"; code: string; label: string; amount: number; percent: number };
+  | { kind: "first"; code: string; label: string; amount: number; percent: number }
+  | { kind: "sale"; code: string; label: string; amount: number; percent: number };
 
 const round = (n: number) => Math.round(n * 100) / 100;
 
@@ -28,6 +30,12 @@ export async function resolveDiscount(raw: string, opts: { subtotal: number; acc
     const r = await rewardPromotionFor(opts.account, code);
     if ("error" in r) return { error: r.error };
     return { kind: "reward", code, label: `$${REWARD_VALUE} reward`, amount: REWARD_VALUE, promotionCode: r.id };
+  }
+
+  if (code === SALE.code) {
+    const state = saleState();
+    if (state !== "active") return { error: state === "upcoming" ? `${SALE.code} isn't live yet.` : `The ${SALE.name} has ended, so ${SALE.code} no longer works.` };
+    return { kind: "sale", code, label: `${SALE.percent}% off · ${SALE.name}`, amount: round((opts.subtotal * SALE.percent) / 100), percent: SALE.percent };
   }
 
   if (code === FIRST_ORDER.code) {
