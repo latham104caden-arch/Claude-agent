@@ -121,6 +121,7 @@ const withDpi = (png, dpi) => {
 
 const browser = await chromium.launch({ executablePath: CHROME });
 const page = await browser.newPage({ viewport: { width: 525, height: 225 }, deviceScaleFactor: 2 });
+const pdfPage = await browser.newPage();
 let count = 0;
 for (const c of CATEGORIES) {
   rmSync(join(OUT, c.slug), { recursive: true, force: true });
@@ -128,12 +129,15 @@ for (const c of CATEGORIES) {
   rmSync(join(OUT, "pdf", c.slug), { recursive: true, force: true });
   mkdirSync(join(OUT, "pdf", c.slug), { recursive: true });
   for (const item of c.items) {
-    await page.setContent(`<style>${CSS} @page { size: 1.75in 0.75in; margin: 0; }</style>${labelHtml(item)}`);
+    await page.setContent(`<style>${CSS}</style>${labelHtml(item)}`);
     await page.evaluate(FIT);
     const png = await page.locator(".label").screenshot();
     writeFileSync(join(OUT, c.slug, `${item.slug.toLowerCase()}-${slugify(item.size)}.png`), withDpi(png, 600));
-    // Same label as its own print-size PDF (vector text), e.g. for Canva.
-    await page.pdf({ path: join(OUT, "pdf", c.slug, `${item.slug.toLowerCase()}-${slugify(item.size)}.pdf`), width: "1.75in", height: "0.75in", printBackground: true, scale: 96 / 300, pageRanges: "1" });
+    // Same label as its own print-size PDF for Canva: the 600 dpi image on a
+    // 1.75 × 0.75 in page (Canva's PDF import drops CSS gradients and font weights).
+    await pdfPage.setContent(`<style>@page { size: 1.75in 0.75in; margin: 0; } html, body { margin: 0; }
+      img { display: block; width: 1.75in; height: 0.75in; }</style><img src="data:image/png;base64,${png.toString("base64")}">`);
+    await pdfPage.pdf({ path: join(OUT, "pdf", c.slug, `${item.slug.toLowerCase()}-${slugify(item.size)}.pdf`), width: "1.75in", height: "0.75in", printBackground: true, pageRanges: "1" });
     count++;
   }
   // Contact sheet for review.
@@ -149,14 +153,6 @@ for (const c of CATEGORIES) {
   await sheet.screenshot({ path: join(OUT, `overview-${c.slug}.png`), fullPage: true });
   await sheet.close();
 }
-// Every label as one PDF page at print size (vector text), for Canva import.
-const all = CATEGORIES.flatMap((c) => c.items);
-const pdfPage = await browser.newPage();
-await pdfPage.setContent(`<style>${CSS} @page { size: 1.75in 0.75in; margin: 0; }
-  .label { page-break-after: always; break-after: page; }</style>${all.map(labelHtml).join("")}`);
-await pdfPage.evaluate(FIT);
-// Layout is 300 px/in; CSS px are 96/in, so scale to print size.
-await pdfPage.pdf({ path: join(OUT, "revised-labels.pdf"), width: "1.75in", height: "0.75in", printBackground: true, scale: 96 / 300 });
 await pdfPage.close();
 await browser.close();
 console.log(`wrote ${count} labels to ${OUT}`);
