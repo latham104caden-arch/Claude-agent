@@ -80,10 +80,10 @@ body { background: transparent; font-family: Inter, sans-serif; -webkit-font-smo
 .bottom { position: absolute; left: 22px; bottom: 16px; }
 .made { font-size: 18px; font-weight: 600; }
 .ruo { margin-top: 3px; font-size: 14px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
-/* Sits just right of the text block (~1.1 in from the left edge) so it stays
-   on the front of the vial instead of wrapping round the back. */
-.word { position: absolute; left: 340px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; line-height: 1;
-  font-size: 37px; font-weight: 800; letter-spacing: .05em; color: #fff; }
+/* Reads bottom to top, like the vials on the site. Sits just right of the
+   text block (~1.2 in from the left edge) so it stays on the front of the vial. */
+.word { position: absolute; left: 362px; top: 50%; transform: translate(-50%, -50%) rotate(-90deg); white-space: nowrap; line-height: 1;
+  font-size: 44px; font-weight: 800; letter-spacing: .05em; color: #fff; }
 `;
 
 const labelHtml = ({ name, size, tone }) => {
@@ -145,5 +145,14 @@ for (const c of CATEGORIES) {
   await sheet.screenshot({ path: join(OUT, `overview-${c.slug}.png`), fullPage: true });
   await sheet.close();
 }
+// Every label as one PDF page at print size (vector text), for Canva import.
+const all = CATEGORIES.flatMap((c) => c.items);
+const pdfPage = await browser.newPage();
+await pdfPage.setContent(`<style>${CSS} @page { size: 1.75in 0.75in; margin: 0; }
+  .label { page-break-after: always; break-after: page; }</style>${all.map(labelHtml).join("")}`);
+await pdfPage.evaluate(FIT);
+// Layout is 300 px/in; CSS px are 96/in, so scale to print size.
+await pdfPage.pdf({ path: join(OUT, "revised-labels.pdf"), width: "1.75in", height: "0.75in", printBackground: true, scale: 96 / 300 });
+await pdfPage.close();
 await browser.close();
 console.log(`wrote ${count} labels to ${OUT}`);
