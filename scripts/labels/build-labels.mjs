@@ -125,11 +125,15 @@ let count = 0;
 for (const c of CATEGORIES) {
   rmSync(join(OUT, c.slug), { recursive: true, force: true });
   mkdirSync(join(OUT, c.slug), { recursive: true });
+  rmSync(join(OUT, "pdf", c.slug), { recursive: true, force: true });
+  mkdirSync(join(OUT, "pdf", c.slug), { recursive: true });
   for (const item of c.items) {
-    await page.setContent(`<style>${CSS}</style>${labelHtml(item)}`);
+    await page.setContent(`<style>${CSS} @page { size: 1.75in 0.75in; margin: 0; }</style>${labelHtml(item)}`);
     await page.evaluate(FIT);
     const png = await page.locator(".label").screenshot();
     writeFileSync(join(OUT, c.slug, `${item.slug.toLowerCase()}-${slugify(item.size)}.png`), withDpi(png, 600));
+    // Same label as its own print-size PDF (vector text), e.g. for Canva.
+    await page.pdf({ path: join(OUT, "pdf", c.slug, `${item.slug.toLowerCase()}-${slugify(item.size)}.pdf`), width: "1.75in", height: "0.75in", printBackground: true, scale: 96 / 300, pageRanges: "1" });
     count++;
   }
   // Contact sheet for review.
