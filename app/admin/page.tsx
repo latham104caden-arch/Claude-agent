@@ -9,6 +9,7 @@ import { countSubscriptions, storageReady, TEAM_PREFIX } from "../../lib/push";
 import { Gate } from "../../components/admin/Gate";
 import { SalesChart } from "../../components/admin/SalesChart";
 import { OrderAlerts } from "../../components/admin/OrderAlerts";
+import { SyncCustomers } from "../../components/admin/SyncCustomers";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -145,6 +146,7 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
       </div>
 
       <OrderAlerts devices={devices} />
+      <SyncCustomers />
     </div>
   );
 }
