@@ -23,7 +23,7 @@ const fail = (message: string, status = 400) => NextResponse.json({ ok: false, m
  * orders (lib/bulk.ts) get the bulk discount and free shipping instead of a code.
  */
 export async function POST(req: Request) {
-  let body: { lines?: unknown; code?: unknown; useLink?: unknown; attest?: unknown; emailOptIn?: unknown };
+  let body: { lines?: unknown; code?: unknown; useLink?: unknown; attest?: unknown; emailOptIn?: unknown; gateAt?: unknown };
   try { body = await req.json(); } catch { return fail("Invalid request."); }
   if (body.attest !== true) return fail("Please confirm the research-use statement.");
 
@@ -35,7 +35,13 @@ export async function POST(req: Request) {
 
   const jar = await cookies();
   const attribution = readAttribution(jar);
-  const metadata: Record<string, string> = { ...attributionMetadata(jar), ruo_attested: "yes", attested_at: new Date().toISOString(), mkt_email: body.emailOptIn === true ? "yes" : "no" };
+  // 21+ is confirmed at the entry gate (its timestamp is recorded here); without one, the checkout box itself includes 21+.
+  const gateAt = typeof body.gateAt === "string" && !Number.isNaN(Date.parse(body.gateAt)) ? new Date(body.gateAt).toISOString() : null;
+  const metadata: Record<string, string> = {
+    ...attributionMetadata(jar), ruo_attested: "yes", attested_at: new Date().toISOString(),
+    age_21_confirmed: gateAt ? `entry gate ${gateAt}` : "checkout box",
+    mkt_email: body.emailOptIn === true ? "yes" : "no",
+  };
 
   // Signed-in shoppers check out under their account email (orders, rewards and Omnisend all key on it).
   const account = await currentEmail();

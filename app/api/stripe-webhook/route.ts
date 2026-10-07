@@ -1,6 +1,6 @@
 import type Stripe from "stripe";
 import { trackOrder, trackRefund } from "@adz/next";
-import { splitName, upsertContact } from "../../../lib/omnisend";
+import { saveCustomer } from "../../../lib/customers";
 import { getStripe } from "../../../lib/stripe";
 import { syncRewards } from "../../../lib/rewards";
 import { sendOrderConfirmation } from "../../../lib/email";
@@ -55,23 +55,6 @@ export async function POST(req: Request) {
     return new Response("handler failed", { status: 500 });
   }
   return Response.json({ received: true });
-}
-
-/** Buyer → Omnisend with name, phone and ship-to; email-subscribed only if the checkout opt-in box was left ticked. */
-async function saveCustomer(session: Stripe.Checkout.Session) {
-  const c = session.customer_details;
-  if (!c?.email) return;
-  const ship = session.collected_information?.shipping_details;
-  const a = ship?.address ?? c.address;
-  await upsertContact({
-    email: c.email.toLowerCase(),
-    ...splitName(ship?.name || c.name),
-    phone: c.phone,
-    address: a ? { line1: a.line1, line2: a.line2, city: a.city, state: a.state, postalCode: a.postal_code, country: a.country } : null,
-    tags: ["customer"],
-    subscribe: session.metadata?.mkt_email === "yes",
-    consentSource: "website checkout opt-in",
-  });
 }
 
 /**

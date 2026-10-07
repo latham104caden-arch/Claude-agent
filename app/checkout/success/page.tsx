@@ -4,6 +4,7 @@ import { PageHero } from "../../../components/ui";
 import { ClearCart } from "../../../components/checkout/ClearCart";
 import { getStripe } from "../../../lib/stripe";
 import { sendOrderConfirmation } from "../../../lib/email";
+import { saveCustomer } from "../../../lib/customers";
 
 export const metadata: Metadata = { title: "Order Confirmed", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -20,7 +21,13 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
       paid = s.payment_status === "paid";
       email = s.customer_details?.email ?? null;
       // Webhook also sends it; the Idempotency-Key in sendOrderConfirmation keeps it to one email.
-      if (paid) await sendOrderConfirmation(s).catch((err) => console.error("[success] confirmation", err));
+      if (paid) {
+        await Promise.all([
+          sendOrderConfirmation(s).catch((err) => console.error("[success] confirmation", err)),
+          // Also done by the webhook; doing it here too means buyers reach Omnisend even if the webhook is down.
+          saveCustomer(s).catch((err) => console.error("[success] omnisend", err)),
+        ]);
+      }
     } catch {}
   }
   return (

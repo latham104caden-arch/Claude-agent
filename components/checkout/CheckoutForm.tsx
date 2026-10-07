@@ -26,6 +26,14 @@ export function CheckoutForm() {
   const [applied, setApplied] = useState<(AppliedDiscount & { fromLink?: boolean }) | null>(null);
   const [applying, setApplying] = useState(false);
   const [codeMsg, setCodeMsg] = useState("");
+  // The entry gate already asked for 21+ (rr-gate-v1). If it's on record, checkout only asks for research use.
+  const [gateAt, setGateAt] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      const at = JSON.parse(localStorage.getItem("rr-gate-v1") || "null")?.at;
+      if (typeof at === "string") setGateAt(at);
+    } catch {}
+  }, []);
 
   const preview = async (typed: string) => {
     const res = await fetch("/api/checkout/code", {
@@ -95,7 +103,7 @@ export function CheckoutForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: applied && !applied.fromLink ? applied.code : undefined, useLink: !bulk.tier && !!applied?.fromLink, attest, emailOptIn }),
+        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: applied && !applied.fromLink ? applied.code : undefined, useLink: !bulk.tier && !!applied?.fromLink, attest, emailOptIn, gateAt }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.clientSecret) {
@@ -153,7 +161,9 @@ export function CheckoutForm() {
         </label>
         <label className="check" style={{ marginBottom: 20 }}>
           <input type="checkbox" checked={attest} onChange={(e) => setAttest(e.target.checked)} />
-          <span>I confirm I am 21 or older and that these products are purchased for laboratory research use only, not for human or veterinary use.</span>
+          <span>{gateAt
+            ? "I confirm these products are purchased for laboratory research use only, not for human or veterinary use."
+            : "I confirm I am 21 or older and that these products are purchased for laboratory research use only, not for human or veterinary use."}</span>
         </label>
       </div>
       <div>
