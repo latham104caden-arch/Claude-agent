@@ -21,3 +21,7 @@ next-env.d.ts
 # iCloud / Finder duplicates ("page 2.tsx") — these took Ventra down once
 * 2.*
 * 3.*
+
+# Exported vial images (sent to the owner; regenerate from the site)
+design/labels/site/
+vial-zips/
