@@ -11,10 +11,13 @@
 // Needs playwright-core + Chromium (CHROME_PATH to override). If
 // playwright-core lives elsewhere, copy this file there and set REPO_ROOT.
 //
-// Strengths are placeholders until the owner confirms the real lineup.
-// Names are checked against data/ruo-banned.json and the build refuses any hit.
+// Products, sizes and label colors come from the live catalog (lib/catalog.ts):
+// one label per product per size, bundles skipped. Names are checked against
+// data/ruo-banned.json and the build refuses any hit; GLP-coded listings are
+// never labelled.
 import { chromium } from "playwright-core";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { crc32 } from "node:zlib";
 import { join } from "node:path";
 
@@ -23,38 +26,32 @@ const CHROME = process.env.CHROME_PATH ?? "/opt/pw-browsers/chromium-1194/chrome
 const OUT = join(ROOT, "design/labels");
 
 // Label palettes (print assets, not site UI): edge, sheen, body, dark end.
-const CATEGORIES = [
-  {
-    slug: "repair-immune", name: "Repair & Immune", colors: ["#3E8A89", "#6FB8B6", "#3C7F7F", "#264A4D"],
-    items: [
-      ["BPC-157", "10mg"], ["TB-500", "10mg"], ["Thymosin Beta-4", "5mg"], ["GHK-Cu", "50mg"],
-      ["KPV", "10mg"], ["LL-37", "5mg"], ["Thymosin Alpha-1", "10mg"], ["Thymalin", "10mg"],
-      ["VIP", "5mg"], ["ARA-290", "10mg"], ["BPC-157 + TB-500", "20mg"], ["GLOW Blend", "70mg"],
-      ["KLOW Blend", "80mg"],
-    ],
-  },
-  {
-    slug: "metabolic-gh", name: "Metabolic & GH", colors: ["#34507C", "#52709C", "#2A3F66", "#1D2740"],
-    items: [
-      ["CJC-1295 DAC", "5mg"], ["CJC-1295 No DAC", "5mg"], ["Sermorelin", "5mg"], ["Tesamorelin", "10mg"],
-      ["Ipamorelin", "10mg"], ["GHRP-2", "10mg"], ["GHRP-6", "10mg"], ["Hexarelin", "5mg"],
-      ["IGF-1 LR3", "1mg"], ["AOD-9604", "5mg"], ["HGH Frag 176-191", "5mg"], ["MOTS-c", "10mg"],
-      ["SS-31", "10mg"], ["Humanin", "5mg"], ["CJC-1295 + Ipa", "10mg"],
-    ],
-  },
-  {
-    slug: "cognitive-longevity", name: "Cognitive & Longevity", colors: ["#5A1F24", "#7C4A4F", "#4A1A1E", "#261B1D"],
-    items: [
-      ["Semax", "10mg"], ["Selank", "10mg"], ["Dihexa", "10mg"], ["Pinealon", "10mg"], ["DSIP", "5mg"],
-      ["Epitalon", "10mg"], ["FOXO4-DRI", "10mg"], ["PT-141", "10mg"], ["Melanotan I", "10mg"],
-      ["Melanotan II", "10mg"], ["Kisspeptin-10", "10mg"], ["Oxytocin", "2mg"], ["Gonadorelin", "2mg"],
-    ],
-  },
-];
+// Keyed by the product's photo accent, so each label matches its vial on the site.
+const PALETTES = {
+  repair: ["#3E8A89", "#6FB8B6", "#3C7F7F", "#264A4D"],
+  metabolic: ["#34507C", "#52709C", "#2A3F66", "#1D2740"],
+  cognitive: ["#5A1F24", "#7C4A4F", "#4A1A1E", "#261B1D"],
+  nasal: ["#5A1F24", "#7C4A4F", "#4A1A1E", "#261B1D"],
+  supply: ["#E9ECEF", "#FFFFFF", "#F4F5F7", "#DADDE2"],
+};
+const CATEGORY_NAMES = {
+  "repair-immune": "Repair & Immune", "metabolic-gh": "Metabolic & GH", "cognitive-longevity": "Cognitive & Longevity",
+  nasal: "Nasal Research", supplies: "Lab Supplies",
+};
+
+const catalog = JSON.parse(execFileSync("npx", ["tsx", "-e",
+  'import { getCatalog } from "./lib/catalog.ts"; console.log(JSON.stringify(getCatalog().map((p) => ({ slug: p.slug, name: p.name, category: p.category, accent: p.accent, sizes: p.variants.map((v) => v.option) }))))',
+], { cwd: ROOT, encoding: "utf8" }));
+const NEVER = /glp|retatrutide|semaglutide|tirzepatide|liraglutide/i;
+const CATEGORIES = Object.entries(CATEGORY_NAMES).map(([slug, name]) => ({
+  slug, name,
+  items: catalog.filter((p) => p.category === slug && !NEVER.test(p.slug + " " + p.name))
+    .flatMap((p) => p.sizes.map((size) => ({ slug: p.slug, name: p.name, size: size.replace(/\s+/g, ""), tone: p.accent ?? "metabolic" }))),
+})).filter((c) => c.items.length);
 
 const banned = JSON.parse(readFileSync(join(ROOT, "data/ruo-banned.json"), "utf8"));
 const bannedList = (Array.isArray(banned) ? banned : Object.values(banned).flat()).map((s) => String(s).toLowerCase());
-for (const c of CATEGORIES) for (const [n] of c.items) {
+for (const c of CATEGORIES) for (const { name: n } of c.items) {
   if (bannedList.some((b) => n.toLowerCase().includes(b))) throw new Error(`Banned name in label list: ${n}`);
 }
 
@@ -74,6 +71,9 @@ body { background: transparent; font-family: Inter, sans-serif; -webkit-font-smo
     linear-gradient(90deg, var(--c0) 0%, var(--c1) 14%, var(--c2) 45%, var(--c3) 100%); }
 .top { position: absolute; left: 22px; top: 18px; width: 300px; }
 .name { font-weight: 700; letter-spacing: -.01em; line-height: 1.04; white-space: nowrap; }
+.name.wrap { white-space: normal; }
+.label--supply, .label--supply .word { color: #16191D; }
+.label--supply .pill { background: #fff; border: 1.5px solid #9AA1AA; line-height: 28px; }
 .row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 .pill { background: #fff; color: #3A3F47; font-size: 20px; font-weight: 600; height: 31px; line-height: 31px; padding: 0 11px; border-radius: 10px; }
 .purity { font-size: 14px; font-weight: 500; height: 26px; line-height: 23px; padding: 0 9px; border: 1.5px solid rgba(255,255,255,.85); border-radius: 999px; }
@@ -86,19 +86,27 @@ body { background: transparent; font-family: Inter, sans-serif; -webkit-font-smo
   font-size: 37px; font-weight: 800; letter-spacing: .05em; color: #fff; }
 `;
 
-const labelHtml = (c, [name, mg]) => `
-<div class="label" style="--c0:${c.colors[0]};--c1:${c.colors[1]};--c2:${c.colors[2]};--c3:${c.colors[3]}">
-  <div class="top"><div class="name">${esc(name)}</div>
-    <div class="row"><span class="pill">${esc(mg)}</span><span class="purity">99% Purity</span></div></div>
-  <div class="bottom"><div class="made">U.S. Synthesized</div><div class="ruo">Research use only</div></div>
+const labelHtml = ({ name, size, tone }) => {
+  const c = PALETTES[tone] ?? PALETTES.metabolic;
+  const supply = tone === "supply";
+  return `
+<div class="label${supply ? " label--supply" : ""}" style="--c0:${c[0]};--c1:${c[1]};--c2:${c[2]};--c3:${c[3]}">
+  <div class="top"><div class="name">${esc(supply ? name.toUpperCase() : name)}</div>
+    <div class="row"><span class="pill">${esc(size)}</span>${supply ? "" : '<span class="purity">99% Purity</span>'}</div></div>
+  <div class="bottom"><div class="made">${supply ? "Multi-use" : "U.S. Synthesized"}</div><div class="ruo">Research use only</div></div>
   <div class="word">REVISED</div>
 </div>`;
+};
 
 // Fit each name on one line: 44px (~10.5pt) down to 26px (~6.2pt).
 const FIT = `for (const el of document.querySelectorAll('.name')) {
   const max = el.parentElement.clientWidth; let s = 44; el.style.fontSize = s + 'px';
   while (el.scrollWidth > max && s > 26) { s -= 1; el.style.fontSize = s + 'px'; }
-  if (el.scrollWidth > max) throw new Error('Name too long for label: ' + el.textContent);
+  if (el.scrollWidth > max) { // two lines, as the site does for long names
+    el.classList.add('wrap'); s = 34; el.style.fontSize = s + 'px';
+    while ((el.scrollWidth > max || el.clientHeight > s * 1.04 * 2 + 1) && s > 22) { s -= 1; el.style.fontSize = s + 'px'; }
+    if (el.scrollWidth > max || el.clientHeight > s * 1.04 * 2 + 1) throw new Error('Name too long for label: ' + el.textContent);
+  }
 }`;
 
 // Stamp 600 dpi into the PNG (pHYs chunk right after IHDR).
@@ -115,12 +123,13 @@ const browser = await chromium.launch({ executablePath: CHROME });
 const page = await browser.newPage({ viewport: { width: 525, height: 225 }, deviceScaleFactor: 2 });
 let count = 0;
 for (const c of CATEGORIES) {
+  rmSync(join(OUT, c.slug), { recursive: true, force: true });
   mkdirSync(join(OUT, c.slug), { recursive: true });
   for (const item of c.items) {
-    await page.setContent(`<style>${CSS}</style>${labelHtml(c, item)}`);
+    await page.setContent(`<style>${CSS}</style>${labelHtml(item)}`);
     await page.evaluate(FIT);
     const png = await page.locator(".label").screenshot();
-    writeFileSync(join(OUT, c.slug, `${slugify(item[0])}.png`), withDpi(png, 600));
+    writeFileSync(join(OUT, c.slug, `${item.slug.toLowerCase()}-${slugify(item.size)}.png`), withDpi(png, 600));
     count++;
   }
   // Contact sheet for review.
@@ -131,7 +140,7 @@ for (const c of CATEGORIES) {
     .cell { width: 315px; height: 135px; overflow: hidden; border-radius: 4px; box-shadow: 0 6px 18px rgba(0,0,0,.12); }
     .cell .label { transform: scale(.6); transform-origin: 0 0; }</style>
     <h1>${esc(c.name)} · ${c.items.length} labels · 1.75 × 0.75 in</h1>
-    <div class="grid">${c.items.map((i) => `<div class="cell">${labelHtml(c, i)}</div>`).join("")}</div>`);
+    <div class="grid">${c.items.map((i) => `<div class="cell">${labelHtml(i)}</div>`).join("")}</div>`);
   await sheet.evaluate(FIT);
   await sheet.screenshot({ path: join(OUT, `overview-${c.slug}.png`), fullPage: true });
   await sheet.close();
