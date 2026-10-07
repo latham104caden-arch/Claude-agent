@@ -11,6 +11,11 @@ from the live catalog (`lib/catalog.ts`); bundles are skipped.
   white with dark print for Lab Supplies.
 - Names too long for one line wrap to two, like the site.
 - Names in `data/ruo-banned.json` are refused.
+- Each label is also written as its own 1.75 × 0.75 in PDF in
+  `design/labels/pdf/<category>/`, holding the 600 dpi image. These are what
+  get imported into Canva (one design per label). Canva's PDF import drops CSS
+  gradients and font weights, which is why the PDFs carry the image.
+- REVISED reads bottom to top, like the vials on the site.
 - No bleed is included. Add it if the printer asks for it.
 
 ```bash
