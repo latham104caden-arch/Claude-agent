@@ -45,6 +45,8 @@
 .adm-money tr.is-total td { font-weight: 650; border-top: 1px solid var(--border); }
 .adm-sub { display: block; font-size: 12px; color: var(--text-muted); }
 a.adm-sub { color: var(--accent-ink); }
+.adm-address { font-size: 13px; line-height: 1.45; user-select: all; }
+.adm-address span { display: block; }
 .adm-items { list-style: none; padding: 0; margin: 0; font-size: 13px; }
 .adm-orders td { min-width: 110px; }
 .adm-scroll { overflow-x: auto; }

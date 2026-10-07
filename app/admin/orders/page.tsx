@@ -10,7 +10,7 @@ export const maxDuration = 60;
 const PAGE = 50;
 
 const matches = (o: OrderRow, q: string) =>
-  [o.number, o.id, o.email, o.name, o.city, o.state, o.code].some((v) => v?.toLowerCase().includes(q));
+  [o.number, o.id, o.email, o.name, o.city, o.state, o.code, o.phone, o.shipTo.join(" ")].some((v) => v?.toLowerCase().includes(q));
 
 export default async function AdminOrders({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   if (!(await currentAdmin())) return <Gate />;
@@ -54,14 +54,15 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
       {shown.length ? (
         <div className="card adm-card adm-scroll">
           <table className="adm-table adm-orders">
-            <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Code</th><th className="num">Total</th><th>Status</th></tr></thead>
+            <thead><tr><th>Order</th><th>Customer</th><th>Ship to</th><th>Items</th><th>Code</th><th className="num">Total</th><th>Status</th></tr></thead>
             <tbody>
               {shown.map((o) => {
                 const link = stripeLink(o.paymentIntent, o.livemode);
                 return (
                   <tr key={o.id}>
                     <td><b>{o.number}</b><span className="adm-sub">{when(o.created)}</span>{link ? <a className="adm-sub" href={link} target="_blank" rel="noreferrer">Stripe ↗</a> : null}</td>
-                    <td>{o.name ?? "—"}<span className="adm-sub">{o.email}</span><span className="adm-sub">{[o.city, o.state].filter(Boolean).join(", ")}</span></td>
+                    <td>{o.name ?? "—"}<span className="adm-sub">{o.email}</span>{o.phone ? <span className="adm-sub">{o.phone}</span> : null}</td>
+                    <td className="adm-address">{o.shipTo.length ? o.shipTo.map((l, i) => <span key={i}>{l}</span>) : <span className="muted">—</span>}</td>
                     <td><ul className="adm-items">{(lines.get(o.id) ?? []).map((l, i) => <li key={i}>{l.qty} × {l.name}</li>)}</ul></td>
                     <td>{o.code ?? <span className="muted">—</span>}{o.discount ? <span className="adm-sub">−{cents(o.discount)}</span> : null}</td>
                     <td className="num"><b>{cents(o.total)}</b><span className="adm-sub">{o.shipping ? `incl. ${cents(o.shipping)} ship` : "free ship"}</span></td>

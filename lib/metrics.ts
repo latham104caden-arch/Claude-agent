@@ -34,6 +34,9 @@ export type OrderRow = {
   name: string | null;
   state: string | null;
   city: string | null;
+  /** Full ship-to lines (name, street, city/state/ZIP) for packing labels. */
+  shipTo: string[];
+  phone: string | null;
   /** Cents. subtotal is before discounts; total is what the card was charged. */
   subtotal: number;
   discount: number;
@@ -85,6 +88,13 @@ function toRow(s: Stripe.Checkout.Session): OrderRow {
     name: s.collected_information?.shipping_details?.name ?? s.customer_details?.name ?? null,
     state: ship?.state ?? null,
     city: ship?.city ?? null,
+    shipTo: ship ? [
+      s.collected_information?.shipping_details?.name ?? s.customer_details?.name ?? "",
+      ship.line1 ?? "",
+      ship.line2 ?? "",
+      `${ship.city ?? ""}${ship.city && ship.state ? ", " : ""}${ship.state ?? ""} ${ship.postal_code ?? ""}`.trim(),
+    ].filter(Boolean) : [],
+    phone: s.customer_details?.phone ?? null,
     subtotal: s.amount_subtotal ?? 0,
     discount: s.total_details?.amount_discount ?? 0,
     shipping: s.total_details?.amount_shipping ?? 0,

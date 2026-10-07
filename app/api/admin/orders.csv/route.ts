@@ -24,9 +24,9 @@ export async function GET(req: Request) {
   const rows = raw.orders.filter((o) => o.created >= w.from && o.created < w.to &&
     (!q || [o.number, o.id, o.email, o.name, o.city, o.state, o.code].some((v) => v?.toLowerCase().includes(q))));
 
-  const head = ["order", "date", "created_utc", "name", "email", "city", "state", "code", "subtotal", "discount", "shipping", "tax", "total", "refunded", "stripe_fee", "status", "checkout_session", "payment_intent", "mode"];
+  const head = ["order", "date", "created_utc", "name", "email", "phone", "ship_to", "city", "state", "code", "subtotal", "discount", "shipping", "tax", "total", "refunded", "stripe_fee", "status", "checkout_session", "payment_intent", "mode"];
   const body = rows.map((o) => [
-    o.number, dayKey(o.created), new Date(o.created * 1000).toISOString(), o.name, o.email, o.city, o.state, o.code,
+    o.number, dayKey(o.created), new Date(o.created * 1000).toISOString(), o.name, o.email, o.phone, o.shipTo.join(", "), o.city, o.state, o.code,
     usd(o.subtotal), usd(o.discount), usd(o.shipping), usd(o.tax), usd(o.total), usd(o.refunded), usd(o.fee), o.status, o.id, o.paymentIntent, o.livemode ? "live" : "test",
   ].map(cell).join(","));
   return new Response([head.join(","), ...body].join("\n") + "\n", {
