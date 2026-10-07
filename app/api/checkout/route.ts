@@ -7,6 +7,7 @@ import { currentEmail } from "../../../lib/auth";
 import { resolveDiscount } from "../../../lib/discounts";
 import { BULK_NO_CODES, bulkFor, bulkLabel } from "../../../lib/bulk";
 import { SALE } from "../../../lib/sale";
+import { record } from "../../../lib/funnel";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,7 +24,7 @@ const fail = (message: string, status = 400) => NextResponse.json({ ok: false, m
  * orders (lib/bulk.ts) get the bulk discount and free shipping instead of a code.
  */
 export async function POST(req: Request) {
-  let body: { lines?: unknown; code?: unknown; useLink?: unknown; attest?: unknown; emailOptIn?: unknown; gateAt?: unknown };
+  let body: { lines?: unknown; code?: unknown; useLink?: unknown; attest?: unknown; emailOptIn?: unknown; gateAt?: unknown; sid?: unknown };
   try { body = await req.json(); } catch { return fail("Invalid request."); }
   if (body.attest !== true) return fail("Please confirm the research-use statement.");
 
@@ -114,9 +115,14 @@ export async function POST(req: Request) {
       custom_text: { submit: { message: "Research use only. By paying you confirm you are 21 or older and these products are not for human or veterinary use." } },
       metadata,
       payment_intent_data: { metadata },
+      // Unpaid checkouts expire after 2 hours (Stripe's default is 24), so abandoned-checkout follow-ups go out the same day.
+      expires_at: Math.floor(Date.now() / 1000) + 2 * 3600,
       return_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     });
     if (!session.client_secret) return fail("Couldn't start checkout. Please try again.", 502);
+    // Funnel: count the checkout start for the team dashboard (never blocks checkout).
+    const sid = typeof body.sid === "string" && /^[a-z0-9]{8,40}$/i.test(body.sid) ? body.sid : `srv${session.id.slice(-12)}`;
+    await record({ type: "checkout", sid, items: cart.lines.map((l) => ({ slug: l.product.slug, qty: l.qty })) }).catch((err) => console.error("[checkout] funnel", err));
     return NextResponse.json({ ok: true, clientSecret: session.client_secret });
   } catch (err) {
     console.error("[checkout] Stripe session failed", err);

@@ -4,12 +4,16 @@ import {
   RANGES, allOrders, codeBreakdown, dailySeries, isRange, linesFor, previousWindow, productBreakdown,
   reconcile, refundsIn, stateBreakdown, summarize, windowFor, type RangeKey, type Summary,
 } from "../../lib/metrics";
-import { cents, change, count, tzName, when } from "../../lib/admin-format";
+import { cents, change, count, dayLabel, tzName, when } from "../../lib/admin-format";
+import { dayKey } from "../../lib/metrics";
 import { countSubscriptions, storageReady, TEAM_PREFIX } from "../../lib/push";
 import { Gate } from "../../components/admin/Gate";
 import { SalesChart } from "../../components/admin/SalesChart";
 import { OrderAlerts } from "../../components/admin/OrderAlerts";
 import { SyncCustomers } from "../../components/admin/SyncCustomers";
+import { Funnel } from "../../components/admin/Funnel";
+import { funnelReady, report } from "../../lib/funnel";
+import { getCatalog } from "../../lib/catalog";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -31,7 +35,8 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
   const inW = raw.orders.filter((o) => o.created >= w.from && o.created < w.to);
   const capped = inW.slice(0, PRODUCT_ORDER_CAP);
 
-  const [refunds, prevRefunds, rec, lines, devices] = await Promise.all([
+  const [funnel, refunds, prevRefunds, rec, lines, devices] = await Promise.all([
+    report(w.days).catch((err) => { console.error("[admin] funnel", err); return null; }),
     refundsIn(w),
     prev ? refundsIn(prev) : Promise.resolve(0),
     reconcile(raw.orders, w),
@@ -44,6 +49,17 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
   const products = productBreakdown(lines).slice(0, 12);
   const codes = codeBreakdown(inW);
   const states = stateBreakdown(inW).slice(0, 10);
+  const bySku = new Map(getCatalog().flatMap((p) => p.variants.map((v) => [v.sku, p.slug] as const)));
+  const names = new Map(getCatalog().map((p) => [p.slug, p.name]));
+  // The funnel compares only orders placed since tracking began (earlier orders have no visits on record).
+  const since = funnel?.since ?? null;
+  const tracked = (unix: number) => !!since && dayKey(unix) >= since;
+  const funnelOrders = inW.filter((o) => tracked(o.created));
+  const bought = new Map<string, number>();
+  for (const o of funnelOrders) for (const l of lines.get(o.id) ?? []) {
+    const slug = l.sku ? bySku.get(l.sku) : undefined;
+    if (slug) bought.set(slug, (bought.get(slug) ?? 0) + l.qty);
+  }
   const issues = rec ? rec.mismatched.length + rec.missingCharge.length + rec.outsideCheckout.length : 0;
 
   return (
@@ -73,6 +89,20 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
       <section className="card adm-card">
         <h2 className="h4">Daily sales <span className="muted">· {w.label}</span></h2>
         <SalesChart days={days} />
+      </section>
+
+      <section className="card adm-card">
+        <h2 className="h4">Shopper funnel <span className="muted">· {w.label}</span></h2>
+        {funnel ? (
+          <>
+            <Funnel report={funnel} ordersByDay={days.map((d) => (since && d.day >= since ? d.orders : 0))} orders={funnelOrders.length} bought={bought} names={names} />
+            {since && since > w.days[0] ? <p className="adm-fine muted">Tracking started {dayLabel(since)}; orders before then aren&apos;t in the funnel.</p> : null}
+          </>
+        ) : funnelReady() ? (
+          <p className="muted">Couldn&apos;t load funnel numbers just now. Refresh in a moment.</p>
+        ) : (
+          <p className="muted">Funnel tracking needs a Redis store: in Vercel, open the project → Storage → Create → <b>Upstash for Redis</b> (free tier), connect it to this project, then redeploy. Counting starts from that moment.</p>
+        )}
       </section>
 
       <div className="adm-grid">

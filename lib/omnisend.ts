@@ -93,14 +93,14 @@ export function splitName(name?: string | null): { firstName?: string; lastName?
 }
 
 /** Custom event (e.g. "earned reward") for Omnisend automations to trigger on. Never throws. */
-export async function sendEvent(eventName: string, email: string, properties: Record<string, string | number | boolean>): Promise<boolean> {
+export async function sendEvent(eventName: string, email: string, properties: Record<string, unknown>, eventID?: string): Promise<boolean> {
   const key = process.env.OMNISEND_API_KEY;
   if (!key) return false;
   try {
     const res = await fetch("https://api.omnisend.com/v5/events", {
       method: "POST",
       headers: { "content-type": "application/json", accept: "application/json", "X-API-KEY": key },
-      body: JSON.stringify({ eventName, origin: "api", contact: { email }, properties }),
+      body: JSON.stringify({ eventName, origin: "api", ...(eventID ? { eventID } : {}), contact: { email }, properties }),
       cache: "no-store",
       signal: AbortSignal.timeout(5000),
     });

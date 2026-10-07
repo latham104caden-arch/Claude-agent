@@ -77,6 +77,22 @@ a.adm-sub { color: var(--accent-ink); }
 .adm-chart-table summary { cursor: pointer; color: var(--accent-ink); }
 .adm-chart-table table { margin-top: 8px; }
 
+/* Funnel: one magnitude series, bars relative to visits, numbers labelled. */
+.adm-h5 { font-size: 14px; font-weight: 600; margin: 4px 0 8px; }
+.adm-kpis--funnel { margin: 4px 0 16px; }
+.adm-kpis--funnel .adm-kpi { box-shadow: none; background: var(--surface-soft); border-color: var(--border-soft); }
+.adm-funnel { display: grid; gap: 10px; margin-bottom: 20px; }
+.adm-funnel-row { display: grid; grid-template-columns: minmax(130px, 200px) 1fr 70px minmax(110px, 140px); gap: 12px; align-items: center; font-size: 14px; }
+.adm-funnel-bar { height: 22px; background: var(--surface-soft); border-radius: 0 4px 4px 0; overflow: hidden; }
+.adm-funnel-bar i { display: block; height: 100%; background: var(--action); border-radius: 0 4px 4px 0; min-width: 2px; }
+.adm-funnel-n { text-align: right; font-variant-numeric: tabular-nums; }
+.adm-funnel-step { font-size: 12px; }
+@media (max-width: 640px) {
+  .adm-funnel-row { grid-template-columns: 1fr 60px; }
+  .adm-funnel-bar { grid-column: 1 / -1; grid-row: 2; height: 14px; }
+  .adm-funnel-step { grid-column: 1 / -1; }
+}
+
 .adm-alerts { display: grid; gap: 12px; border-radius: var(--radius); }
 .adm-alerts-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .adm-alerts-msg { font-size: 13px; }

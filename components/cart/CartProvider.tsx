@@ -5,8 +5,9 @@
  * to a server yet. When checkout is wired, the server must re-price every line
  * from the catalog — prices held here are display-only and never trusted.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { CartLine } from "../../lib/types";
+import { trackAddToCart } from "../../lib/track-client";
 
 const KEY = "rr-cart-v1";
 
@@ -45,13 +46,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [lines, ready]);
 
+  // Latest lines for event tracking (the add handler itself stays stable).
+  const linesRef = useRef(lines);
+  useEffect(() => { linesRef.current = lines; }, [lines]);
+
   const add = useCallback((line: Omit<CartLine, "qty">, qty = 1) => {
-    setLines((prev) => {
+    const merge = (prev: CartLine[]) => {
       const hit = prev.find((l) => l.sku === line.sku);
       if (hit) return prev.map((l) => (l.sku === line.sku ? { ...l, qty: Math.min(99, l.qty + qty) } : l));
       return [...prev, { ...line, qty }];
-    });
+    };
+    setLines(merge);
     setOpen(true);
+    trackAddToCart(line, qty, merge(linesRef.current));
   }, []);
 
   const setQty = useCallback((sku: string, qty: number) => {

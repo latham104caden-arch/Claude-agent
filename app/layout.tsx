@@ -11,6 +11,7 @@ import { Reveal } from "../components/chrome/Reveal";
 import { Announcement } from "../components/chrome/Announcement";
 import { Omnisend } from "../components/chrome/Omnisend";
 import { StoreOnly } from "../components/chrome/StoreOnly";
+import { Track } from "../components/chrome/Track";
 
 import "@fontsource-variable/inter";
 import "@fontsource-variable/newsreader/opsz.css";
@@ -66,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </StoreOnly>
           <Reveal />
         </CartProvider>
-        <StoreOnly><Omnisend /></StoreOnly>
+        <StoreOnly><Omnisend /><Track /></StoreOnly>
       </body>
     </html>
   );

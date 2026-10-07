@@ -8,6 +8,7 @@ import { Icon } from "../Icon";
 import { PaymentForm } from "./PaymentForm";
 import { Summary, type AppliedDiscount } from "./Summary";
 import { bulkFor, bulkLabel } from "../../lib/bulk";
+import { sessionId, trackCheckoutStarted } from "../../lib/track-client";
 
 /**
  * Checkout: research attestation and an optional creator code, then Stripe's
@@ -103,10 +104,11 @@ export function CheckoutForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: applied && !applied.fromLink ? applied.code : undefined, useLink: !bulk.tier && !!applied?.fromLink, attest, emailOptIn, gateAt }),
+        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: applied && !applied.fromLink ? applied.code : undefined, useLink: !bulk.tier && !!applied?.fromLink, attest, emailOptIn, gateAt, sid: sessionId() }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.clientSecret) {
+        trackCheckoutStarted(lines);
         setClientSecret(data.clientSecret);
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
