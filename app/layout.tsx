@@ -10,6 +10,7 @@ import { FirstOrderOffer } from "../components/offer/FirstOrderOffer";
 import { Reveal } from "../components/chrome/Reveal";
 import { Announcement } from "../components/chrome/Announcement";
 import { Omnisend } from "../components/chrome/Omnisend";
+import { StoreOnly } from "../components/chrome/StoreOnly";
 
 import "@fontsource-variable/inter";
 import "@fontsource-variable/newsreader/opsz.css";
@@ -52,16 +53,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <a className="skip-link" href="#main">Skip to content</a>
         <CartProvider>
-          <Announcement />
-          <Header products={searchIndex} />
+          <StoreOnly>
+            <Announcement />
+            <Header products={searchIndex} />
+          </StoreOnly>
           <main id="main">{children}</main>
-          <Footer />
-          <CartDrawer />
-          <EntryGate />
-          <FirstOrderOffer />
+          <StoreOnly>
+            <Footer />
+            <CartDrawer />
+            <EntryGate />
+            <FirstOrderOffer />
+          </StoreOnly>
           <Reveal />
         </CartProvider>
-        <Omnisend />
+        <StoreOnly><Omnisend /></StoreOnly>
       </body>
     </html>
   );

@@ -1,0 +1,89 @@
+/* Team dashboard (/admin). Colors from tokens.css only. */
+.adm { min-height: 100vh; background: var(--surface-soft); }
+.adm-bar { background: var(--surface); border-bottom: 1px solid var(--border-soft); position: sticky; top: 0; z-index: 20; }
+.adm-bar-in { max-width: var(--container); margin: 0 auto; padding: 12px var(--gutter); display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.adm-brand { font-family: var(--font-display); font-size: 20px; color: var(--ink); text-decoration: none; }
+.adm-brand span { font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); margin-left: 6px; }
+.adm-nav { display: flex; gap: 18px; }
+.adm-nav a { color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 500; }
+.adm-nav a:hover { color: var(--accent-ink); }
+.adm-who { margin-left: auto; display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.adm-who .btn { height: 36px; padding: 0 14px; font-size: 13px; }
+.adm-main { max-width: var(--container); margin: 0 auto; padding: 28px var(--gutter) 64px; }
+
+.adm-page { display: grid; gap: 18px; }
+.adm-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.adm-title { font-family: var(--font-display); font-size: clamp(28px, 3vw, 36px); font-weight: 500; margin: 0 0 4px; }
+.adm-head p { font-size: 13px; }
+.adm-head a { color: var(--accent-ink); }
+.h4 { font-size: 17px; font-weight: 600; margin: 0 0 12px; }
+.h4 .muted { font-weight: 400; }
+
+.adm-tabs { display: flex; gap: 4px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-pill); padding: 4px; }
+.adm-tabs a { padding: 7px 14px; border-radius: var(--radius-pill); font-size: 13px; color: var(--ink); text-decoration: none; }
+.adm-tabs a[aria-current="page"] { background: var(--action); color: var(--on-ink); }
+
+.adm-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.card.adm-kpi { padding: 18px 20px; display: grid; gap: 4px; border-radius: var(--radius); }
+.adm-kpi-label { font-size: 13px; color: var(--text-muted); }
+.adm-kpi-value { font-size: 26px; font-weight: 650; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.adm-kpi-delta { font-size: 12px; color: var(--accent-ink); font-weight: 600; }
+.adm-kpi-delta.is-down { color: var(--text-muted); }
+.adm-kpi-note { font-size: 12px; }
+
+.card.adm-card { padding: 20px 22px; border-radius: var(--radius); }
+.adm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 18px; }
+.adm-fine { font-size: 12px; margin-top: 10px; }
+.adm-fine a { color: var(--accent-ink); }
+
+.adm-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.adm-table th { text-align: left; font-size: 12px; font-weight: 600; color: var(--text-muted); padding: 6px 8px; border-bottom: 1px solid var(--border-soft); }
+.adm-table td { padding: 9px 8px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+.adm-table tr:last-child td { border-bottom: 0; }
+.adm-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.adm-table a { color: var(--accent-ink); }
+.adm-money tr.is-total td { font-weight: 650; border-top: 1px solid var(--border); }
+.adm-sub { display: block; font-size: 12px; color: var(--text-muted); }
+a.adm-sub { color: var(--accent-ink); }
+.adm-items { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+.adm-orders td { min-width: 110px; }
+.adm-scroll { overflow-x: auto; }
+
+.adm-check .h4::before { content: "✓ "; color: var(--accent-ink); }
+.adm-check.is-bad { border-color: var(--danger); }
+.adm-check.is-bad .h4::before { content: "! "; color: var(--danger); }
+.adm-issues { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+
+.adm-search { display: flex; gap: 8px; flex-wrap: wrap; }
+.adm-search .input { flex: 1 1 260px; }
+.adm-pager { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.adm-pager a { color: var(--accent-ink); }
+
+/* Daily sales chart: one series, bars anchored to the baseline, 2px gaps, hover/focus tooltip. */
+.adm-chart { margin: 0; }
+.adm-chart-plot { display: grid; grid-template-columns: auto 1fr; gap: 10px; height: 220px; padding-bottom: 22px; }
+.adm-chart-axis { display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: var(--text-muted); text-align: right; font-variant-numeric: tabular-nums; margin-bottom: -6px; }
+.adm-chart-bars { position: relative; display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 2px; align-items: end; border-bottom: 1px solid var(--border); background: linear-gradient(to bottom, var(--border-soft) 1px, transparent 1px) 0 0 / 100% 50%; }
+.adm-chart-col { position: relative; height: 100%; display: flex; align-items: flex-end; outline: none; }
+.adm-chart-col i { display: block; width: 100%; min-height: 0; background: var(--action); border-radius: 4px 4px 0 0; max-width: 28px; margin: 0 auto; }
+.adm-chart-col:hover i, .adm-chart-col:focus-visible i { background: var(--action-hi); }
+.adm-chart-col em { position: absolute; top: calc(100% + 6px); left: 0; font-style: normal; font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+.adm-tip { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--on-ink); font-size: 12px; padding: 6px 9px; border-radius: 8px; white-space: nowrap; z-index: 5; pointer-events: none; }
+.adm-tip b { display: block; font-weight: 600; }
+.adm-chart-col:hover .adm-tip, .adm-chart-col:focus-visible .adm-tip { display: block; }
+.adm-chart-table { margin-top: 12px; font-size: 13px; }
+.adm-chart-table summary { cursor: pointer; color: var(--accent-ink); }
+.adm-chart-table table { margin-top: 8px; }
+
+.adm-alerts { display: grid; gap: 12px; border-radius: var(--radius); }
+.adm-alerts-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.adm-alerts-msg { font-size: 13px; }
+
+.adm-signin { max-width: 440px; margin: 48px auto; display: grid; gap: 14px; }
+.adm-signin form { display: grid; gap: 14px; }
+.adm-signin .eyebrow { justify-self: start; }
+
+@media (max-width: 640px) {
+  .adm-who .muted { display: none; }
+  .adm-chart-plot { height: 180px; }
+}

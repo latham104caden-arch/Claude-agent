@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { CHALLENGE_COOKIE, SESSION_COOKIE, authConfigured, checkChallenge, cookieOpts, newSession } from "../../../../lib/auth";
 import { upsertContact } from "../../../../lib/omnisend";
+import { isAdmin } from "../../../../lib/admin";
 
 export const runtime = "nodejs";
 
@@ -16,7 +17,8 @@ export async function POST(req: Request) {
 
   const { email, profile } = ok;
   // Account holders appear in Omnisend with what they typed. Email/SMS marketing only per the boxes they left ticked.
-  await upsertContact({
+  // Team members signing in to /admin are kept out of the marketing list.
+  if (!isAdmin(email)) await upsertContact({
     email, firstName: profile.firstName, lastName: profile.lastName, phone: profile.phone, tags: ["account"],
     subscribe: profile.emailOptIn === true, smsSubscribe: profile.smsOptIn === true, consentSource: "account sign-up form",
     consentIp: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null, consentUserAgent: req.headers.get("user-agent"),
