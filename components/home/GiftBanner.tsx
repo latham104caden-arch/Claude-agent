@@ -35,12 +35,12 @@ export function GiftBanner({ name, option, value, minimum, endsAt, freeShip }: P
   return (
     <div className="gift" data-reveal="" data-reveal-delay="240">
       <div className="gift-copy">
-        <span className="gift-tag">Weekend only</span>
+        <span className="gift-tag">Limited time only</span>
         <p className="gift-title">Spend {minimum}, get a free {name} <span className="gift-opt">{option}</span>{freeShip ? " + free shipping" : ""}</p>
         <p className="gift-sub">A {value} value, added to your order automatically at checkout.</p>
       </div>
       <div className="gift-side">
-        <div className="gift-timer" role="timer" aria-label="Time left in the weekend offer">
+        <div className="gift-timer" role="timer" aria-label="Time left in the offer">
           {parts.map(([n, label]) => (
             <span key={label} className="gift-unit"><b>{left === null ? "--" : n}</b><i>{label}</i></span>
           ))}
