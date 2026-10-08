@@ -56,6 +56,12 @@
   --tile-wash: linear-gradient(160deg, #D5DFEA 0%, #BCCBDA 100%);
   --silver-sheen: linear-gradient(100deg, #3F5874 0%, #7E98B4 45%, #4E6781 70%, #33475F 100%);
 
+  /* Teal from the "repair" vial label (BPC-157 etc.), for promo surfaces */
+  --teal-deep: #24413F;     /* darkest end of the promo gradient */
+  --teal: #3F6E6C;          /* label shadow side */
+  --teal-bright: #559291;   /* label lit side */
+  --teal-ink: #2F5A58;      /* teal text on white (AA) */
+
   /* Vial label print (matches the slate studio label) */
   --label-ink: #FFFFFF;       /* product name, white on slate */
   --label-ink-soft: #3A3F47;  /* size text inside the pill */

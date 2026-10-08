@@ -226,10 +226,10 @@
 /* ── Limited-time gift box (lib/gift.ts) ─────────────────────── */
 .gift-section { padding: clamp(20px, 3vw, 32px) 0; background: var(--surface); border-bottom: 1px solid var(--border-soft); }
 .gift { max-width: 860px; margin: 0 auto; display: grid; gap: 14px; padding: clamp(16px, 2.4vw, 22px); border-radius: var(--radius-lg); color: var(--on-ink);
-  background: linear-gradient(120deg, var(--ink-deep) 0%, var(--action-lo) 45%, var(--action-hi) 100%);
+  background: linear-gradient(120deg, var(--teal-deep) 0%, var(--teal) 50%, var(--teal-bright) 100%);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, var(--shadow-lg); }
 .gift-main { display: grid; grid-template-columns: auto 1fr auto; gap: clamp(14px, 2vw, 22px); align-items: center; color: inherit; text-decoration: none; }
-.gift-tile { width: clamp(84px, 11vw, 112px); aspect-ratio: 1; display: grid; place-items: center; align-content: center; gap: 6px; border-radius: var(--radius); background: var(--surface); color: var(--accent-ink); box-shadow: var(--shadow); }
+.gift-tile { width: clamp(84px, 11vw, 112px); aspect-ratio: 1; display: grid; place-items: center; align-content: center; gap: 6px; border-radius: var(--radius); background: var(--surface); color: var(--teal-ink); box-shadow: var(--shadow); }
 .gift-tile svg { width: 30px; height: 30px; }
 .gift-tile b { font-size: 13px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; }
 .gift-copy { display: grid; gap: 6px; min-width: 0; }
@@ -237,7 +237,7 @@
 .gift-title { font-family: var(--font-display); font-size: clamp(22px, 2.6vw, 30px); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
 .gift-nowrap { white-space: nowrap; }
 .gift-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-.gift-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 10px; border-radius: var(--radius-pill); background: var(--surface); color: var(--accent-ink); font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
+.gift-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 10px; border-radius: var(--radius-pill); background: var(--surface); color: var(--teal-ink); font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
 .gift-chip svg { width: 16px; height: 16px; }
 .gift-title small { margin-left: 8px; font-size: 15px; font-weight: 500; letter-spacing: 0; color: var(--on-ink-muted); white-space: nowrap; }
 .gift-sub { font-size: 15px; line-height: 1.5; color: var(--on-ink); opacity: 0.92; }
@@ -261,11 +261,6 @@
   .gift-tile svg { width: 24px; height: 24px; }
   .gift-tile b { font-size: 11px; }
   .gift-arrow { display: none; }
-  .gift-nowrap { white-space: nowrap; }
-.gift-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-.gift-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 10px; border-radius: var(--radius-pill); background: var(--surface); color: var(--accent-ink); font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
-.gift-chip svg { width: 16px; height: 16px; }
-.gift-title small { display: block; margin: 4px 0 0; }
   .gift-sub { font-size: 14px; }
   .gift-timer { justify-content: center; }
   .gift-ends { width: 100%; text-align: center; }
