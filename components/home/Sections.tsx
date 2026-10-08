@@ -9,7 +9,7 @@ import { SectionHead } from "../ui";
 import { ProductCard } from "../product/ProductCard";
 import { WavingFlag } from "./WavingFlag";
 import { GiftBanner } from "./GiftBanner";
-import { giftOffer } from "../../lib/gift";
+import { GIFT, giftOffer } from "../../lib/gift";
 import { money } from "../../lib/format";
 
 /**
@@ -24,7 +24,6 @@ export function Hero() {
   const starOption = star.variants[star.variants.length - 1].option;
   const back = catalog.find((p) => p.slug === "tb-500") ?? catalog[1] ?? star;
   const back2 = catalog.find((p) => p.slug === "ghk-cu") ?? catalog[2] ?? star;
-  const gift = giftOffer();
   return (
     <section className="hero">
       <div className="container hero-grid">
@@ -41,9 +40,6 @@ export function Hero() {
             <Link href="/shop" className="btn btn--dark">Shop Compounds <Icon name="arrow" /></Link>
             <Link href="/coas" className="btn btn--ghost">View COAs</Link>
           </div>
-          {gift ? (
-            <GiftBanner name={gift.product.name} option={gift.variant.option} value={money(gift.value)} minimum={money(gift.minimum).replace(/\.00$/, "")} endsAt={gift.endsAt} freeShip={gift.minimum >= SITE.freeShippingThreshold} />
-          ) : null}
         </div>
 
         <div className="hero-show" aria-hidden="true">
@@ -248,6 +244,28 @@ export function WhyUs() {
           ))}
         </div>
         <p className="ruo-line">{RUO_SHORT}</p>
+      </div>
+    </section>
+  );
+}
+
+/** Limited-time free-gift box between the hero and the products (lib/gift.ts). Renders nothing while the deal is off. */
+export function GiftOffer() {
+  const gift = giftOffer();
+  if (!gift) return null;
+  return (
+    <section className="gift-section" aria-label="Limited-time offer">
+      <div className="container">
+        <GiftBanner
+          label={GIFT.label}
+          name={gift.product.name}
+          option={gift.variant.option}
+          slug={gift.product.slug}
+          value={money(gift.value)}
+          minimum={money(gift.minimum).replace(/\.00$/, "")}
+          endsAt={gift.endsAt}
+          freeShip={gift.minimum >= SITE.freeShippingThreshold}
+        />
       </div>
     </section>
   );

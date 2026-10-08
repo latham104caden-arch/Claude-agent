@@ -4,16 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Icon } from "../Icon";
 
-type Props = { name: string; option: string; value: string; minimum: string; endsAt: string; freeShip: boolean };
+type Props = { label: string; name: string; option: string; slug: string; value: string; minimum: string; endsAt: string; freeShip: boolean };
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
- * "Spend $X, get a free ___" box with a live countdown (lib/gift.ts). The page
- * is prerendered, so the timer starts after load and the box removes itself
- * when the deal ends; checkout enforces the end time on the server too.
+ * Limited-time "spend $X, get a free ___" box with a live countdown
+ * (lib/gift.ts). The page is prerendered, so the timer starts after load and
+ * the box removes itself when the deal ends; checkout enforces the end time on
+ * the server too.
  */
-export function GiftBanner({ name, option, value, minimum, endsAt, freeShip }: Props) {
+export function GiftBanner({ label, name, option, slug, value, minimum, endsAt, freeShip }: Props) {
   const end = Date.parse(endsAt);
   const [left, setLeft] = useState<number | null>(null);
   useEffect(() => {
@@ -25,28 +26,43 @@ export function GiftBanner({ name, option, value, minimum, endsAt, freeShip }: P
   if (left === 0) return null;
 
   const s = Math.floor((left ?? 0) / 1000);
-  const parts: [string, string][] = [
-    [pad(Math.floor(s / 86400)), "Days"],
+  const days = Math.floor(s / 86400);
+  const units: [string, string][] = [
+    ...(days > 0 ? [[pad(days), "Days"] as [string, string]] : []),
     [pad(Math.floor((s % 86400) / 3600)), "Hrs"],
     [pad(Math.floor((s % 3600) / 60)), "Min"],
     [pad(s % 60), "Sec"],
   ];
 
   return (
-    <div className="gift" data-reveal="" data-reveal-delay="240">
-      <div className="gift-copy">
-        <span className="gift-tag">Limited time only</span>
-        <p className="gift-title">Spend {minimum}, get a free {name} <span className="gift-opt">{option}</span>{freeShip ? " + free shipping" : ""}</p>
-        <p className="gift-sub">A {value} value, added to your order automatically at checkout.</p>
-      </div>
-      <div className="gift-side">
-        <div className="gift-timer" role="timer" aria-label="Time left in the offer">
-          {parts.map(([n, label]) => (
-            <span key={label} className="gift-unit"><b>{left === null ? "--" : n}</b><i>{label}</i></span>
+    <div className="gift" data-reveal="">
+      <Link href="/shop" className="gift-main">
+        <span className="gift-tile" aria-hidden="true"><Icon name="gift" /><b>Free</b></span>
+        <span className="gift-copy">
+          <span className="gift-label">{label}</span>
+          <span className="gift-title">Free {name}{freeShip ? <> + <span className="gift-nowrap">Free Shipping</span></> : null}</span>
+          <span className="gift-sub">
+            Spend <b>{minimum}</b>, get a <b>free {name} {option}</b> (a {value} value){freeShip ? <> and <b>free shipping</b></> : null}. Added at checkout automatically, no code needed.
+          </span>
+          <span className="gift-chips">
+            <span className="gift-chip"><Icon name="gift" />Free {name} {option}</span>
+            {freeShip ? <span className="gift-chip"><Icon name="truck" />Free shipping</span> : null}
+          </span>
+        </span>
+        <span className="gift-arrow" aria-hidden="true"><Icon name="arrow" /></span>
+      </Link>
+      <div className="gift-timer">
+        <span className="gift-ends">Offer ends in</span>
+        <span className="gift-units" role="timer" aria-label="Time left in the offer">
+          {units.map(([n, unit], i) => (
+            <span key={unit} className="gift-unit-wrap">
+              {i ? <i className="gift-colon" aria-hidden="true">:</i> : null}
+              <span className="gift-unit"><b>{left === null ? "--" : n}</b><small>{unit}</small></span>
+            </span>
           ))}
-        </div>
-        <Link href="/shop" className="btn btn--dark btn--sm gift-cta">Shop now <Icon name="arrow" /></Link>
+        </span>
       </div>
+      <p className="gift-fine">One free {name} {option} per order while the offer runs. For research use only. <Link href={`/product/${slug}`}>Product details</Link></p>
     </div>
   );
 }

@@ -16,6 +16,8 @@ import type { Product, Variant } from "./types";
  */
 export const GIFT = {
   sku: "",
+  /** Small line above the title on the homepage box. */
+  label: "Limited time only",
   minimum: 245,
   startsAt: "",
   endsAt: "2026-10-12T00:00:00-05:00", // end of Sunday Oct 11, Central time
