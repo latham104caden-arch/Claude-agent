@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 /** Omnisend brand (public; it identifies the store, not a secret). */
-const BRAND_ID = "6ac0123471f964d84476a730";
+const BRAND_ID = "6ac7c3613161ad34c2670389";
 
 type OmnisendQueue = unknown[][] & { push: (cmd: unknown[]) => number };
 declare global {

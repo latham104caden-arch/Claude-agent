@@ -85,11 +85,13 @@ On-brand lines from the site to calibrate against:
 
 ## Omnisend
 
-- Brand: Revised Research (brand ID `6ac0123471f964d84476a730`). Never touch any other brand.
+- Brand: Revised Research (brand ID `6ac7c3613161ad34c2670389`), in Revised's own Omnisend
+  account (moved 2026-10-08). Never touch any other brand, including the old Revised store
+  (`6ac0123471f964d84476a730`) left in the Ventra account.
 - Sender: `noreply@revisedresearch.com`, reply-to `support@revisedresearch.com`, from name
   "Revised Research". Click-tracking domain: `links.revisedresearch.com` once verified.
-- Existing: "earned reward" event; template `6ac025651e4182cee8bad660`; automation
-  `6ac0257407dffad9c58dd433` (enabled, owned by the owner: edit only when asked).
+- The "earned reward" event, its template and automation were built in the old account
+  and have to be rebuilt in the new one (look up current IDs with `omnisend_query`).
 - Before building, read the relevant `omnisend_reference` topics (`email_templates`,
   `automations`, `automation_content`, `campaigns`, `segments`) and the operation's
   `omnisend_tool_schema`. Look up current state with `omnisend_query` before changing anything.
