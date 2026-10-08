@@ -11,6 +11,7 @@ import { Gate } from "../../components/admin/Gate";
 import { SalesChart } from "../../components/admin/SalesChart";
 import { OrderAlerts } from "../../components/admin/OrderAlerts";
 import { SyncCustomers } from "../../components/admin/SyncCustomers";
+import { ContactProperties } from "../../components/admin/ContactProperties";
 import { Funnel } from "../../components/admin/Funnel";
 import { funnelReady, report } from "../../lib/funnel";
 import { getCatalog } from "../../lib/catalog";
@@ -177,6 +178,7 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
 
       <OrderAlerts devices={devices} />
       <SyncCustomers />
+      <ContactProperties />
     </div>
   );
 }
