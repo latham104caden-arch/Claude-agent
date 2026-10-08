@@ -1,63 +1,66 @@
 import { NextResponse } from "next/server";
 import { currentAdmin } from "../../../../lib/admin";
-import { parseCsv } from "../../../../lib/csv";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-/** Purchase fields (and the random send_group split) the import screen can't create, written as typed custom properties. */
+/** Fields the import screen can't create (purchase data and the random send_group split), written as custom properties. */
 const NUMBER = ["total_spent", "total_orders", "average_order", "days_since_last_order"];
 const TEXT = ["customer_status", "spend_band", "signup_source", "first_order_date", "last_order_date", "first_seen", "send_group"];
 const EMAIL = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i;
-const BATCH = 100;
+const MAX_ROWS = 300;
+const PARALLEL = 6;
 
 /**
- * Team-only: takes a contact CSV (the import files) and writes only the
- * purchase fields above onto each contact, matched by email, through
- * Omnisend's batch API. No subscription status, consent or tags are sent, so
- * nobody's status changes. Contacts should be imported first.
+ * Team-only: takes up to 300 CSV rows (the browser splits the file) and
+ * PATCHes only the custom properties above onto each existing contact, by
+ * email. Omnisend's batch API can't be used: it insists on a channel status,
+ * and this must never change anyone's subscription. Missing contacts are
+ * skipped, not created.
  */
 export async function POST(req: Request) {
   if (!(await currentAdmin())) return NextResponse.json({ ok: false, message: "Not authorized." }, { status: 401 });
   const key = process.env.OMNISEND_API_KEY;
   if (!key) return NextResponse.json({ ok: false, message: "OMNISEND_API_KEY isn't set." }, { status: 503 });
-  const file = (await req.formData().catch(() => null))?.get("file");
-  if (!(file instanceof File)) return NextResponse.json({ ok: false, message: "Choose a CSV file." }, { status: 400 });
-
-  const rows = parseCsv(await file.text());
-  if (!rows.length || !("email" in rows[0])) return NextResponse.json({ ok: false, message: "That file has no email column." }, { status: 400 });
+  const body = (await req.json().catch(() => null)) as { rows?: Record<string, string>[] } | null;
+  const rows = Array.isArray(body?.rows) ? body.rows.slice(0, MAX_ROWS) : [];
 
   const items = rows.flatMap((r) => {
-    const email = r.email.toLowerCase();
+    const email = String(r.email ?? "").trim().toLowerCase();
     if (!EMAIL.test(email)) return [];
     const props: Record<string, string | number> = {};
     for (const k of NUMBER) if (r[k] !== undefined && r[k] !== "" && Number.isFinite(Number(r[k]))) props[k] = Number(r[k]);
-    for (const k of TEXT) if (r[k]) props[k] = r[k];
-    return Object.keys(props).length ? [{ identifiers: [{ type: "email", id: email }], customProperties: props }] : [];
+    for (const k of TEXT) if (r[k]) props[k] = String(r[k]);
+    return Object.keys(props).length ? [{ email, props }] : [];
   });
-  if (!items.length) return NextResponse.json({ ok: false, message: "No purchase fields found in that file." }, { status: 400 });
 
-  let sent = 0, failedBatches = 0;
-  for (let i = 0; i < items.length; i += BATCH) {
-    const chunk = items.slice(i, i + BATCH);
-    try {
-      const res = await fetch("https://api.omnisend.com/v5/batches", {
-        method: "POST",
-        headers: { "content-type": "application/json", accept: "application/json", "X-API-KEY": key },
-        body: JSON.stringify({ method: "POST", endpoint: "contacts", items: chunk }),
-        cache: "no-store",
-        signal: AbortSignal.timeout(15000),
-      });
-      if (res.ok) sent += chunk.length;
-      else { failedBatches++; console.error("[admin/contact-properties] batch", res.status, await res.text().catch(() => "")); }
-    } catch (err) {
-      failedBatches++;
-      console.error("[admin/contact-properties]", err);
+  let updated = 0, missing = 0, failed = 0;
+  const patch = async ({ email, props }: (typeof items)[number]) => {
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        const res = await fetch(`https://api.omnisend.com/v5/contacts?email=${encodeURIComponent(email)}`, {
+          method: "PATCH",
+          headers: { "content-type": "application/json", accept: "application/json", "X-API-KEY": key },
+          body: JSON.stringify({ customProperties: props }),
+          cache: "no-store",
+          signal: AbortSignal.timeout(15000),
+        });
+        if (res.ok) { updated++; return; }
+        if (res.status === 404) { missing++; return; }
+        if (res.status === 429 || res.status >= 500) {
+          const wait = Number(res.headers.get("retry-after")) || 2 ** attempt;
+          await new Promise((r) => setTimeout(r, Math.min(wait, 20) * 1000));
+          continue;
+        }
+        console.error("[admin/contact-properties]", res.status, await res.text().catch(() => ""));
+        failed++; return;
+      } catch (err) {
+        if (attempt === 3) { console.error("[admin/contact-properties]", err); failed++; return; }
+      }
     }
-  }
-  return NextResponse.json({
-    ok: failedBatches === 0,
-    message: `Sent purchase fields for ${sent.toLocaleString()} of ${items.length.toLocaleString()} contacts from ${file.name}${failedBatches ? ` (${failedBatches} batch${failedBatches === 1 ? "" : "es"} failed, run the file again)` : ""}. Omnisend applies them in the background over a few minutes.`,
-  });
+    failed++;
+  };
+  for (let i = 0; i < items.length; i += PARALLEL) await Promise.all(items.slice(i, i + PARALLEL).map(patch));
+  return NextResponse.json({ ok: true, updated, missing, failed, skipped: rows.length - items.length });
 }
