@@ -249,7 +249,7 @@ export function WhyUs() {
   );
 }
 
-/** Limited-time free-gift box between the hero and the products (lib/gift.ts). Renders nothing while the deal is off. */
+/** Limited-time free-gift box between the ticker and the products (lib/gift.ts). Renders nothing while the deal is off. */
 export function GiftOffer() {
   const gift = giftOffer();
   if (!gift) return null;
