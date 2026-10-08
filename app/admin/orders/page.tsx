@@ -63,7 +63,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
                     <td><b>{o.number}</b><span className="adm-sub">{when(o.created)}</span>{link ? <a className="adm-sub" href={link} target="_blank" rel="noreferrer">Stripe ↗</a> : null}</td>
                     <td>{o.name ?? "—"}<span className="adm-sub">{o.email}</span>{o.phone ? <span className="adm-sub">{o.phone}</span> : null}</td>
                     <td className="adm-address">{o.shipTo.length ? o.shipTo.map((l, i) => <span key={i}>{l}</span>) : <span className="muted">—</span>}</td>
-                    <td><ul className="adm-items">{(lines.get(o.id) ?? []).map((l, i) => <li key={i}>{l.qty} × {l.name}</li>)}</ul></td>
+                    <td><ul className="adm-items">{(lines.get(o.id) ?? []).map((l, i) => <li key={i}>{l.qty} × {l.name}</li>)}{o.giftMissing ? <li><b>+ free gift {o.gift}</b> (pack by hand)</li> : null}</ul></td>
                     <td>{o.code ?? <span className="muted">—</span>}{o.discount ? <span className="adm-sub">−{cents(o.discount)}</span> : null}</td>
                     <td className="num"><b>{cents(o.total)}</b><span className="adm-sub">{o.shipping ? `incl. ${cents(o.shipping)} ship` : "free ship"}</span></td>
                     <td><span className={`badge${o.status === "Paid" ? "" : " badge--muted"}`}>{o.status}</span>{o.refunded ? <span className="adm-sub">−{cents(o.refunded)} refunded</span> : null}</td>

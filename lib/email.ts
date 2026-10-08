@@ -63,7 +63,7 @@ export async function sendOrderConfirmation(session: Stripe.Checkout.Session): P
 
   const row = (l: string, r: string, strong = false) =>
     `<tr><td style="padding:6px 0;font-size:14px;color:${strong ? "#223044" : "#34465E"};${strong ? "font-weight:700;" : ""}">${l}</td><td align="right" style="padding:6px 0;font-size:14px;color:#223044;${strong ? "font-weight:700;" : ""}">${r}</td></tr>`;
-  const itemRows = items.map((li) => row(`${li.quantity ?? 1} × ${esc(li.description)}`, usd(li.amount_subtotal))).join("");
+  const itemRows = items.map((li) => row(`${li.quantity ?? 1} × ${esc(li.description)}`, li.amount_subtotal === 0 ? "Free" : usd(li.amount_subtotal))).join("");
   const totals = [
     row("Subtotal", usd(session.amount_subtotal)),
     d?.amount_discount ? row(`Discount${code ? ` (${esc(code)})` : ""}`, `−${usd(d.amount_discount)}`) : "",
@@ -88,7 +88,7 @@ ${shipTo.length ? `<tr><td style="padding:18px 32px 0"><p style="margin:0 0 4px;
 </table></div></body></html>`;
   const text = [
     `Order ${number} confirmed`, "", `Thanks, ${name}. Your order is in. Shipping takes 2–3 business days; tracking is emailed when your label is created.`, "",
-    ...items.map((li) => `${li.quantity ?? 1} x ${li.description}  ${usd(li.amount_subtotal)}`),
+    ...items.map((li) => `${li.quantity ?? 1} x ${li.description}  ${li.amount_subtotal === 0 ? "Free" : usd(li.amount_subtotal)}`),
     "", `Total: ${usd(session.amount_total)}`, ...(shipTo.length ? ["", "Shipping to:", ...shipTo] : []),
     "", "Questions? Reply to this email or write to support@revisedresearch.com.", "For laboratory research use only.",
   ].join("\n");

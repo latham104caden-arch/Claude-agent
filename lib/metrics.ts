@@ -47,6 +47,9 @@ export type OrderRow = {
   fee: number | null;
   code: string | null;
   codeKind: CodeKind;
+  /** Free-gift SKU (lib/gift.ts) when the order qualified; giftMissing = it isn't a line item, so pack it by hand. */
+  gift: string | null;
+  giftMissing: boolean;
   status: "Paid" | "Partly refunded" | "Refunded";
   chargeId: string | null;
   chargeAmount: number | null;
@@ -104,6 +107,8 @@ function toRow(s: Stripe.Checkout.Session): OrderRow {
     fee: bt ? bt.fee : null,
     code,
     codeKind: kind,
+    gift: s.metadata?.gift_sku || null,
+    giftMissing: s.metadata?.gift_line === "missing",
     status: refunded <= 0 ? "Paid" : refunded >= total ? "Refunded" : "Partly refunded",
     chargeId: charge?.id ?? null,
     chargeAmount: charge ? charge.amount : null,

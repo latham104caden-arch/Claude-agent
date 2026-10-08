@@ -9,6 +9,7 @@ import { Vial } from "../Vial";
 import { useCart } from "./CartProvider";
 import { bulkFor, bulkLabel } from "../../lib/bulk";
 import { QtyStepper } from "./QtyStepper";
+import { giftFor } from "../../lib/gift";
 
 export function CartDrawer() {
   const { lines, subtotal, open, setOpen, setQty, remove } = useCart();
@@ -25,6 +26,7 @@ export function CartDrawer() {
   const bulk = bulkFor(lines);
   const toFree = bulk.tier ? 0 : Math.max(0, SITE.freeShippingThreshold - subtotal);
   const pct = Math.min(100, (subtotal / SITE.freeShippingThreshold) * 100);
+  const gift = giftFor(subtotal);
 
   return (
     <>
@@ -46,6 +48,11 @@ export function CartDrawer() {
             )}
             <div className="meter"><i style={{ width: `${bulk.tier ? 100 : pct}%` }} /></div>
             {bulk.tier ? <p className="drawer-bulk"><b>{bulkLabel(bulk.tier)}:</b> you save {money(bulk.amount)}.</p> : null}
+            {gift ? (
+              <p className="drawer-bulk">{gift.unlocked
+                ? <><b>Free gift unlocked:</b> {gift.product.name} ({gift.variant.option}) is added at checkout.</>
+                : <>Add <b>{money(gift.toGo)}</b> more for a free {gift.product.name} ({gift.variant.option}).</>}</p>
+            ) : null}
             {bulk.next && bulk.units > 0 ? <p className="drawer-bulk">Add <b>{bulk.toNext}</b> more compound{bulk.toNext === 1 ? "" : "s"} for {bulk.tier ? "the next tier" : "bulk pricing"}. <Link href="/bulk" onClick={() => setOpen(false)}>See tiers</Link></p> : null}
           </div>
         ) : null}

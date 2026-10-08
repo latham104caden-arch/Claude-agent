@@ -8,6 +8,7 @@ import { resolveDiscount } from "../../../lib/discounts";
 import { BULK_NO_CODES, bulkFor, bulkLabel } from "../../../lib/bulk";
 import { SALE } from "../../../lib/sale";
 import { record } from "../../../lib/funnel";
+import { giftFor } from "../../../lib/gift";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -93,19 +94,35 @@ export async function POST(req: Request) {
   const saleShip = metadata.sale_code === SALE.code && cart.subtotal >= SALE.freeShippingOver;
   const shipping = bulk.tier || saleShip ? 0 : shippingFor(cart.subtotal);
   const origin = new URL(req.url).origin;
-  try {
-    const session = await stripe.checkout.sessions.create({
+
+  // Free gift with purchase (lib/gift.ts): judged on the pre-discount subtotal, added as a $0 line so it
+  // shows on the receipt, the order email and the team's order list.
+  const gift = giftFor(cart.subtotal);
+  const lineItems = cart.lines.map((l) => ({
+    quantity: l.qty,
+    price_data: {
+      currency: "usd",
+      unit_amount: cents(l.variant.price),
+      product_data: { name: `${l.product.name} (${l.variant.option})`, description: "For laboratory research use only.", metadata: { sku: l.variant.sku } },
+    },
+  }));
+  if (gift?.unlocked) {
+    metadata.gift_sku = gift.variant.sku;
+    lineItems.push({
+      quantity: 1,
+      price_data: {
+        currency: "usd",
+        unit_amount: 0,
+        product_data: { name: `FREE GIFT: ${gift.product.name} (${gift.variant.option})`, description: "Free with orders over the gift minimum. For laboratory research use only.", metadata: { sku: gift.variant.sku } },
+      },
+    });
+  }
+
+  const create = (items: typeof lineItems) => stripe.checkout.sessions.create({
       mode: "payment",
       ui_mode: "embedded",
       ...(account ? { customer_email: account } : {}),
-      line_items: cart.lines.map((l) => ({
-        quantity: l.qty,
-        price_data: {
-          currency: "usd",
-          unit_amount: cents(l.variant.price),
-          product_data: { name: `${l.product.name} (${l.variant.option})`, description: "For laboratory research use only.", metadata: { sku: l.variant.sku } },
-        },
-      })),
+      line_items: items,
       ...(discounts.length ? { discounts } : {}),
       shipping_address_collection: { allowed_countries: ["US"] },
       shipping_options: [{
@@ -119,6 +136,18 @@ export async function POST(req: Request) {
       expires_at: Math.floor(Date.now() / 1000) + 2 * 3600,
       return_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     });
+  try {
+    let session;
+    try {
+      session = await create(lineItems);
+    } catch (err) {
+      // Never let the gift block a sale: if Stripe refuses the $0 line, check out without it.
+      // The gift stays on the order as metadata.gift_sku (shown on /admin/orders) for packing.
+      if (!gift?.unlocked) throw err;
+      console.error("[checkout] gift line refused, retrying without it", err);
+      metadata.gift_line = "missing";
+      session = await create(lineItems.slice(0, -1));
+    }
     if (!session.client_secret) return fail("Couldn't start checkout. Please try again.", 502);
     // Funnel: count the checkout start for the team dashboard (never blocks checkout).
     const sid = typeof body.sid === "string" && /^[a-z0-9]{8,40}$/i.test(body.sid) ? body.sid : `srv${session.id.slice(-12)}`;
