@@ -24,6 +24,16 @@
 .pcard-price s { color: var(--text-muted); font-weight: 400; font-size: 13px; }
 .pcard-foot { padding: 0 4px 4px; position: relative; z-index: 1; }
 .pcard-foot .btn { width: 100%; height: 46px; font-size: 14px; }
+
+/* Free-gift product (lib/gift.ts): teal card with a "Get one free" tag on top */
+.pcard--gift { background: linear-gradient(160deg, var(--teal-deep) 0%, var(--teal) 55%, var(--teal-bright) 100%); border-color: var(--teal); box-shadow: var(--shadow); }
+.pcard--gift .pcard-sub, .pcard--gift .pcard-price small, .pcard--gift .pcard-price s { color: var(--on-ink-muted); }
+.pcard--gift .pcard-name, .pcard--gift .pcard-name a, .pcard--gift .pcard-price { color: var(--on-ink); }
+.pcard-gift-tag { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); z-index: 3; display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-pill); background: var(--surface); color: var(--teal-ink); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; box-shadow: var(--shadow); border: 1px solid var(--teal-bright); }
+.pcard-gift-tag svg { width: 15px; height: 15px; }
+.pcard-gift-note { margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--on-ink); }
+.pcard-gift-tag svg { flex: none; }
+@media (max-width: 640px) { .pcard-gift-tag { padding: 5px 10px; gap: 4px; font-size: 10.5px; letter-spacing: 0.05em; } .pcard-gift-tag svg { width: 13px; height: 13px; } }
 /* One button style for every card: soft slate at rest, darker slate on hover / tap / focus / just-added. */
 .card-btn { background: var(--accent-soft); color: var(--action); border-color: transparent; box-shadow: none; -webkit-tap-highlight-color: transparent; }
 .card-btn:active, .card-btn:focus-visible, .card-btn.is-done {
