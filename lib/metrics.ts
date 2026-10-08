@@ -62,7 +62,7 @@ const MAX_SESSIONS = 5000;
 let cache: Raw | null = null;
 const CACHE_MS = 60_000;
 
-function codeOf(m: Stripe.Metadata | null): { code: string | null; kind: CodeKind } {
+export function codeOf(m: Stripe.Metadata | null): { code: string | null; kind: CodeKind } {
   if (!m) return { code: null, kind: "none" };
   if (m.sale_code) return { code: m.sale_code, kind: "sale" };
   if (m.first_order_code) return { code: m.first_order_code, kind: "first" };

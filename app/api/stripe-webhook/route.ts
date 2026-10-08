@@ -1,8 +1,7 @@
 import type Stripe from "stripe";
 import { trackOrder, trackRefund } from "@adz/next";
-import { saveCustomer } from "../../../lib/customers";
+import { omnisendLineItems, reportPlacedOrder, saveCustomer } from "../../../lib/customers";
 import { sendEvent } from "../../../lib/omnisend";
-import { getCatalog } from "../../../lib/catalog";
 import { getStripe } from "../../../lib/stripe";
 import { syncRewards } from "../../../lib/rewards";
 import { sendOrderConfirmation } from "../../../lib/email";
@@ -40,6 +39,7 @@ export async function POST(req: Request) {
         await sendOrderConfirmation(session).catch((err) => console.error("[stripe-webhook] confirmation", err));
         await reportOrder(session);
         await saveCustomer(session);
+        await reportPlacedOrder(session);
         // Issue any $100 reward this order unlocked (idempotent; the account page also does this).
         const email = session.customer_details?.email;
         if (email) await syncRewards(email).catch((err) => console.error("[stripe-webhook] rewards", err));
@@ -71,18 +71,7 @@ async function reportAbandonedCheckout(stripe: Stripe, sessionId: string) {
   const s = await stripe.checkout.sessions.retrieve(sessionId, { expand: ["line_items.data.price.product"] });
   const email = s.customer_details?.email?.toLowerCase();
   if (s.payment_status === "paid" || !email || s.metadata?.mkt_email !== "yes") return;
-  const bySku = new Map(getCatalog().flatMap((p) => p.variants.map((v) => [v.sku, { p, v }] as const)));
-  const lineItems = (s.line_items?.data ?? []).flatMap((li) => {
-    const prod = li.price?.product;
-    const sku = prod && typeof prod === "object" && "metadata" in prod ? prod.metadata?.sku : undefined;
-    const hit = sku ? bySku.get(sku) : undefined;
-    if (!hit) return [];
-    return [{
-      productID: hit.p.slug, productTitle: hit.p.name, productVariantID: hit.v.sku, productVariantTitle: hit.v.option, productSKU: hit.v.sku,
-      productPrice: hit.v.price, productQuantity: li.quantity ?? 1, productURL: `https://revisedresearch.com/product/${hit.p.slug}`,
-      productImageURL: `https://revisedresearch.com/email/vial-${hit.p.accent ?? "metabolic"}.png`,
-    }];
-  });
+  const lineItems = omnisendLineItems(s);
   if (!lineItems.length) return;
   await sendEvent("started checkout", email, {
     abandonedCheckoutURL: "https://revisedresearch.com/cart",

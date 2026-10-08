@@ -19,7 +19,7 @@ export function SyncCustomers() {
     <section className="card adm-alerts" aria-label="Omnisend">
       <div>
         <h2 className="h4">Past buyers → Omnisend</h2>
-        <p className="muted">Adds everyone who has paid to Omnisend as a customer. Only buyers who left the email box ticked are subscribed. Safe to run again.</p>
+        <p className="muted">Adds everyone who has paid to Omnisend as a customer, with their orders (totals and products), for purchase segments. Only buyers who left the email box ticked are subscribed. Safe to run again.</p>
       </div>
       <div className="adm-alerts-actions">
         <button type="button" className="btn btn--ghost btn--sm" onClick={run} disabled={busy}>{busy ? "Adding…" : "Add past buyers to Omnisend"}</button>

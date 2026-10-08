@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentAdmin } from "../../../../lib/admin";
 import { getStripe } from "../../../../lib/stripe";
-import { saveCustomer } from "../../../../lib/customers";
+import { reportPlacedOrder, saveCustomer } from "../../../../lib/customers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,7 +10,9 @@ export const maxDuration = 300;
 /**
  * Team-only: adds every past paid buyer to Omnisend, the same way a new order
  * does (tag "customer"; email-subscribed only if they left the checkout box
- * ticked). Safe to run more than once: contacts are upserted by email.
+ * ticked), then sends each past paid order as "placed order" so their order
+ * count, total spent and purchase segments are filled in. Safe to run more than
+ * once: contacts are upserted by email and order events dedupe by order.
  */
 export async function POST() {
   if (!(await currentAdmin())) return NextResponse.json({ ok: false, message: "Not authorized." }, { status: 401 });
@@ -18,17 +20,22 @@ export async function POST() {
   const stripe = getStripe();
   if (!stripe) return NextResponse.json({ ok: false, message: "Stripe isn't connected." }, { status: 503 });
 
-  let buyers = 0, subscribed = 0, failed = 0;
+  let buyers = 0, subscribed = 0, orders = 0, failed = 0;
   const seen = new Set<string>();
   // Newest first, so each email gets its most recent order's details and opt-in choice.
   for await (const s of stripe.checkout.sessions.list({ limit: 100 })) {
     const email = s.customer_details?.email?.toLowerCase();
-    if (s.payment_status !== "paid" || !email || seen.has(email)) continue;
-    seen.add(email);
+    if (s.payment_status !== "paid" || !email) continue;
     try {
-      await saveCustomer(s);
-      buyers++;
-      if (s.metadata?.mkt_email === "yes") subscribed++;
+      if (!seen.has(email)) {
+        seen.add(email);
+        await saveCustomer(s);
+        buyers++;
+        if (s.metadata?.mkt_email === "yes") subscribed++;
+      }
+      const full = await stripe.checkout.sessions.retrieve(s.id, { expand: ["line_items.data.price.product"] });
+      if (await reportPlacedOrder(full)) orders++;
+      else failed++;
     } catch (err) {
       failed++;
       console.error("[admin/sync-customers]", err);
@@ -36,6 +43,6 @@ export async function POST() {
   }
   return NextResponse.json({
     ok: true,
-    message: `Added ${buyers} buyer${buyers === 1 ? "" : "s"} to Omnisend: ${subscribed} subscribed to email, ${buyers - subscribed} as customers only (they unticked the box or bought before it existed)${failed ? `, ${failed} failed` : ""}.`,
+    message: `Added ${buyers} buyer${buyers === 1 ? "" : "s"} to Omnisend: ${subscribed} subscribed to email, ${buyers - subscribed} as customers only (they unticked the box or bought before it existed). Sent ${orders} order${orders === 1 ? "" : "s"} with totals and products${failed ? `; ${failed} failed` : ""}.`,
   });
 }
