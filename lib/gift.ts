@@ -15,7 +15,7 @@ import type { Product, Variant } from "./types";
  * banner counts down to it. `startsAt` ("" = live as soon as the SKU is set).
  */
 export const GIFT = {
-  sku: "",
+  sku: "RR-GHK-CU-50MG",
   /** Small line above the title on the homepage box. */
   label: "Limited time only",
   minimum: 245,
