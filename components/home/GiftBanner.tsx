@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Icon } from "../Icon";
 
-type Props = { name: string; option: string; value: string; minimum: string; endsAt: string };
+type Props = { name: string; option: string; value: string; minimum: string; endsAt: string; freeShip: boolean };
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -13,7 +13,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * is prerendered, so the timer starts after load and the box removes itself
  * when the deal ends; checkout enforces the end time on the server too.
  */
-export function GiftBanner({ name, option, value, minimum, endsAt }: Props) {
+export function GiftBanner({ name, option, value, minimum, endsAt, freeShip }: Props) {
   const end = Date.parse(endsAt);
   const [left, setLeft] = useState<number | null>(null);
   useEffect(() => {
@@ -36,7 +36,7 @@ export function GiftBanner({ name, option, value, minimum, endsAt }: Props) {
     <div className="gift" data-reveal="" data-reveal-delay="240">
       <div className="gift-copy">
         <span className="gift-tag">Weekend only</span>
-        <p className="gift-title">Spend {minimum}, get a free {name} <span className="gift-opt">{option}</span></p>
+        <p className="gift-title">Spend {minimum}, get a free {name} <span className="gift-opt">{option}</span>{freeShip ? " + free shipping" : ""}</p>
         <p className="gift-sub">A {value} value, added to your order automatically at checkout.</p>
       </div>
       <div className="gift-side">

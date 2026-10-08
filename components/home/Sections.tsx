@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getCatalog, getCategories, bestSellers, summarize } from "../../lib/catalog";
 import { COAS, COA_COUNT, TESTED_COUNT, QC_PILLARS, QC_STATS, TICKER, WHY_US } from "../../data/content";
 import { REVIEWS, REVIEWS_SOURCE } from "../../data/reviews";
-import { RUO_SHORT } from "../../lib/site";
+import { RUO_SHORT, SITE } from "../../lib/site";
 import { Icon } from "../Icon";
 import { Vial } from "../Vial";
 import { SectionHead } from "../ui";
@@ -42,7 +42,7 @@ export function Hero() {
             <Link href="/coas" className="btn btn--ghost">View COAs</Link>
           </div>
           {gift ? (
-            <GiftBanner name={gift.product.name} option={gift.variant.option} value={money(gift.value)} minimum={money(gift.minimum).replace(/\.00$/, "")} endsAt={gift.endsAt} />
+            <GiftBanner name={gift.product.name} option={gift.variant.option} value={money(gift.value)} minimum={money(gift.minimum).replace(/\.00$/, "")} endsAt={gift.endsAt} freeShip={gift.minimum >= SITE.freeShippingThreshold} />
           ) : null}
         </div>
 
