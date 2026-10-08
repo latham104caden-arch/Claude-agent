@@ -55,6 +55,9 @@
     linear-gradient(180deg, #CCD8E4 0%, #AEBFD0 100%);
   --tile-wash: linear-gradient(160deg, #D5DFEA 0%, #BCCBDA 100%);
   --silver-sheen: linear-gradient(100deg, #3F5874 0%, #7E98B4 45%, #4E6781 70%, #33475F 100%);
+  /* Maroon from the cognitive vial label (Melanotan II, Epitalon), same sheen shape as --silver-sheen */
+  --maroon: #7A2F37;
+  --maroon-sheen: linear-gradient(100deg, #5A2C2E 0%, #9D5A62 45%, #843E47 70%, #471D20 100%);
 
   /* Teal from the "repair" vial label (BPC-157 etc.), for promo surfaces */
   --teal-deep: #24413F;     /* darkest end of the promo gradient */

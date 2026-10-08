@@ -166,7 +166,7 @@ export function QualityControl() {
       <div className="container">
         <SectionHead
           eyebrow="Quality Control"
-          title={<>{TESTED_COUNT} compounds, <em>tested 10x.</em></>}
+          title={<>{TESTED_COUNT} compounds, <em className="em-maroon">tested 10x.</em></>}
           lead="What happens to a batch between synthesis and your bench."
         />
         <div className="qc-stats">

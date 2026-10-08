@@ -71,6 +71,7 @@ p { margin: 0; }
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   padding-right: 0.06em;
 }
+.h1 em.em-maroon, .h2 em.em-maroon { color: var(--maroon); background: var(--maroon-sheen); -webkit-background-clip: text; background-clip: text; }
 .section--dark .h2 em { background: linear-gradient(100deg, var(--silver-light) 0%, var(--on-ink) 50%, var(--silver) 100%); -webkit-background-clip: text; background-clip: text; }
 .underline-accent { position: relative; display: inline-block; }
 .underline-accent::after {
