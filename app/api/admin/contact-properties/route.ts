@@ -6,9 +6,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-/** Purchase fields the import screen can't create, written as typed custom properties. */
+/** Purchase fields (and the random send_group split) the import screen can't create, written as typed custom properties. */
 const NUMBER = ["total_spent", "total_orders", "average_order", "days_since_last_order"];
-const TEXT = ["customer_status", "spend_band", "signup_source", "first_order_date", "last_order_date", "first_seen"];
+const TEXT = ["customer_status", "spend_band", "signup_source", "first_order_date", "last_order_date", "first_seen", "send_group"];
 const EMAIL = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i;
 const BATCH = 100;
 
