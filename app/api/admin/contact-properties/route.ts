@@ -9,11 +9,11 @@ export const maxDuration = 300;
 const NUMBER = ["total_spent", "total_orders", "average_order", "days_since_last_order"];
 const TEXT = ["customer_status", "spend_band", "signup_source", "first_order_date", "last_order_date", "first_seen", "send_group"];
 const EMAIL = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i;
-const MAX_ROWS = 300;
+const MAX_ROWS = 100;
 const PARALLEL = 6;
 
 /**
- * Team-only: takes up to 300 CSV rows (the browser splits the file) and
+ * Team-only: takes up to 100 CSV rows (the browser splits the file) and
  * PATCHes only the custom properties above onto each existing contact, by
  * email. Omnisend's batch API can't be used: it insists on a channel status,
  * and this must never change anyone's subscription. Missing contacts are
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         if (res.status === 404) { missing++; return; }
         if (res.status === 429 || res.status >= 500) {
           const wait = Number(res.headers.get("retry-after")) || 2 ** attempt;
-          await new Promise((r) => setTimeout(r, Math.min(wait, 20) * 1000));
+          await new Promise((r) => setTimeout(r, Math.min(wait, 8) * 1000));
           continue;
         }
         console.error("[admin/contact-properties]", res.status, await res.text().catch(() => ""));
