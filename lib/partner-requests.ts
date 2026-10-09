@@ -14,6 +14,8 @@ export type StoredPartnerRequest = {
   contact: { name: string; email: string; phone: string; organization: string; notes: string };
   lines: { name: string; option: string; sku: string; qty: number; price: number; percent: number; savings: number }[];
   quote: { vials: number; qualifyingVials: number; regular: number; savings: number; partner: number; percentOff: number };
+  /** How the email to the support inbox went (Resend's status and error, if any). */
+  email?: { ok: boolean; status: number; error: string; from: string };
 };
 
 export async function savePartnerRequest(r: Omit<StoredPartnerRequest, "at">): Promise<boolean> {

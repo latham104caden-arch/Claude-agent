@@ -1,7 +1,6 @@
 import type Stripe from "stripe";
 import { LOGO_PNG_BASE64 } from "./email-logo";
 import { SITE } from "./site";
-import { adminEmails } from "./admin";
 
 /**
  * Transactional email via Resend (owner-approved): account sign-in codes and
@@ -31,6 +30,41 @@ export async function sendSignInCode(to: string, code: string): Promise<boolean>
   });
   if (!res.ok) console.error("[email] Resend", res.status, await res.text().catch(() => ""));
   return res.ok;
+}
+
+
+export type SendResult = { ok: boolean; status: number; error: string; from: string };
+
+const ORDERS_FROM = () => process.env.RESEND_ORDERS_FROM || "Revised Research <orders@revisedresearch.com>";
+const LOGIN_FROM = () => process.env.RESEND_FROM || "Revised Research <login@revisedresearch.com>";
+
+/**
+ * Sends from the orders@ sender; if Resend refuses that sender (4xx), retries
+ * once from the sign-in sender, which is known to deliver. Returns Resend's
+ * status and error text so callers can show why a send failed.
+ */
+export async function sendFromOrders(payload: Record<string, unknown>, idempotencyKey?: string): Promise<SendResult> {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return { ok: false, status: 0, error: "RESEND_API_KEY isn't set.", from: "" };
+  const attempt = async (from: string, idem?: string): Promise<SendResult> => {
+    try {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { authorization: `Bearer ${key}`, "content-type": "application/json", ...(idem ? { "Idempotency-Key": idem } : {}) },
+        body: JSON.stringify({ ...payload, from }),
+        cache: "no-store",
+      });
+      const error = res.ok ? "" : (await res.text().catch(() => "")).slice(0, 400);
+      if (!res.ok) console.error("[email] Resend", from, res.status, error);
+      return { ok: res.ok, status: res.status, error, from };
+    } catch (err) {
+      return { ok: false, status: 0, error: String((err as Error)?.message ?? err).slice(0, 400), from };
+    }
+  };
+  const first = await attempt(ORDERS_FROM(), idempotencyKey);
+  if (first.ok || first.status >= 500 || first.status === 0 || LOGIN_FROM() === ORDERS_FROM()) return first;
+  const second = await attempt(LOGIN_FROM(), idempotencyKey ? `${idempotencyKey}/fallback` : undefined);
+  return second.ok ? second : { ...second, error: `orders@ sender: ${first.status} ${first.error} | fallback: ${second.status} ${second.error}` };
 }
 
 
@@ -95,22 +129,15 @@ ${shipTo.length ? `<tr><td style="padding:18px 32px 0"><p style="margin:0 0 4px;
     "", "Questions? Reply to this email or write to support@revisedresearch.com.", "For laboratory research use only.",
   ].join("\n");
 
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { authorization: `Bearer ${key}`, "content-type": "application/json", "Idempotency-Key": `order-confirmation/${session.id}` },
-    body: JSON.stringify({
-      from: process.env.RESEND_ORDERS_FROM || "Revised Research <orders@revisedresearch.com>",
-      to: [to],
-      reply_to: "support@revisedresearch.com",
-      subject: `Order ${number} confirmed`,
-      html,
-      text,
-      attachments: [LOGO_ATTACHMENT],
-    }),
-    cache: "no-store",
-  });
-  if (!res.ok) console.error("[email] order confirmation", res.status, await res.text().catch(() => ""));
-  return res.ok;
+  const r = await sendFromOrders({
+    to: [to],
+    reply_to: "support@revisedresearch.com",
+    subject: `Order ${number} confirmed`,
+    html,
+    text,
+    attachments: [LOGO_ATTACHMENT],
+  }, `order-confirmation/${session.id}`);
+  return r.ok;
 }
 
 export type PartnerRequestEmail = {
@@ -125,9 +152,7 @@ export type PartnerRequestEmail = {
  * team's support inbox with the lab's kit and the partner quote; replying
  * answers the lab directly. Nothing is sent to the requester.
  */
-export async function sendPartnerRequest(r: PartnerRequestEmail): Promise<boolean> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return false;
+export async function sendPartnerRequest(r: PartnerRequestEmail): Promise<SendResult> {
   const money = (n: number) => `$${n.toFixed(2)}`;
   const c = r.contact;
   const tierNote = (l: PartnerRequestEmail["lines"][number]) => (l.percent ? `${l.percent}% off · −${money(l.savings)}` : "no tier (under 10 of this vial)");
@@ -154,19 +179,10 @@ ${sum("Saving overall", `${r.quote.percentOff}%`)}
     ...r.lines.map((l) => `${l.qty} x ${l.name} (${l.option}) [${l.sku}]  ${money(l.price * l.qty)}  (${tierNote(l)})`), "",
     `Regular price: ${money(r.quote.regular)}`, `Partner savings: -${money(r.quote.savings)}`, `Partner price: ${money(r.quote.partner)} (${r.quote.percentOff}% off overall)`,
   ].join("\n");
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-    body: JSON.stringify({
-      from: process.env.RESEND_ORDERS_FROM || "Revised Research <orders@revisedresearch.com>",
-      // The support inbox plus each team member directly, so one forwarding hiccup can't lose a request.
-      to: [...new Set([SITE.supportEmail, ...adminEmails()])],
-      reply_to: c.email,
-      subject: `Partner pricing request: ${r.quote.vials} vials · ${c.name}`,
-      html, text,
-    }),
-    cache: "no-store",
+  return sendFromOrders({
+    to: [SITE.supportEmail],
+    reply_to: c.email,
+    subject: `Partner pricing request: ${r.quote.vials} vials · ${c.name}`,
+    html, text,
   });
-  if (!res.ok) console.error("[email] partner request", res.status, await res.text().catch(() => ""));
-  return res.ok;
 }

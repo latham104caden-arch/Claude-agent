@@ -16,8 +16,8 @@ const clean = (v: unknown, max: number) => (typeof v === "string" ? v.trim().sli
  * Research Partner pricing request from /partner. Body: { lines: [{sku, qty}],
  * name, email, phone?, organization?, notes?, website? (honeypot) }.
  * Re-prices the kit from the catalog (never trusts the browser's numbers),
- * requires at least the smallest kit, then saves it (shown in /admin), pings
- * team devices and emails the support inbox and each team member. It counts as
+ * requires at least the smallest kit, then emails the support inbox, pings team
+ * devices and saves it with the email result (shown in /admin). It counts as
  * received if any of those worked.
  */
 export async function POST(req: Request) {
@@ -42,15 +42,15 @@ export async function POST(req: Request) {
     lines: q.lines.map((l) => ({ name: bySku.get(l.sku)!.product.name, option: bySku.get(l.sku)!.variant.option, sku: l.sku, qty: l.qty, price: l.price, percent: l.tier?.percent ?? 0, savings: l.savings })),
     quote: { vials: q.vials, qualifyingVials: q.qualifyingVials, regular: q.regular, savings: q.savings, partner: q.partner, percentOff: q.percentOff },
   };
-  const [saved, emailed, alerted] = await Promise.all([
-    savePartnerRequest(request),
-    sendPartnerRequest(request).catch((err) => { console.error("[partner] email", err); return false; }),
+  const [mail, alerted] = await Promise.all([
+    sendPartnerRequest(request).catch((err) => ({ ok: false, status: 0, error: String(err), from: "" })),
     alertTeamPartnerRequest({ name, organization: request.contact.organization, vials: q.vials, savings: q.savings }).catch((err) => { console.error("[partner] alert", err); return false; }),
   ]);
-  if (!saved && !emailed) {
-    console.error("[partner] request lost", { saved, emailed, alerted, email });
+  // Saved with the email result, so /admin shows the request and whether (and why not) the email went out.
+  const saved = await savePartnerRequest({ ...request, email: mail });
+  if (!saved && !mail.ok) {
+    console.error("[partner] request lost", { email: mail, alerted });
     return fail("We couldn't send your request just now. Please email support@revisedresearch.com instead.", 502);
   }
-  if (!emailed) console.error("[partner] email failed; request saved for /admin", { email });
   return NextResponse.json({ ok: true });
 }

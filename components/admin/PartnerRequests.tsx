@@ -1,4 +1,5 @@
 import type { StoredPartnerRequest } from "../../lib/partner-requests";
+import { TestEmail } from "./TestEmail";
 
 const money = (n: number) => `$${n.toFixed(2)}`;
 const at = (iso: string) => new Date(iso).toLocaleString("en-US", { timeZone: process.env.ADMIN_TZ || "America/Chicago", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
@@ -18,7 +19,7 @@ export function PartnerRequests({ rows }: { rows: StoredPartnerRequest[] | null 
                 <td>
                   <b>{r.contact.name}</b>{r.contact.organization ? ` · ${r.contact.organization}` : ""}
                   <span className="adm-sub"><a href={`mailto:${r.contact.email}?subject=${encodeURIComponent("Your Research Partner pricing")}`}>{r.contact.email}</a>{r.contact.phone ? ` · ${r.contact.phone}` : ""}</span>
-                  <span className="adm-sub">{at(r.at)}</span>
+                  <span className="adm-sub">{at(r.at)} · {!r.email ? "email: not recorded" : r.email.ok ? `emailed to support@ from ${r.email.from.replace(/.*</, "").replace(">", "")}` : `email failed: ${r.email.status || "no response"} ${r.email.error}`}</span>
                   {r.contact.notes ? <span className="adm-sub">“{r.contact.notes}”</span> : null}
                 </td>
                 <td>{r.lines.map((l) => (
@@ -29,6 +30,7 @@ export function PartnerRequests({ rows }: { rows: StoredPartnerRequest[] | null 
             ))}</tbody>
           </table>
         )}
+      <TestEmail />
     </section>
   );
 }
