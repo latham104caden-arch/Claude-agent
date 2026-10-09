@@ -181,7 +181,7 @@ export function FirstOrderOffer() {
                   <span className="offer-code-label">Your code</span>
                   <b>{CODE}</b>
                   <button type="button" className="offer-copy" onClick={copy}><Icon name={copied ? "check" : "copy"} /> {copied ? "Copied" : "Copy code"}</button>
-                  <p>25% off your first order. $100 minimum, one per customer. Sign in at checkout to use it. Applies instead of other codes and bulk pricing, not on top of them.</p>
+                  <p>25% off your first order. $100 minimum, one per customer. Sign in at checkout to use it. Applies instead of other codes and partner pricing, not on top of them.</p>
                 </div>
                 <Link href="/shop" className="btn btn--block offer-btn-light" onClick={() => setOpen(false)}>Shop Compounds <Icon name="arrow" /></Link>
               </div>

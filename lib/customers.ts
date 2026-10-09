@@ -30,7 +30,7 @@ export async function saveCustomer(session: Stripe.Checkout.Session): Promise<vo
 /**
  * Stripe line items (session retrieved with line_items.data.price.product
  * expanded) → Omnisend's standard lineItems, matched to the catalog by SKU.
- * Prices are what Stripe actually charged per unit (bulk pricing included).
+ * Prices are what Stripe actually charged per unit.
  */
 export function omnisendLineItems(s: Stripe.Checkout.Session) {
   const bySku = new Map(getCatalog().flatMap((p) => p.variants.map((v) => [v.sku, { p, v }] as const)));

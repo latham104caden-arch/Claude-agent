@@ -5,7 +5,6 @@ import { priceCart, shippingFor } from "../../../lib/orders";
 import { getStripe } from "../../../lib/stripe";
 import { currentEmail } from "../../../lib/auth";
 import { resolveDiscount } from "../../../lib/discounts";
-import { BULK_NO_CODES, bulkFor, bulkLabel } from "../../../lib/bulk";
 import { SALE } from "../../../lib/sale";
 import { record } from "../../../lib/funnel";
 import { giftFor } from "../../../lib/gift";
@@ -21,8 +20,8 @@ const fail = (message: string, status = 400) => NextResponse.json({ ok: false, m
  * mounts on our checkout page). Prices, shipping and the creator-code discount
  * are all decided here; Stripe's form collects the address and card. Attribution
  * rides on the session so the webhook can report the order. Codes: a $100 spend
- * reward (lib/rewards.ts, signed-in owner only) or an adz creator code. Bulk
- * orders (lib/bulk.ts) get the bulk discount and free shipping instead of a code.
+ * reward (lib/rewards.ts, signed-in owner only) or an adz creator code.
+ * Research Partner kit pricing (lib/partner.ts) is set up by the team, not here.
  */
 export async function POST(req: Request) {
   let body: { lines?: unknown; code?: unknown; useLink?: unknown; attest?: unknown; emailOptIn?: unknown; gateAt?: unknown; sid?: unknown };
@@ -48,51 +47,34 @@ export async function POST(req: Request) {
   // Signed-in shoppers check out under their account email (orders, rewards and Omnisend all key on it).
   const account = await currentEmail();
 
-  // One discount per order (Stripe rule; no stacking). Bulk pricing wins; otherwise a typed code wins over a creator-link code.
+  // One discount per order (Stripe rule; no stacking): a typed code wins over a creator-link code.
+  // Research Partner pricing (lib/partner.ts) is never applied here; the team sets it up after a request.
   const typed = typeof body.code === "string" ? body.code.trim() : "";
   const discounts: ({ coupon: string } | { promotion_code: string })[] = [];
-  const bulk = bulkFor(cart.lines.map((l) => ({ slug: l.product.slug, price: l.variant.price, qty: l.qty })));
-  if (bulk.tier) {
-    // Bulk orders take no code, except a live sitewide sale code: whichever saves more wins.
-    if (typed && typed.toUpperCase() !== SALE.code) return fail(BULK_NO_CODES);
-    const sale = typed ? await resolveDiscount(typed, { subtotal: cart.subtotal, account, explicit: true }) : null;
-    if (sale && "error" in sale) return fail(sale.error);
-    if (sale && sale.kind !== "sale") return fail(BULK_NO_CODES);
-    if (sale && sale.amount > bulk.amount) {
-      const coupon = await stripe.coupons.create({ percent_off: sale.percent, duration: "once", max_redemptions: 1, name: sale.code });
-      discounts.push({ coupon: coupon.id });
-      metadata.sale_code = sale.code;
-    } else {
-      const coupon = await stripe.coupons.create({ amount_off: cents(bulk.amount), currency: "usd", duration: "once", max_redemptions: 1, name: bulkLabel(bulk.tier) });
-      discounts.push({ coupon: coupon.id });
-      metadata.bulk_tier = String(bulk.tier.min);
-    }
-  } else {
-    // The creator-link code applies only if the shopper kept it (they can remove it on the page).
-    const linkCode = body.useLink === true ? attribution.code : null;
-    const d = await resolveDiscount(typed || linkCode || "", { subtotal: cart.subtotal, account, explicit: !!typed });
-    if (d && "error" in d) return fail(d.error);
-    if (d?.kind === "reward") {
-      discounts.push({ promotion_code: d.promotionCode });
-      metadata.reward_code = d.code;
-    } else if (d?.kind === "sale") {
-      const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
-      discounts.push({ coupon: coupon.id });
-      metadata.sale_code = d.code;
-    } else if (d?.kind === "first") {
-      const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: `${d.code} first order` });
-      discounts.push({ coupon: coupon.id });
-      metadata.first_order_code = d.code;
-    } else if (d?.kind === "creator") {
-      const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
-      discounts.push({ coupon: coupon.id });
-      metadata.adz_code = d.code;
-    }
+  // The creator-link code applies only if the shopper kept it (they can remove it on the page).
+  const linkCode = body.useLink === true ? attribution.code : null;
+  const d = await resolveDiscount(typed || linkCode || "", { subtotal: cart.subtotal, account, explicit: !!typed });
+  if (d && "error" in d) return fail(d.error);
+  if (d?.kind === "reward") {
+    discounts.push({ promotion_code: d.promotionCode });
+    metadata.reward_code = d.code;
+  } else if (d?.kind === "sale") {
+    const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
+    discounts.push({ coupon: coupon.id });
+    metadata.sale_code = d.code;
+  } else if (d?.kind === "first") {
+    const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: `${d.code} first order` });
+    discounts.push({ coupon: coupon.id });
+    metadata.first_order_code = d.code;
+  } else if (d?.kind === "creator") {
+    const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
+    discounts.push({ coupon: coupon.id });
+    metadata.adz_code = d.code;
   }
 
-  // Free shipping: bulk orders, the normal threshold, or the sale code's lower threshold.
+  // Free shipping: the normal threshold (lower during a gift deal), or the sale code's lower threshold.
   const saleShip = metadata.sale_code === SALE.code && cart.subtotal >= SALE.freeShippingOver;
-  const shipping = bulk.tier || saleShip ? 0 : shippingFor(cart.subtotal);
+  const shipping = saleShip ? 0 : shippingFor(cart.subtotal);
   const origin = new URL(req.url).origin;
 
   // Free gift with purchase (lib/gift.ts): judged on the pre-discount subtotal, added as a $0 line so it

@@ -7,7 +7,6 @@ import { useCart } from "../cart/CartProvider";
 import { Icon } from "../Icon";
 import { PaymentForm } from "./PaymentForm";
 import { Summary, type AppliedDiscount } from "./Summary";
-import { bulkFor, bulkLabel } from "../../lib/bulk";
 import { sessionId, trackCheckoutStarted } from "../../lib/track-client";
 
 /**
@@ -74,8 +73,6 @@ export function CheckoutForm() {
     setApplying(false);
   };
 
-  const bulk = bulkFor(lines);
-
   if (!ready) return <div style={{ minHeight: 400 }} />;
   if (lines.length === 0) {
     return (
@@ -104,7 +101,7 @@ export function CheckoutForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: applied && !applied.fromLink ? applied.code : undefined, useLink: !bulk.tier && !!applied?.fromLink, attest, emailOptIn, gateAt, sid: sessionId() }),
+        body: JSON.stringify({ lines: lines.map((l) => ({ sku: l.sku, qty: l.qty })), code: applied && !applied.fromLink ? applied.code : undefined, useLink: !!applied?.fromLink, attest, emailOptIn, gateAt, sid: sessionId() }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.clientSecret) {
@@ -123,16 +120,6 @@ export function CheckoutForm() {
   return (
     <form className="checkout-grid" onSubmit={submit}>
       <div>
-        {bulk.tier ? (
-        <fieldset>
-          <legend>Bulk pricing</legend>
-          <div className="code-applied" role="status">
-            <Icon name="check" strokeWidth={2.4} />
-            <span><b>{bulkLabel(bulk.tier)}</b> applied · you save {money(bulk.amount)} and shipping is free</span>
-          </div>
-          <p className="drawer-note">Bulk pricing can&apos;t be combined with other codes. A sitewide sale code still works, and you get whichever saves more. <Link href="/bulk">How bulk pricing works</Link></p>
-        </fieldset>
-        ) : null}
         <fieldset>
           <legend>Discount code</legend>
           <div className="form-grid">

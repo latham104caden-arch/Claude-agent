@@ -6,7 +6,7 @@ import { money } from "../../lib/format";
 import { Icon } from "../Icon";
 import { Vial } from "../Vial";
 import { useCart } from "./CartProvider";
-import { bulkFor, bulkLabel } from "../../lib/bulk";
+import { PARTNER, PARTNER_TIERS, partnerQuote } from "../../lib/partner";
 import { QtyStepper } from "./QtyStepper";
 import { freeShippingAt, giftFor } from "../../lib/gift";
 
@@ -22,9 +22,9 @@ export function CartDrawer() {
     return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
   }, [open, setOpen]);
 
-  const bulk = bulkFor(lines);
+  const kit = partnerQuote(lines);
   const shipFreeAt = freeShippingAt();
-  const toFree = bulk.tier ? 0 : Math.max(0, shipFreeAt - subtotal);
+  const toFree = Math.max(0, shipFreeAt - subtotal);
   const pct = Math.min(100, (subtotal / shipFreeAt) * 100);
   const gift = giftFor(subtotal);
 
@@ -46,14 +46,15 @@ export function CartDrawer() {
             ) : (
               <><b>You&apos;ve unlocked free shipping.</b></>
             )}
-            <div className="meter"><i style={{ width: `${bulk.tier ? 100 : pct}%` }} /></div>
-            {bulk.tier ? <p className="drawer-bulk"><b>{bulkLabel(bulk.tier)}:</b> you save {money(bulk.amount)}.</p> : null}
+            <div className="meter"><i style={{ width: `${pct}%` }} /></div>
             {gift ? (
               <p className="drawer-bulk">{gift.unlocked
                 ? <><b>Free gift unlocked:</b> {gift.product.name} ({gift.variant.option}) is added at checkout.</>
                 : <>Add <b>{money(gift.toGo)}</b> more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= shipFreeAt ? " and free shipping" : ""}.</>}</p>
             ) : null}
-            {bulk.next && bulk.units > 0 ? <p className="drawer-bulk">Add <b>{bulk.toNext}</b> more compound{bulk.toNext === 1 ? "" : "s"} for {bulk.tier ? "the next tier" : "bulk pricing"}. <Link href="/bulk" onClick={() => setOpen(false)}>See tiers</Link></p> : null}
+            {kit.vials >= PARTNER_TIERS[0].kit
+              ? <p className="drawer-bulk"><b>{kit.vials} vials:</b> Research Partner pricing would save you {money(kit.savings)} ({kit.tier!.percent}%). <Link href={PARTNER.path} onClick={() => setOpen(false)}>Request it</Link></p>
+              : kit.vials >= 5 ? <p className="drawer-bulk">Stocking a lab? Kits of {PARTNER_TIERS[0].kit}+ vials get up to {PARTNER_TIERS[PARTNER_TIERS.length - 1].percent}% off. <Link href={PARTNER.path} onClick={() => setOpen(false)}>Partner pricing</Link></p> : null}
           </div>
         ) : null}
 
@@ -86,7 +87,6 @@ export function CartDrawer() {
         {lines.length > 0 ? (
           <div className="drawer-foot">
             <div className="drawer-total"><span>Subtotal</span><span>{money(subtotal)}</span></div>
-            {bulk.tier ? <div className="drawer-total summary-discount"><span>Bulk savings</span><span>−{money(bulk.amount)}</span></div> : null}
             <Link href="/checkout" className="btn btn--primary btn--block" onClick={() => setOpen(false)}>
               Checkout <Icon name="arrow" />
             </Link>

@@ -110,3 +110,58 @@ ${shipTo.length ? `<tr><td style="padding:18px 32px 0"><p style="margin:0 0 4px;
   if (!res.ok) console.error("[email] order confirmation", res.status, await res.text().catch(() => ""));
   return res.ok;
 }
+
+export type PartnerRequestEmail = {
+  contact: { name: string; email: string; phone?: string; organization?: string; notes?: string };
+  lines: { name: string; option: string; sku: string; qty: number; price: number }[];
+  quote: { vials: number; percent: number; regular: number; savings: number; partner: number; percentOff: number };
+};
+
+/**
+ * Research Partner pricing request (owner-approved 2026-10-09): goes to the
+ * team's support inbox with the lab's kit and the partner quote; replying
+ * answers the lab directly. Nothing is sent to the requester.
+ */
+export async function sendPartnerRequest(r: PartnerRequestEmail): Promise<boolean> {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return false;
+  const money = (n: number) => `$${n.toFixed(2)}`;
+  const c = r.contact;
+  const rows = r.lines.map((l) => `<tr><td style="padding:6px 0">${l.qty} × ${esc(l.name)} (${esc(l.option)})<br><span style="color:#5A6A7E;font-size:12px">${esc(l.sku)}</span></td><td style="padding:6px 0;text-align:right">${money(l.price * l.qty)}</td></tr>`).join("");
+  const sum = (label: string, value: string, strong = false) => `<tr><td style="padding:4px 0;${strong ? "font-weight:700" : ""}">${label}</td><td style="padding:4px 0;text-align:right;${strong ? "font-weight:700" : ""}">${value}</td></tr>`;
+  const html = `<div style="font-family:-apple-system,Segoe UI,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#223044">
+<p style="margin:0 0 6px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#3F5874">Research Partner request</p>
+<h1 style="margin:0 0 16px;font-size:22px">${r.quote.vials}-vial kit · ${r.quote.percent}% tier</h1>
+<p style="margin:0 0 4px"><b>${esc(c.name)}</b>${c.organization ? ` · ${esc(c.organization)}` : ""}</p>
+<p style="margin:0 0 4px"><a href="mailto:${esc(c.email)}">${esc(c.email)}</a>${c.phone ? ` · ${esc(c.phone)}` : ""}</p>
+${c.notes ? `<p style="margin:12px 0;padding:12px;background:#ECF1F6;border-radius:8px;white-space:pre-wrap">${esc(c.notes)}</p>` : ""}
+<table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px">${rows}</table>
+<table style="width:100%;border-collapse:collapse;border-top:1px solid #CFD9E4;font-size:14px">
+${sum("Regular price", money(r.quote.regular))}
+${sum(`Partner savings (${r.quote.percent}% on compounds)`, `−${money(r.quote.savings)}`)}
+${sum("Partner price", money(r.quote.partner), true)}
+${sum("Saving overall", `${r.quote.percentOff}%`)}
+</table>
+<p style="margin:20px 0 0;font-size:12px;color:#5E7894">Shipping and tax not included. Prices re-checked against the live catalog when the request was sent. Reply to this email to answer the lab.</p></div>`;
+  const text = [
+    `Research Partner request: ${r.quote.vials}-vial kit (${r.quote.percent}% tier)`,
+    `${c.name}${c.organization ? ` · ${c.organization}` : ""}`, c.email + (c.phone ? ` · ${c.phone}` : ""),
+    ...(c.notes ? ["", `Notes: ${c.notes}`] : []), "",
+    ...r.lines.map((l) => `${l.qty} x ${l.name} (${l.option}) [${l.sku}]  ${money(l.price * l.qty)}`), "",
+    `Regular price: ${money(r.quote.regular)}`, `Partner savings: -${money(r.quote.savings)}`, `Partner price: ${money(r.quote.partner)} (${r.quote.percentOff}% off overall)`,
+  ].join("\n");
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
+    body: JSON.stringify({
+      from: process.env.RESEND_ORDERS_FROM || "Revised Research <orders@revisedresearch.com>",
+      to: ["support@revisedresearch.com"],
+      reply_to: c.email,
+      subject: `Partner pricing request: ${r.quote.vials} vials · ${c.name}`,
+      html, text,
+    }),
+    cache: "no-store",
+  });
+  if (!res.ok) console.error("[email] partner request", res.status, await res.text().catch(() => ""));
+  return res.ok;
+}
