@@ -29,14 +29,14 @@ export async function POST(req: Request) {
 
   const cart = priceCart(body.lines);
   if (!cart.ok) return fail(cart.message);
-  const lines = cart.lines.map((l) => ({ slug: l.product.slug, price: l.variant.price, qty: l.qty }));
-  const q = partnerQuote(lines);
-  if (!q.tier) return fail(`Partner pricing starts at a ${PARTNER_TIERS[0].kit}-vial kit. Add ${q.toNext} more vial${q.toNext === 1 ? "" : "s"}.`);
+  const q = partnerQuote(cart.lines.map((l) => ({ sku: l.variant.sku, slug: l.product.slug, price: l.variant.price, qty: l.qty })));
+  if (!q.qualifying) return fail(`Partner pricing starts at ${PARTNER_TIERS[0].kit} of the same vial (same compound and size).`);
+  const bySku = new Map(cart.lines.map((l) => [l.variant.sku, l] as const));
 
   const sent = await sendPartnerRequest({
     contact: { name, email, phone: clean(body.phone, 40), organization: clean(body.organization, 160), notes: clean(body.notes, 2000) },
-    lines: cart.lines.map((l) => ({ name: l.product.name, option: l.variant.option, sku: l.variant.sku, qty: l.qty, price: l.variant.price })),
-    quote: { vials: q.vials, percent: q.tier.percent, regular: q.regular, savings: q.savings, partner: q.partner, percentOff: q.percentOff },
+    lines: q.lines.map((l) => ({ name: bySku.get(l.sku)!.product.name, option: bySku.get(l.sku)!.variant.option, sku: l.sku, qty: l.qty, price: l.price, percent: l.tier?.percent ?? 0, savings: l.savings })),
+    quote: { vials: q.vials, qualifyingVials: q.qualifyingVials, regular: q.regular, savings: q.savings, partner: q.partner, percentOff: q.percentOff },
   }).catch((err) => { console.error("[partner] request", err); return false; });
   if (!sent) return fail("We couldn't send your request just now. Please email support@revisedresearch.com instead.", 502);
   return NextResponse.json({ ok: true });

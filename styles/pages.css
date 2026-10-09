@@ -151,6 +151,8 @@
 .kit-line-name { font-weight: 600; color: var(--ink); }
 .kit-line-name small { display: block; font-weight: 400; color: var(--text-muted); }
 .kit-line-total { text-align: right; }
+.kit-line-tier { display: block; margin-top: 4px; font-style: normal; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.kit-line-tier.is-on { color: var(--teal-ink); }
 .kit-sum { position: sticky; top: 140px; display: grid; gap: 14px; }
 .kit-sum-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
 .kit-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }

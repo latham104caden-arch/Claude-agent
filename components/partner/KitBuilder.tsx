@@ -11,12 +11,14 @@ import { Icon } from "../Icon";
 export type KitProduct = { slug: string; name: string; variants: { sku: string; option: string; price: number }[] };
 type Line = { sku: string; slug: string; name: string; option: string; price: number; qty: number };
 
+const FIRST = PARTNER_TIERS[0];
 const MAX_KIT = PARTNER_TIERS[PARTNER_TIERS.length - 1].kit;
 
 /**
- * Research Partner kit builder (lib/partner.ts): pick compounds and quantities,
- * see the regular price, the partner price and the saving in dollars and
- * percent, then send the kit to the team. Nothing here changes checkout.
+ * Research Partner kit builder (lib/partner.ts): pick vials and quantities;
+ * each vial earns its own tier (10/20/30+ of the same vial). Shows the regular
+ * price, the partner price and the saving in dollars and percent, then sends
+ * the kit to the team. Nothing here changes checkout.
  */
 export function KitBuilder({ products }: { products: KitProduct[] }) {
   const cart = useCart();
@@ -28,8 +30,11 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
 
   const bySku = useMemo(() => new Map(products.flatMap((p) => p.variants.map((v) => [v.sku, { p, v }] as const))), [products]);
   const q = partnerQuote(lines);
-  const tierPct = q.tier?.percent ?? PARTNER_TIERS[0].percent;
-  const preview = q.tier ? q.savings : Math.round(q.regular * PARTNER_TIERS[0].percent) / 100;
+  const quoted = new Map(q.lines.map((l) => [l.sku, l] as const));
+  const ready = q.qualifying > 0;
+  // Before any vial reaches a tier: what the closest vial would save at 10.
+  const near = q.closest ? lines.find((l) => l.sku === q.closest!.sku) : null;
+  const nearSave = q.closest ? Math.round(q.closest.price * FIRST.kit * FIRST.percent) / 100 : 0;
 
   const add = (addSku: string, n: number) => {
     const hit = bySku.get(addSku);
@@ -49,7 +54,7 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
   const [error, setError] = useState("");
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!q.tier || state === "sending") return;
+    if (!ready || state === "sending") return;
     setState("sending"); setError("");
     try {
       const res = await fetch("/api/partner/request", {
@@ -104,16 +109,23 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
 
           {lines.length ? (
             <ul className="kit-lines">
-              {lines.map((l) => (
+              {lines.map((l) => {
+                const ql = quoted.get(l.sku);
+                return (
                 <li key={l.sku}>
-                  <span className="kit-line-name">{l.name} <small>{l.option} · {money(l.price)}</small></span>
+                  <span className="kit-line-name">{l.name} <small>{l.option} · {money(l.price)}</small>
+                    {ql?.tier ? <em className="kit-line-tier is-on">{ql.tier.percent}% off · save {money(ql.savings)}{ql.next ? ` · ${ql.toNext} more for ${ql.next.percent}%` : ""}</em>
+                      : ql?.compound ? <em className="kit-line-tier">Add {ql.toNext} more for {FIRST.percent}% off</em>
+                      : <em className="kit-line-tier">Not discounted</em>}
+                  </span>
                   <QtyStepper value={l.qty} onChange={(n) => setLineQty(l.sku, n)} label={l.name} />
                   <b className="kit-line-total">{money(l.price * l.qty)}</b>
                   <button type="button" className="line-remove" onClick={() => setLineQty(l.sku, 0)}>Remove</button>
                 </li>
-              ))}
+                );
+              })}
             </ul>
-          ) : <p className="muted kit-empty">Add compounds above. Mix any compounds and sizes; every vial counts toward your kit.</p>}
+          ) : <p className="muted kit-empty">Add vials above. Each vial (compound and size) earns its own discount: {PARTNER_TIERS.map((t) => `${t.kit}${t.kit === MAX_KIT ? "+" : ""} for ${t.percent}%`).join(", ")}.</p>}
         </div>
       </div>
 
@@ -121,22 +133,21 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
         <p className="kit-sum-eyebrow">Your kit</p>
         <div className="kit-tiers">
           {PARTNER_TIERS.map((t) => (
-            <span key={t.kit} className={"kit-tier" + (q.tier?.kit === t.kit ? " is-on" : q.vials >= t.kit ? " is-past" : "")}>
-              <b>{t.percent}%</b><small>{t.kit}{t.kit === MAX_KIT ? "+" : ""} vials</small>
+            <span key={t.kit} className={"kit-tier" + (q.bestTier?.kit === t.kit ? " is-on" : "")}>
+              <b>{t.percent}%</b><small>{t.kit}{t.kit === MAX_KIT ? "+" : ""} of a vial</small>
             </span>
           ))}
         </div>
-        <div className="kit-meter"><i style={{ width: `${Math.min(100, (q.vials / MAX_KIT) * 100)}%` }} /></div>
-        <p className="kit-count"><b>{q.vials}</b> vial{q.vials === 1 ? "" : "s"}{q.next ? <> · add <b>{q.toNext}</b> for {q.next.percent}% off</> : <> · top tier</>}</p>
+        <p className="kit-count"><b>{q.vials}</b> vial{q.vials === 1 ? "" : "s"}{ready ? <> · <b>{q.qualifyingVials}</b> at partner pricing</> : null}</p>
 
         <dl className="kit-totals">
           <div><dt>Regular price</dt><dd>{money(q.regular)}</dd></div>
-          <div><dt>Partner price{q.tier ? ` (${q.tier.percent}% off)` : ""}</dt><dd>{q.tier ? money(q.partner) : "—"}</dd></div>
+          <div><dt>Partner price</dt><dd>{ready ? money(q.partner) : "—"}</dd></div>
         </dl>
-        <div className={"kit-save" + (q.tier ? "" : " is-preview")}>
-          <span>{q.tier ? "You save" : `At ${tierPct}% you'd save`}</span>
-          <b>{money(preview)}</b>
-          <small>{q.tier ? `${q.percentOff}% off your kit` : `once your kit reaches ${PARTNER_TIERS[0].kit} vials`}</small>
+        <div className={"kit-save" + (ready ? "" : " is-preview")}>
+          <span>{ready ? "You save" : near ? `Add ${q.closest!.toNext} more ${near.name} ${near.option}` : "Your saving"}</span>
+          <b>{money(ready ? q.savings : nearSave)}</b>
+          <small>{ready ? `${q.percentOff}% off your kit` : near ? `you'd save at ${FIRST.kit} of that vial (${FIRST.percent}% off)` : `Add ${FIRST.kit} of any one vial to unlock ${FIRST.percent}% off`}</small>
         </div>
 
         <form className="kit-form" onSubmit={send}>
@@ -148,10 +159,10 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
           <label className="field"><span>Lab or organization (optional)</span><input className="input" autoComplete="organization" {...field("organization")} /></label>
           <label className="field"><span>Notes (optional)</span><textarea className="textarea" rows={3} {...field("notes")} /></label>
           {error ? <p className="form-msg is-error" role="alert">{error}</p> : null}
-          <button type="submit" className="btn btn--primary btn--block" disabled={!q.tier || state === "sending"}>
-            {state === "sending" ? "Sending…" : q.tier ? <>Request partner pricing <Icon name="arrow" /></> : `Add ${q.toNext} more vial${q.toNext === 1 ? "" : "s"} to request`}
+          <button type="submit" className="btn btn--primary btn--block" disabled={!ready || state === "sending"}>
+            {state === "sending" ? "Sending…" : ready ? <>Request partner pricing <Icon name="arrow" /></> : `Add ${FIRST.kit} of one vial to request`}
           </button>
-          <p className="kit-fine">Partner pricing isn&apos;t applied at checkout; our team confirms lots and sets it up for you, usually within one business day. Reconstitution solution isn&apos;t discounted. For laboratory research use only.</p>
+          <p className="kit-fine">Tiers are per vial: {FIRST.kit} or more of the same compound and size. Different vials don&apos;t add together. Partner pricing isn&apos;t applied at checkout; our team confirms lots and sets it up for you, usually within one business day. Reconstitution solution isn&apos;t discounted. For laboratory research use only.</p>
         </form>
       </aside>
     </div>
