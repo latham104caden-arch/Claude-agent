@@ -24,6 +24,16 @@ export async function hasPaidOrder(email: string): Promise<boolean | null> {
   return sessions.data.some((s) => s.payment_status === "paid");
 }
 
+/** Whether this email already has a paid order that used `code` (stored in checkout metadata under `key`). */
+export async function hasUsedCode(email: string, key: string, code: string): Promise<boolean | null> {
+  const stripe = getStripe();
+  if (!stripe) return null;
+  for await (const s of stripe.checkout.sessions.list({ customer_details: { email }, limit: 100 })) {
+    if (s.payment_status === "paid" && s.metadata?.[key] === code) return true;
+  }
+  return false;
+}
+
 /** A shopper's paid orders, newest first, straight from Stripe (no local copy). */
 export async function ordersFor(email: string, limit = 10): Promise<Order[] | null> {
   const stripe = getStripe();

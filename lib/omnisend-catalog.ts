@@ -5,16 +5,13 @@
  * product blocks, recommendations and segments.
  */
 import { getCatalog, getCategories } from "./catalog";
+import { isMarketed } from "./marketing";
 import { productImage } from "./seo";
 import { SITE } from "./site";
 import type { Product } from "./types";
 
 const API = "https://api.omnisend.com/v5";
 const PARALLEL = 5;
-
-/** GLP-class listings are never sent to Omnisend for email marketing; the sync retires them if present. */
-const NOT_MARKETED = /^glp-/i;
-const marketed = (p: Product) => !NOT_MARKETED.test(p.slug) && !NOT_MARKETED.test(p.name);
 
 const status = (inStock: boolean) => (inStock ? "inStock" : "outOfStock");
 
@@ -70,8 +67,8 @@ async function upsert(key: string, collection: string, id: string, body: unknown
 export type SyncResult = { products: number; categories: number; retired: number; failed: string[] };
 
 /**
- * Pushes every category and product. Products that are in Omnisend but no
- * longer on the site are marked "notAvailable" (never deleted), so old
+ * Pushes every category and every marketed product (lib/marketing.ts).
+ * Anything else already in Omnisend is marked "notAvailable" (never deleted), so old
  * emails and order history keep working but they stop being recommended.
  */
 export async function syncCatalog(key: string): Promise<SyncResult> {
@@ -84,7 +81,7 @@ export async function syncCatalog(key: string): Promise<SyncResult> {
     else failed.push(`category ${c.slug} (${r.status})`);
   }
 
-  const catalog = getCatalog().filter(marketed);
+  const catalog = getCatalog().filter(isMarketed);
   for (let i = 0; i < catalog.length; i += PARALLEL) {
     await Promise.all(catalog.slice(i, i + PARALLEL).map(async (p) => {
       const r = await upsert(key, "products", p.slug, omnisendProduct(p), "PUT");

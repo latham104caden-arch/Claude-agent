@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
   const typed = typeof body.code === "string" ? body.code.trim() : "";
   const link = typed ? null : readAttribution(await cookies()).code;
-  const d = await resolveDiscount(typed || link || "", { subtotal: cart.subtotal, account: await currentEmail(), explicit: !!typed });
+  const d = await resolveDiscount(typed || link || "", { subtotal: cart.subtotal, lines: cart.lines.map((l) => ({ product: l.product, price: l.variant.price, qty: l.qty })), account: await currentEmail(), explicit: !!typed });
   if (!d) return NextResponse.json({ ok: true, discount: null });
   if ("error" in d) return NextResponse.json({ ok: false, message: d.error }, { status: 400 });
   return NextResponse.json({ ok: true, discount: { code: d.code, label: d.label, amount: d.amount, kind: d.kind, fromLink: !typed } });

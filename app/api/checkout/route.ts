@@ -4,7 +4,7 @@ import { attributionMetadata, readAttribution } from "@adz/next";
 import { priceCart, shippingFor } from "../../../lib/orders";
 import { getStripe } from "../../../lib/stripe";
 import { currentEmail } from "../../../lib/auth";
-import { resolveDiscount } from "../../../lib/discounts";
+import { MAIL_CODE, resolveDiscount } from "../../../lib/discounts";
 import { SALE } from "../../../lib/sale";
 import { record } from "../../../lib/funnel";
 import { giftFor } from "../../../lib/gift";
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   const discounts: ({ coupon: string } | { promotion_code: string })[] = [];
   // The creator-link code applies only if the shopper kept it (they can remove it on the page).
   const linkCode = body.useLink === true ? attribution.code : null;
-  const d = await resolveDiscount(typed || linkCode || "", { subtotal: cart.subtotal, account, explicit: !!typed });
+  const d = await resolveDiscount(typed || linkCode || "", { subtotal: cart.subtotal, lines: cart.lines.map((l) => ({ product: l.product, price: l.variant.price, qty: l.qty })), account, explicit: !!typed });
   if (d && "error" in d) return fail(d.error);
   if (d?.kind === "reward") {
     discounts.push({ promotion_code: d.promotionCode });
@@ -66,6 +66,11 @@ export async function POST(req: Request) {
     const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: `${d.code} first order` });
     discounts.push({ coupon: coupon.id });
     metadata.first_order_code = d.code;
+  } else if (d?.kind === "mail") {
+    // A fixed amount (not a percent), because it only covers the marketed items in the cart.
+    const coupon = await stripe.coupons.create({ amount_off: cents(d.amount), currency: "usd", duration: "once", max_redemptions: 1, name: `${d.code} 25% off` });
+    discounts.push({ coupon: coupon.id });
+    metadata[MAIL_CODE.metaKey] = d.code;
   } else if (d?.kind === "creator") {
     const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
     discounts.push({ coupon: coupon.id });

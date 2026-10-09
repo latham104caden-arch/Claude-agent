@@ -1,17 +1,30 @@
 import { validateCode } from "@adz/next";
 import { REWARD_VALUE, isRewardCode, rewardPromotionFor } from "./rewards";
-import { hasPaidOrder } from "./account";
+import { hasPaidOrder, hasUsedCode } from "./account";
+import { isMarketed } from "./marketing";
+import type { Product } from "./types";
 import { SALE, saleState } from "./sale";
 
 /** First-order code from the drop-alerts offer (components/offer). */
 export const FIRST_ORDER = { code: "RR25", percent: 25, minimum: 100 } as const;
+
+/**
+ * Abandoned-cart email code: 25% off, once per customer (checked against their
+ * paid orders in Stripe, so it needs a signed-in account). Applies only to
+ * marketed products (lib/marketing.ts), as a fixed dollar amount.
+ */
+export const MAIL_CODE = { code: "MAIL25", percent: 25, metaKey: "mail_code" } as const;
+
+/** Cart lines a code is priced against: price × qty per product. */
+export type CodeLine = { product: Pick<Product, "slug" | "name">; price: number; qty: number };
 
 /** What a code is worth on this cart. One per order (no stacking). Shared by the preview and the real charge. */
 export type Discount =
   | { kind: "reward"; code: string; label: string; amount: number; promotionCode: string }
   | { kind: "creator"; code: string; label: string; amount: number; percent: number }
   | { kind: "first"; code: string; label: string; amount: number; percent: number }
-  | { kind: "sale"; code: string; label: string; amount: number; percent: number };
+  | { kind: "sale"; code: string; label: string; amount: number; percent: number }
+  | { kind: "mail"; code: string; label: string; amount: number; percent: number };
 
 const round = (n: number) => Math.round(n * 100) / 100;
 
@@ -20,7 +33,7 @@ const round = (n: number) => Math.round(n * 100) / 100;
  * `explicit` = the shopper typed it, so a bad code is an error; a stale link
  * code is just ignored (null).
  */
-export async function resolveDiscount(raw: string, opts: { subtotal: number; account: string | null; explicit: boolean }): Promise<Discount | { error: string } | null> {
+export async function resolveDiscount(raw: string, opts: { subtotal: number; lines: CodeLine[]; account: string | null; explicit: boolean }): Promise<Discount | { error: string } | null> {
   const code = raw.trim().toUpperCase();
   if (!code) return null;
 
@@ -36,6 +49,18 @@ export async function resolveDiscount(raw: string, opts: { subtotal: number; acc
     const state = saleState();
     if (state !== "active") return { error: state === "upcoming" ? `${SALE.code} isn't live yet.` : `The ${SALE.name} has ended, so ${SALE.code} no longer works.` };
     return { kind: "sale", code, label: `${SALE.percent}% off · ${SALE.name}`, amount: round((opts.subtotal * SALE.percent) / 100), percent: SALE.percent };
+  }
+
+  if (code === MAIL_CODE.code) {
+    if (!opts.account) return { error: `Sign in to use ${MAIL_CODE.code}. It works once per customer, so we check your order history.` };
+    const eligible = opts.lines.filter((l) => isMarketed(l.product)).reduce((n, l) => n + l.price * l.qty, 0);
+    if (eligible <= 0) return { error: `${MAIL_CODE.code} doesn't apply to the items in your cart.` };
+    let used: boolean | null = null;
+    try { used = await hasUsedCode(opts.account, MAIL_CODE.metaKey, MAIL_CODE.code); } catch (err) { console.error("[discounts] code history check failed", err); }
+    if (used === null) return { error: "We couldn't check your order history right now. Try again in a minute." };
+    if (used) return { error: `${MAIL_CODE.code} works once per customer, and this account has already used it.` };
+    const partial = eligible < opts.subtotal - 0.005;
+    return { kind: "mail", code, label: `${MAIL_CODE.percent}% off${partial ? " eligible items" : ""}`, amount: round((eligible * MAIL_CODE.percent) / 100), percent: MAIL_CODE.percent };
   }
 
   if (code === FIRST_ORDER.code) {
