@@ -188,3 +188,48 @@ ${sum("Saving overall", `${r.quote.percentOff}%`)}
     html, text,
   });
 }
+
+export type PartnerApprovalEmail = {
+  name: string;
+  email: string;
+  url: string;
+  expiresAt: string;
+  lines: { name: string; option: string; qty: number; unit: number; price: number; percent: number }[];
+  regular: number;
+  partner: number;
+  savings: number;
+};
+
+/** Tells a lab their Research Partner kit is approved, with its private checkout link. */
+export async function sendPartnerApproval(a: PartnerApprovalEmail): Promise<SendResult> {
+  const money = (n: number) => `$${n.toFixed(2)}`;
+  const until = new Date(a.expiresAt).toLocaleDateString("en-US", { timeZone: "America/Chicago", month: "long", day: "numeric" });
+  const first = a.name.split(/\s+/)[0] || "there";
+  const rows = a.lines.map((l) => `<tr><td style="padding:6px 0">${l.qty} × ${esc(l.name)} (${esc(l.option)})${l.percent ? `<br><span style="color:#5A6A7E;font-size:12px">${l.percent}% off · ${money(l.unit)} each</span>` : ""}</td><td style="padding:6px 0;text-align:right">${money(l.unit * l.qty)}</td></tr>`).join("");
+  const html = `<div style="font-family:-apple-system,Segoe UI,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#223044">
+<p style="margin:0 0 6px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#3F5874">Research Partner Program</p>
+<h1 style="margin:0 0 12px;font-size:22px">Your partner pricing is approved</h1>
+<p style="margin:0 0 16px">Hi ${esc(first)}, your kit is approved at partner pricing. Use your private link below to check out. It works once and is good until ${until}.</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:14px">${rows}</table>
+<table style="width:100%;border-collapse:collapse;border-top:1px solid #CFD9E4;font-size:14px">
+<tr><td style="padding:4px 0">Regular price</td><td style="padding:4px 0;text-align:right">${money(a.regular)}</td></tr>
+<tr><td style="padding:4px 0">Partner savings</td><td style="padding:4px 0;text-align:right">−${money(a.savings)}</td></tr>
+<tr><td style="padding:4px 0;font-weight:700">Your price</td><td style="padding:4px 0;text-align:right;font-weight:700">${money(a.partner)}</td></tr>
+</table>
+<p style="margin:22px 0"><a href="${esc(a.url)}" style="display:inline-block;background:#223044;color:#FFFFFF;text-decoration:none;padding:13px 22px;border-radius:8px;font-weight:600">Check out at partner pricing</a></p>
+<p style="margin:0 0 6px;font-size:12px;color:#5E7894">Or paste this link: ${esc(a.url)}</p>
+<p style="margin:16px 0 0;font-size:12px;color:#5E7894">Questions? Just reply to this email. For laboratory research use only. Not for human or veterinary use.</p></div>`;
+  const text = [
+    `Hi ${first}, your Research Partner kit is approved.`, "",
+    ...a.lines.map((l) => `${l.qty} x ${l.name} (${l.option})  ${money(l.unit * l.qty)}${l.percent ? `  (${l.percent}% off)` : ""}`), "",
+    `Regular price: ${money(a.regular)}`, `Partner savings: -${money(a.savings)}`, `Your price: ${money(a.partner)}`, "",
+    `Check out here (works once, good until ${until}): ${a.url}`, "",
+    "Questions? Reply to this email. For laboratory research use only.",
+  ].join("\n");
+  return sendFromOrders({
+    to: [a.email],
+    reply_to: SITE.supportEmail,
+    subject: "Your Research Partner pricing is approved",
+    html, text,
+  });
+}

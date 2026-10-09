@@ -3,12 +3,15 @@
  * the SAME vial (same compound and size, i.e. the same SKU) takes 40%, 45% or
  * 50% off that vial; 15 of one vial is still 40%. Different vials never add
  * up toward a tier. It is NOT applied automatically: labs build a kit on
- * /partner and send it to the team, who confirm lots and set up the pricing.
- * Anyone can still check out at regular prices.
+ * /partner and send it to the team, who approve it in /admin; the lab then
+ * gets a private checkout link for exactly that kit at partner prices
+ * (lib/partner-approvals.ts). Regular checkout always charges regular prices.
  *
- * Used by the /partner page (kit builder, examples), the cart/summary nudges
- * and the request route, which re-prices every request from the catalog.
+ * Used by the /partner page (kit builder, examples), the cart/summary nudges,
+ * the request route and the approved-kit checkout; all re-price from the catalog.
  */
+
+import { isMarketed } from "./marketing";
 
 export const PARTNER = { name: "Research Partner Program", path: "/partner" } as const;
 
@@ -23,6 +26,9 @@ export type PartnerTier = (typeof PARTNER_TIERS)[number];
 
 /** Supplies don't count and aren't discounted. Keep in sync with the "supplies" category in data/products.ts. */
 export const NON_COMPOUND_SLUGS = new Set(["reconstitution-solution"]);
+
+/** Unit price at a tier, in dollars rounded to cents (what the approved-kit checkout charges per vial). */
+export const partnerUnit = (price: number, percent: number) => Math.round(price * (100 - percent)) / 100;
 
 const round = (n: number) => Math.round(n * 100) / 100;
 
@@ -48,10 +54,11 @@ export function partnerQuote(input: Line[]) {
     merged.set(l.sku, same ? { ...same, qty: same.qty + l.qty } : { ...l });
   }
   const lines: QuotedLine[] = [...merged.values()].map((l) => {
-    const compound = !NON_COMPOUND_SLUGS.has(l.slug);
+    // Supplies and non-marketed listings (lib/marketing.ts) never get partner pricing.
+    const compound = !NON_COMPOUND_SLUGS.has(l.slug) && isMarketed({ slug: l.slug, name: "" });
     const tier = compound ? tierFor(l.qty) : null;
     const next = compound ? nextFor(l.qty) : null;
-    return { ...l, compound, tier, next, toNext: next ? next.kit - l.qty : 0, savings: tier ? round((l.price * l.qty * tier.percent) / 100) : 0 };
+    return { ...l, compound, tier, next, toNext: next ? next.kit - l.qty : 0, savings: tier ? round((l.price - partnerUnit(l.price, tier.percent)) * l.qty) : 0 };
   });
   const regular = round(lines.reduce((n, l) => n + l.price * l.qty, 0));
   const savings = round(lines.reduce((n, l) => n + l.savings, 0));

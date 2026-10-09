@@ -17,7 +17,7 @@ export async function alertTeamNewOrder(session: Stripe.Checkout.Session): Promi
   const lastInitial = name.split(/\s+/)[1]?.[0];
   const a = session.collected_information?.shipping_details?.address ?? session.customer_details?.address;
   const m = session.metadata ?? {};
-  const code = m.sale_code || m.first_order_code || m.mail_code || m.reward_code || m.adz_code || (m.bulk_tier ? `bulk ${m.bulk_tier}+` : "");
+  const code = m.sale_code || m.first_order_code || m.mail_code || m.reward_code || m.adz_code || (m.bulk_tier ? `bulk ${m.bulk_tier}+` : "") || (m.partner_token ? "partner kit" : "");
   const body = [
     `${items} item${items === 1 ? "" : "s"}`,
     first ? `${first}${lastInitial ? ` ${lastInitial}.` : ""}` : null,

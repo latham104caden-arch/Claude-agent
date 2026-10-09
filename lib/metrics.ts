@@ -24,7 +24,7 @@ export const RANGES: { key: RangeKey; label: string }[] = [
 ];
 export const isRange = (s: unknown): s is RangeKey => RANGES.some((r) => r.key === s);
 
-export type CodeKind = "sale" | "first" | "mail" | "reward" | "creator" | "bulk" | "none";
+export type CodeKind = "sale" | "first" | "mail" | "reward" | "creator" | "bulk" | "partner" | "none";
 
 export type OrderRow = {
   id: string;
@@ -73,6 +73,7 @@ export function codeOf(m: Stripe.Metadata | null): { code: string | null; kind: 
   if (m.reward_code) return { code: m.reward_code, kind: "reward" };
   if (m.adz_code) return { code: m.adz_code, kind: "creator" };
   if (m.bulk_tier) return { code: `Bulk ${m.bulk_tier}+`, kind: "bulk" };
+  if (m.partner_token) return { code: "Partner kit", kind: "partner" };
   return { code: null, kind: "none" };
 }
 

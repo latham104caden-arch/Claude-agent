@@ -77,7 +77,7 @@ export default function PartnerPage() {
           <div>
             <p className="eyebrow">How it works</p>
             <h2 className="h2">Talk to us, <em>then stock up.</em></h2>
-            <p className="lead">Partner pricing isn&apos;t applied at checkout. Our team confirms lot availability and certificates for your kit first, then sets up your pricing.</p>
+            <p className="lead">Partner pricing isn&apos;t applied at regular checkout. Our team confirms lot availability and certificates for your kit first, then emails you a private checkout link at partner pricing.</p>
           </div>
           <ol className="partner-steps">
             <li><span className="step-num">1</span><div><b>Build your kit.</b> Pick 10 or more of the same vial to unlock 40%; 20+ is 45% and 30+ is 50%. You can add other vials too.</div></li>

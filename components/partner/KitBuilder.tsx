@@ -162,7 +162,7 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
           <button type="submit" className="btn btn--primary btn--block" disabled={!ready || state === "sending"}>
             {state === "sending" ? "Sending…" : ready ? <>Request partner pricing <Icon name="arrow" /></> : `Add ${FIRST.kit} of one vial to request`}
           </button>
-          <p className="kit-fine">Tiers are per vial: {FIRST.kit} or more of the same compound and size. Different vials don&apos;t add together. Partner pricing isn&apos;t applied at checkout; our team confirms lots and sets it up for you, usually within one business day. Reconstitution solution isn&apos;t discounted. For laboratory research use only.</p>
+          <p className="kit-fine">Tiers are per vial: {FIRST.kit} or more of the same compound and size. Different vials don&apos;t add together. Partner pricing isn&apos;t applied at regular checkout: our team confirms lots, usually within one business day, and emails you a private checkout link for your kit at partner pricing. Reconstitution solution isn&apos;t discounted. For laboratory research use only.</p>
         </form>
       </aside>
     </div>

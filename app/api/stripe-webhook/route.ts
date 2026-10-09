@@ -6,6 +6,7 @@ import { getStripe } from "../../../lib/stripe";
 import { syncRewards } from "../../../lib/rewards";
 import { sendOrderConfirmation } from "../../../lib/email";
 import { alertTeamNewOrder } from "../../../lib/alerts";
+import { markApprovalPaid } from "../../../lib/partner-approvals";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,6 +36,8 @@ export async function POST(req: Request) {
     if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
       const session = await stripe.checkout.sessions.retrieve(event.data.object.id, { expand: ["line_items.data.price.product"] });
       if (session.payment_status === "paid") {
+        // An approved partner kit's link works once: close it now that it's paid.
+        if (session.metadata?.partner_token) await markApprovalPaid(session.metadata.partner_token, session.id).catch((err) => console.error("[stripe-webhook] partner link", err));
         await alertTeamNewOrder(session).catch((err) => console.error("[stripe-webhook] team alert", err));
         await sendOrderConfirmation(session).catch((err) => console.error("[stripe-webhook] confirmation", err));
         await reportOrder(session);
