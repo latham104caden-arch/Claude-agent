@@ -51,6 +51,7 @@ const item = (l: Pick<CartLine, "slug" | "sku" | "name" | "option" | "price">, q
   productPrice: l.price,
   productQuantity: qty,
   productURL: `${SITE}/product/${l.slug}`,
+  productImageURL: `${SITE}/api/product-image/${l.slug}`,
 });
 const value = (lines: CartLine[]) => Math.round(lines.reduce((n, l) => n + l.price * l.qty, 0) * 100) / 100;
 

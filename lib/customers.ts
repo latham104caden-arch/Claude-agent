@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import { getCatalog } from "./catalog";
+import { productImage } from "./seo";
 import { codeOf } from "./metrics";
 import { sendEvent, splitName, upsertContact } from "./omnisend";
 
@@ -45,7 +46,7 @@ export function omnisendLineItems(s: Stripe.Checkout.Session) {
       productID: hit.p.slug, productTitle: hit.p.name, productVariantID: hit.v.sku, productVariantTitle: hit.v.option, productSKU: hit.v.sku,
       productPrice: price, productQuantity: qty, productTotalPrice: Math.round(price * qty * 100) / 100,
       productURL: `${SITE}/product/${hit.p.slug}`,
-      productImageURL: `${SITE}/email/vial-${hit.p.accent ?? "metabolic"}.png`,
+      productImageURL: productImage(hit.p),
     }];
   });
 }
