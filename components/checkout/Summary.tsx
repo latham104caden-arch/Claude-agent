@@ -32,7 +32,7 @@ export function Summary({ children, discount }: { children?: React.ReactNode; di
       <div className="summary-row"><span>Shipping</span><span>{shipping ? money(shipping) : "Free"}</span></div>
       <div className="summary-row total"><span>Total</span><span>{money(subtotal - off + shipping)}</span></div>
       {shipping ? <p className="drawer-note">Free shipping on orders {money(shipFreeAt)}+.</p> : null}
-      {gift && !gift.unlocked ? <p className="drawer-note">Add {money(gift.toGo)} more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= SITE.freeShippingThreshold ? " and free shipping" : ""}.</p> : null}
+      {gift && !gift.unlocked ? <p className="drawer-note">Add {money(gift.toGo)} more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= freeShippingAt(200) ? " and free shipping" : ""}.</p> : null}
       {bulk.next && bulk.units > 0 ? <p className="drawer-note">Add {bulk.toNext} more compound{bulk.toNext === 1 ? "" : "s"} for the {bulk.next.min}+ bulk tier.</p> : null}
       {children}
     </aside>
