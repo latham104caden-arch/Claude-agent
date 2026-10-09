@@ -17,7 +17,7 @@ export function TestEmail() {
   };
   return (
     <div className="adm-alerts-actions" style={{ marginTop: 12 }}>
-      <button type="button" className="btn btn--ghost btn--sm" onClick={run} disabled={busy}>{busy ? "Sending…" : "Send a test email to support@"}</button>
+      <button type="button" className="btn btn--ghost btn--sm" onClick={run} disabled={busy}>{busy ? "Sending…" : "Send a test email"}</button>
       {msg ? <p className="form-msg adm-alerts-msg" role="status">{msg}</p> : null}
     </div>
   );

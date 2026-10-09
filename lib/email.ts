@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { LOGO_PNG_BASE64 } from "./email-logo";
 import { SITE } from "./site";
+import { adminEmails } from "./admin";
 
 /**
  * Transactional email via Resend (owner-approved): account sign-in codes and
@@ -180,7 +181,8 @@ ${sum("Saving overall", `${r.quote.percentOff}%`)}
     `Regular price: ${money(r.quote.regular)}`, `Partner savings: -${money(r.quote.savings)}`, `Partner price: ${money(r.quote.partner)} (${r.quote.percentOff}% off overall)`,
   ].join("\n");
   return sendFromOrders({
-    to: [SITE.supportEmail],
+    // The support inbox plus each team member directly: support@ forwarding has been losing these.
+    to: [...new Set([SITE.supportEmail, ...adminEmails()])],
     reply_to: c.email,
     subject: `Partner pricing request: ${r.quote.vials} vials · ${c.name}`,
     html, text,
