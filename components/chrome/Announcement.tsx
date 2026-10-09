@@ -31,5 +31,7 @@ export function Announcement() {
     `Free ${gift.product.name} ${gift.variant.option} + free shipping on orders ${min}+`,
     `Limited time · ends ${endDay(gift.endsAt)} at midnight`,
   ];
-  return <AnnounceBar items={normal} deal={{ items: [...dealItems, ...BASE, RUO], endsAt: gift.endsAt }} />;
+  // The deal version leaves out the lyophilized line to keep the loop short and on the offer.
+  const dealBase = BASE.filter((t) => !t.startsWith("Lyophilized"));
+  return <AnnounceBar items={normal} deal={{ items: [...dealItems, ...dealBase, RUO], endsAt: gift.endsAt }} />;
 }
