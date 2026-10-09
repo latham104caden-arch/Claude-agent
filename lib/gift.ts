@@ -2,7 +2,7 @@ import { getCatalog } from "./catalog";
 import type { Product, Variant } from "./types";
 
 /**
- * Free gift with purchase: "Spend $245, get a free ___ + free shipping".
+ * Free gift with purchase: "Spend $200, get a free ___ + free shipping".
  *
  * TO TURN IT ON: set `sku` to the variant you're giving away (the SKU is in
  * data/products.ts and on the product page, e.g. "RR-BPC-157-10MG").
@@ -18,7 +18,7 @@ export const GIFT = {
   sku: "RR-GLP-3-R-10MG",
   /** Small line above the title on the homepage box. */
   label: "Limited time only",
-  minimum: 245,
+  minimum: 200,
   startsAt: "",
   endsAt: "2026-10-12T00:00:00-05:00", // end of Sunday Oct 11, Central time
 } as const;
