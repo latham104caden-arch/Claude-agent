@@ -12,6 +12,10 @@ import type { Product } from "./types";
 const API = "https://api.omnisend.com/v5";
 const PARALLEL = 5;
 
+/** GLP-class listings are never sent to Omnisend for email marketing; the sync retires them if present. */
+const NOT_MARKETED = /^glp-/i;
+const marketed = (p: Product) => !NOT_MARKETED.test(p.slug) && !NOT_MARKETED.test(p.name);
+
 const status = (inStock: boolean) => (inStock ? "inStock" : "outOfStock");
 
 export function omnisendProduct(p: Product) {
@@ -80,7 +84,7 @@ export async function syncCatalog(key: string): Promise<SyncResult> {
     else failed.push(`category ${c.slug} (${r.status})`);
   }
 
-  const catalog = getCatalog();
+  const catalog = getCatalog().filter(marketed);
   for (let i = 0; i < catalog.length; i += PARALLEL) {
     await Promise.all(catalog.slice(i, i + PARALLEL).map(async (p) => {
       const r = await upsert(key, "products", p.slug, omnisendProduct(p), "PUT");
