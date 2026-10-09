@@ -14,8 +14,8 @@ type Line = { sku: string; slug: string; name: string; option: string; price: nu
 const MAX_KIT = PARTNER_TIERS[PARTNER_TIERS.length - 1].kit;
 
 /**
- * Research Partner kit builder (lib/partner.ts): pick compounds and quantities,
- * see the regular price, the partner price and the saving in dollars and
+ * Bulk pricing kit builder (lib/partner.ts): pick compounds and quantities,
+ * see the regular price, the bulk price and the saving in dollars and
  * percent, then send the kit to the team. Nothing here changes checkout.
  */
 export function KitBuilder({ products }: { products: KitProduct[] }) {
@@ -69,7 +69,7 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
       <div className="card kit-sent" role="status">
         <span className="kit-sent-icon"><Icon name="check" strokeWidth={2.4} /></span>
         <h3 className="h3">Request sent.</h3>
-        <p>We&apos;ll email <b>{form.email}</b> within one business day to confirm lots and set up your partner pricing on this {q.vials}-vial kit (save {money(q.savings)}, {q.percentOff}% off).</p>
+        <p>We&apos;ll email <b>{form.email}</b> within one business day to confirm lots and set up your bulk pricing on this {q.vials}-vial kit (save {money(q.savings)}, {q.percentOff}% off).</p>
         <p className="muted">You can still order anything at regular prices in the meantime.</p>
         <Link href="/shop" className="btn btn--ghost">Back to the shop</Link>
       </div>
@@ -131,7 +131,7 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
 
         <dl className="kit-totals">
           <div><dt>Regular price</dt><dd>{money(q.regular)}</dd></div>
-          <div><dt>Partner price{q.tier ? ` (${q.tier.percent}% off)` : ""}</dt><dd>{q.tier ? money(q.partner) : "—"}</dd></div>
+          <div><dt>Bulk price{q.tier ? ` (${q.tier.percent}% off)` : ""}</dt><dd>{q.tier ? money(q.partner) : "—"}</dd></div>
         </dl>
         <div className={"kit-save" + (q.tier ? "" : " is-preview")}>
           <span>{q.tier ? "You save" : `At ${tierPct}% you'd save`}</span>
@@ -140,7 +140,7 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
         </div>
 
         <form className="kit-form" onSubmit={send}>
-          <p className="kit-form-head">Send us your kit and we&apos;ll set up your partner pricing.</p>
+          <p className="kit-form-head">Send us your kit and we&apos;ll set up your bulk pricing.</p>
           <input className="kit-hp" tabIndex={-1} autoComplete="off" aria-hidden="true" {...field("website")} />
           <label className="field"><span>Name</span><input className="input" required autoComplete="name" {...field("name")} /></label>
           <label className="field"><span>Email</span><input className="input" required type="email" autoComplete="email" {...field("email")} /></label>
@@ -149,9 +149,9 @@ export function KitBuilder({ products }: { products: KitProduct[] }) {
           <label className="field"><span>Notes (optional)</span><textarea className="textarea" rows={3} {...field("notes")} /></label>
           {error ? <p className="form-msg is-error" role="alert">{error}</p> : null}
           <button type="submit" className="btn btn--primary btn--block" disabled={!q.tier || state === "sending"}>
-            {state === "sending" ? "Sending…" : q.tier ? <>Request partner pricing <Icon name="arrow" /></> : `Add ${q.toNext} more vial${q.toNext === 1 ? "" : "s"} to request`}
+            {state === "sending" ? "Sending…" : q.tier ? <>Request bulk pricing <Icon name="arrow" /></> : `Add ${q.toNext} more vial${q.toNext === 1 ? "" : "s"} to request`}
           </button>
-          <p className="kit-fine">Partner pricing isn&apos;t applied at checkout; our team confirms lots and sets it up for you, usually within one business day. Reconstitution solution isn&apos;t discounted. For laboratory research use only.</p>
+          <p className="kit-fine">Bulk pricing isn&apos;t applied at checkout; our team confirms lots and sets it up for you, usually within one business day. Reconstitution solution isn&apos;t discounted. For laboratory research use only.</p>
         </form>
       </aside>
     </div>

@@ -27,7 +27,7 @@ export const NAV: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Compounds" },
   { href: "/coas", label: "COAs" },
-  { href: "/partner", label: "Partner Pricing" },
+  { href: "/bulk", label: "Bulk Pricing" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -42,7 +42,7 @@ export const FOOTER_COLUMNS: { title: string; links: NavItem[] }[] = [
       { href: "/product-category/repair-immune", label: "Repair & Immune" },
       { href: "/product-category/metabolic-gh", label: "Metabolic & GH" },
       { href: "/product-category/cognitive-longevity", label: "Cognitive & Longevity" },
-      { href: "/partner", label: "Research Partner Program" },
+      { href: "/bulk", label: "Bulk Pricing" },
       { href: "/coas", label: "COAs" },
     ],
   },

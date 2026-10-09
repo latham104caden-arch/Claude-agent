@@ -21,7 +21,7 @@ const fail = (message: string, status = 400) => NextResponse.json({ ok: false, m
  * are all decided here; Stripe's form collects the address and card. Attribution
  * rides on the session so the webhook can report the order. Codes: a $100 spend
  * reward (lib/rewards.ts, signed-in owner only) or an adz creator code.
- * Research Partner kit pricing (lib/partner.ts) is set up by the team, not here.
+ * Bulk kit pricing (lib/partner.ts) is set up by the team, not here.
  */
 export async function POST(req: Request) {
   let body: { lines?: unknown; code?: unknown; useLink?: unknown; attest?: unknown; emailOptIn?: unknown; gateAt?: unknown; sid?: unknown };
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
   const account = await currentEmail();
 
   // One discount per order (Stripe rule; no stacking): a typed code wins over a creator-link code.
-  // Research Partner pricing (lib/partner.ts) is never applied here; the team sets it up after a request.
+  // Bulk pricing (lib/partner.ts) is never applied here; the team sets it up after a request.
   const typed = typeof body.code === "string" ? body.code.trim() : "";
   const discounts: ({ coupon: string } | { promotion_code: string })[] = [];
   // The creator-link code applies only if the shopper kept it (they can remove it on the page).

@@ -53,8 +53,8 @@ export function CartDrawer() {
                 : <>Add <b>{money(gift.toGo)}</b> more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= shipFreeAt ? " and free shipping" : ""}.</>}</p>
             ) : null}
             {kit.vials >= PARTNER_TIERS[0].kit
-              ? <p className="drawer-bulk"><b>{kit.vials} vials:</b> Research Partner pricing would save you {money(kit.savings)} ({kit.tier!.percent}%). <Link href={PARTNER.path} onClick={() => setOpen(false)}>Request it</Link></p>
-              : kit.vials >= 5 ? <p className="drawer-bulk">Stocking a lab? Kits of {PARTNER_TIERS[0].kit}+ vials get up to {PARTNER_TIERS[PARTNER_TIERS.length - 1].percent}% off. <Link href={PARTNER.path} onClick={() => setOpen(false)}>Partner pricing</Link></p> : null}
+              ? <p className="drawer-bulk"><b>{kit.vials} vials:</b> Bulk pricing would save you {money(kit.savings)} ({kit.tier!.percent}%). <Link href={PARTNER.path} onClick={() => setOpen(false)}>Request it</Link></p>
+              : kit.vials >= 5 ? <p className="drawer-bulk">Stocking a lab? Kits of {PARTNER_TIERS[0].kit}+ vials get up to {PARTNER_TIERS[PARTNER_TIERS.length - 1].percent}% off. <Link href={PARTNER.path} onClick={() => setOpen(false)}>Bulk pricing</Link></p> : null}
           </div>
         ) : null}
 
