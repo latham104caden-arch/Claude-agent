@@ -5,7 +5,7 @@ import { SITE } from "../lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = SITE.url;
-  const pages = ["", "/shop", "/coas", "/bulk", "/about", "/faq", "/contact", "/research",
+  const pages = ["", "/shop", "/coas", "/partner", "/about", "/faq", "/contact", "/research",
     "/privacy-policy", "/shipping-policy", "/refund-policy", "/terms", "/disclaimer"];
   return [
     ...pages.map((p) => ({ url: base + p })),

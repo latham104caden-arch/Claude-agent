@@ -11,7 +11,7 @@ const EMAIL = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i;
 const clean = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
 /**
- * Bulk pricing request from /bulk. Body: { lines: [{sku, qty}],
+ * Research Partner pricing request from /partner. Body: { lines: [{sku, qty}],
  * name, email, phone?, organization?, notes?, website? (honeypot) }.
  * Re-prices the kit from the catalog (never trusts the browser's numbers),
  * requires at least the smallest kit, and emails it to the team.
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   if (!cart.ok) return fail(cart.message);
   const lines = cart.lines.map((l) => ({ slug: l.product.slug, price: l.variant.price, qty: l.qty }));
   const q = partnerQuote(lines);
-  if (!q.tier) return fail(`Bulk pricing starts at a ${PARTNER_TIERS[0].kit}-vial kit. Add ${q.toNext} more vial${q.toNext === 1 ? "" : "s"}.`);
+  if (!q.tier) return fail(`Partner pricing starts at a ${PARTNER_TIERS[0].kit}-vial kit. Add ${q.toNext} more vial${q.toNext === 1 ? "" : "s"}.`);
 
   const sent = await sendPartnerRequest({
     contact: { name, email, phone: clean(body.phone, 40), organization: clean(body.organization, 160), notes: clean(body.notes, 2000) },

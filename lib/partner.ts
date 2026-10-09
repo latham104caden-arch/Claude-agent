@@ -1,14 +1,14 @@
 /**
- * Bulk Pricing (internally "partner" pricing): lab pricing on kits of 10, 20 or 30+ compound
+ * Research Partner Program: lab pricing on kits of 10, 20 or 30+ compound
  * vials (40%, 45% or 50% off the compounds). It is NOT applied automatically:
- * labs build a kit on /bulk and send it to the team, who confirm lots and
+ * labs build a kit on /partner and send it to the team, who confirm lots and
  * set up the pricing. Anyone can still check out at regular prices.
  *
- * Used by the /bulk page (kit builder, examples) and the request route,
+ * Used by the /partner page (kit builder, examples) and the request route,
  * which re-prices every request from the catalog.
  */
 
-export const PARTNER = { name: "Bulk Pricing", path: "/bulk" } as const;
+export const PARTNER = { name: "Research Partner Program", path: "/partner" } as const;
 
 export const PARTNER_TIERS = [
   { kit: 10, percent: 40 },
@@ -25,7 +25,7 @@ const round = (n: number) => Math.round(n * 100) / 100;
 
 type Line = { slug: string; price: number; qty: number };
 
-/** What a kit costs at bulk pricing. Dollars are rounded to cents; `percentOff` is of the whole kit. */
+/** What a kit costs at partner pricing. Dollars are rounded to cents; `percentOff` is of the whole kit. */
 export function partnerQuote(lines: Line[]) {
   const compounds = lines.filter((l) => !NON_COMPOUND_SLUGS.has(l.slug));
   const vials = compounds.reduce((n, l) => n + l.qty, 0);
