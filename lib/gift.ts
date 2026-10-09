@@ -1,4 +1,5 @@
 import { getCatalog } from "./catalog";
+import { SITE } from "./site";
 import type { Product, Variant } from "./types";
 
 /**
@@ -11,6 +12,8 @@ import type { Product, Variant } from "./types";
  *
  * `minimum` is the cart subtotal (before discounts, the same number the cart
  * shows) that unlocks the gift. One gift per order.
+ * `freeShipping: true` also makes orders of `minimum`+ ship free while the deal
+ * runs (normally free shipping starts at SITE.freeShippingThreshold, $245).
  * `endsAt` switches it off on its own (site, cart and checkout); the homepage
  * banner counts down to it. `startsAt` ("" = live as soon as the SKU is set).
  */
@@ -19,6 +22,7 @@ export const GIFT = {
   /** Small line above the title on the homepage box. */
   label: "Limited time only",
   minimum: 200,
+  freeShipping: true,
   startsAt: "",
   endsAt: "2026-10-12T00:00:00-05:00", // end of Sunday Oct 11, Central time
 } as const;
@@ -48,4 +52,10 @@ export function giftFor(subtotal: number): (GiftOffer & { unlocked: boolean; toG
   if (!offer) return null;
   const toGo = Math.max(0, Math.round((offer.minimum - subtotal) * 100) / 100);
   return { ...offer, unlocked: toGo === 0, toGo };
+}
+
+/** Subtotal where shipping turns free: the gift minimum while a free-shipping deal is live, otherwise the normal threshold. */
+export function freeShippingAt(): number {
+  const offer = GIFT.freeShipping ? giftOffer() : null;
+  return offer ? Math.min(SITE.freeShippingThreshold, offer.minimum) : SITE.freeShippingThreshold;
 }
