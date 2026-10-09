@@ -9,7 +9,7 @@ import { SectionHead } from "../ui";
 import { ProductCard } from "../product/ProductCard";
 import { WavingFlag } from "./WavingFlag";
 import { GiftBanner } from "./GiftBanner";
-import { GIFT, giftOffer } from "../../lib/gift";
+import { GIFT, freeShippingAt, giftOffer } from "../../lib/gift";
 import { money } from "../../lib/format";
 
 /**
@@ -264,7 +264,7 @@ export function GiftOffer() {
           value={money(gift.value)}
           minimum={money(gift.minimum).replace(/\.00$/, "")}
           endsAt={gift.endsAt}
-          freeShip={gift.minimum >= SITE.freeShippingThreshold}
+          freeShip={gift.minimum >= freeShippingAt()}
         />
       </div>
     </section>

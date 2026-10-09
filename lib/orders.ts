@@ -1,5 +1,6 @@
 import { getCatalog } from "./catalog";
 import { SITE } from "./site";
+import { freeShippingAt } from "./gift";
 import type { Product, Variant } from "./types";
 
 export type PricedLine = { product: Product; variant: Variant; qty: number };
@@ -32,5 +33,5 @@ export function priceCart(input: unknown): { ok: true; lines: PricedLine[]; subt
 
 /** Shipping in USD for a pre-discount subtotal (matches what the cart shows). */
 export function shippingFor(subtotal: number): number {
-  return subtotal >= SITE.freeShippingAt(200) ? 0 : SITE.flatShipping;
+  return subtotal >= freeShippingAt() ? 0 : SITE.flatShipping;
 }

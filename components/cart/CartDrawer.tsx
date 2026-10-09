@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { SITE } from "../../lib/site";
 import { money } from "../../lib/format";
 import { Icon } from "../Icon";
 import { Vial } from "../Vial";
 import { useCart } from "./CartProvider";
 import { bulkFor, bulkLabel } from "../../lib/bulk";
 import { QtyStepper } from "./QtyStepper";
-import { giftFor } from "../../lib/gift";
+import { freeShippingAt, giftFor } from "../../lib/gift";
 
 export function CartDrawer() {
   const { lines, subtotal, open, setOpen, setQty, remove } = useCart();
@@ -24,8 +23,9 @@ export function CartDrawer() {
   }, [open, setOpen]);
 
   const bulk = bulkFor(lines);
-  const toFree = bulk.tier ? 0 : Math.max(0, SITE.freeShippingThreshold - subtotal);
-  const pct = Math.min(100, (subtotal / SITE.freeShippingThreshold) * 100);
+  const shipFreeAt = freeShippingAt();
+  const toFree = bulk.tier ? 0 : Math.max(0, shipFreeAt - subtotal);
+  const pct = Math.min(100, (subtotal / shipFreeAt) * 100);
   const gift = giftFor(subtotal);
 
   return (
@@ -51,7 +51,7 @@ export function CartDrawer() {
             {gift ? (
               <p className="drawer-bulk">{gift.unlocked
                 ? <><b>Free gift unlocked:</b> {gift.product.name} ({gift.variant.option}) is added at checkout.</>
-                : <>Add <b>{money(gift.toGo)}</b> more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= SITE.freeShippingThreshold ? " and free shipping" : ""}.</>}</p>
+                : <>Add <b>{money(gift.toGo)}</b> more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= shipFreeAt ? " and free shipping" : ""}.</>}</p>
             ) : null}
             {bulk.next && bulk.units > 0 ? <p className="drawer-bulk">Add <b>{bulk.toNext}</b> more compound{bulk.toNext === 1 ? "" : "s"} for {bulk.tier ? "the next tier" : "bulk pricing"}. <Link href="/bulk" onClick={() => setOpen(false)}>See tiers</Link></p> : null}
           </div>

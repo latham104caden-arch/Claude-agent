@@ -5,7 +5,7 @@ import { money } from "../../lib/format";
 import { useCart } from "../cart/CartProvider";
 import { bulkFor, bulkLabel } from "../../lib/bulk";
 import { SALE } from "../../lib/sale";
-import { giftFor } from "../../lib/gift";
+import { freeShippingAt, giftFor } from "../../lib/gift";
 
 /** Display totals. The server recomputes everything (lib/orders.ts) before Stripe charges. */
 export type AppliedDiscount = { code: string; label: string; amount: number };
@@ -18,7 +18,7 @@ export function Summary({ children, discount }: { children?: React.ReactNode; di
   // On a bulk order only a sale code can apply, and only if it saves more than bulk pricing.
   const codeWins = !!discount && (!bulk.tier || discount.amount > bulk.amount);
   // The sale code lowers the free-shipping threshold (same rule as the server).
-  const shipFreeAt = codeWins && discount!.code === SALE.code ? SALE.freeShippingOver : SITE.freeShippingThreshold;
+  const shipFreeAt = codeWins && discount!.code === SALE.code ? Math.min(SALE.freeShippingOver, freeShippingAt()) : freeShippingAt();
   const shipping = bulk.tier || subtotal >= shipFreeAt ? 0 : SITE.flatShipping;
   const off = codeWins ? Math.min(discount!.amount, subtotal) : bulk.tier ? bulk.amount : 0;
   const gift = giftFor(subtotal);
@@ -32,7 +32,7 @@ export function Summary({ children, discount }: { children?: React.ReactNode; di
       <div className="summary-row"><span>Shipping</span><span>{shipping ? money(shipping) : "Free"}</span></div>
       <div className="summary-row total"><span>Total</span><span>{money(subtotal - off + shipping)}</span></div>
       {shipping ? <p className="drawer-note">Free shipping on orders {money(shipFreeAt)}+.</p> : null}
-      {gift && !gift.unlocked ? <p className="drawer-note">Add {money(gift.toGo)} more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= freeShippingAt(200) ? " and free shipping" : ""}.</p> : null}
+      {gift && !gift.unlocked ? <p className="drawer-note">Add {money(gift.toGo)} more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= freeShippingAt() ? " and free shipping" : ""}.</p> : null}
       {bulk.next && bulk.units > 0 ? <p className="drawer-note">Add {bulk.toNext} more compound{bulk.toNext === 1 ? "" : "s"} for the {bulk.next.min}+ bulk tier.</p> : null}
       {children}
     </aside>
