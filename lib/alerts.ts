@@ -31,3 +31,14 @@ export async function alertTeamNewOrder(session: Stripe.Checkout.Session): Promi
   );
   if (result.failed) console.error("[alerts] order alert failed for some devices", result);
 }
+
+/** Pings team devices when a lab sends a Research Partner request from /partner. */
+export async function alertTeamPartnerRequest(r: { name: string; organization: string; vials: number; savings: number }): Promise<boolean> {
+  if (!senderReady()) return false;
+  const result = await sendToAll(
+    { title: `Partner request: ${r.vials} vials`, body: [r.name, r.organization || null, `save $${r.savings.toFixed(2)}`].filter(Boolean).join(" · "), url: "/admin#partner-requests", tag: `partner-${Date.now()}` },
+    TEAM_PREFIX,
+  );
+  if (result.failed) console.error("[alerts] partner alert failed for some devices", result);
+  return result.sent > 0;
+}

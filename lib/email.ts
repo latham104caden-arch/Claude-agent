@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { LOGO_PNG_BASE64 } from "./email-logo";
 import { SITE } from "./site";
+import { adminEmails } from "./admin";
 
 /**
  * Transactional email via Resend (owner-approved): account sign-in codes and
@@ -158,7 +159,8 @@ ${sum("Saving overall", `${r.quote.percentOff}%`)}
     headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
     body: JSON.stringify({
       from: process.env.RESEND_ORDERS_FROM || "Revised Research <orders@revisedresearch.com>",
-      to: [SITE.supportEmail],
+      // The support inbox plus each team member directly, so one forwarding hiccup can't lose a request.
+      to: [...new Set([SITE.supportEmail, ...adminEmails()])],
       reply_to: c.email,
       subject: `Partner pricing request: ${r.quote.vials} vials · ${c.name}`,
       html, text,

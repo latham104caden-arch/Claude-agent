@@ -13,6 +13,8 @@ import { OrderAlerts } from "../../components/admin/OrderAlerts";
 import { SyncCustomers } from "../../components/admin/SyncCustomers";
 import { SyncProducts } from "../../components/admin/SyncProducts";
 import { ContactProperties } from "../../components/admin/ContactProperties";
+import { PartnerRequests } from "../../components/admin/PartnerRequests";
+import { recentPartnerRequests } from "../../lib/partner-requests";
 import { Funnel } from "../../components/admin/Funnel";
 import { funnelReady, report } from "../../lib/funnel";
 import { getCatalog } from "../../lib/catalog";
@@ -37,13 +39,14 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
   const inW = raw.orders.filter((o) => o.created >= w.from && o.created < w.to);
   const capped = inW.slice(0, PRODUCT_ORDER_CAP);
 
-  const [funnel, refunds, prevRefunds, rec, lines, devices] = await Promise.all([
+  const [funnel, refunds, prevRefunds, rec, lines, devices, partnerRequests] = await Promise.all([
     report(w.days).catch((err) => { console.error("[admin] funnel", err); return null; }),
     refundsIn(w),
     prev ? refundsIn(prev) : Promise.resolve(0),
     reconcile(raw.orders, w),
     linesFor(capped.map((o) => o.id)),
     storageReady() ? countSubscriptions(TEAM_PREFIX).catch(() => null) : Promise.resolve(null),
+    recentPartnerRequests(),
   ]);
   const s = summarize(raw.orders, w, refunds);
   const p = prev ? summarize(raw.orders, prev, prevRefunds) : null;
@@ -177,6 +180,7 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
         </section>
       </div>
 
+      <PartnerRequests rows={partnerRequests} />
       <OrderAlerts devices={devices} />
       <SyncCustomers />
       <SyncProducts />
