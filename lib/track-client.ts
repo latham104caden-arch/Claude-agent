@@ -35,11 +35,21 @@ function beacon(body: object) {
   fetch("/api/track", { method: "POST", body: data, keepalive: true }).catch(() => {});
 }
 
-function omnisend(event: string, properties: Record<string, unknown>) {
+/**
+ * Sends an Omnisend event from the browser snippet, plus the same event (same
+ * eventID) to /api/track/omnisend, which forwards it under the account email
+ * when the shopper is signed in. The snippet alone drops events from browsers
+ * Omnisend doesn't recognise yet; Omnisend keeps one copy per eventID.
+ */
+function omnisend(event: string, properties: Record<string, unknown>, server: Record<string, unknown>) {
+  const eventID = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   const w = window as unknown as { omnisend?: { push: (cmd: unknown[]) => number } };
   const q = (w.omnisend ??= [] as unknown as { push: (cmd: unknown[]) => number });
-  q.push(["track", event, { origin: "api", eventID: crypto.randomUUID?.() ?? String(Date.now()), properties }]);
+  q.push(["track", event, { origin: "api", eventID, properties }]);
+  fetch("/api/track/omnisend", { method: "POST", body: JSON.stringify({ event, eventID, ...server }), keepalive: true }).catch(() => {});
 }
+
+const skus = (lines: CartLine[]) => lines.map((l) => ({ sku: l.sku, qty: l.qty }));
 
 const cartId = () => `cart-${sessionId()}`;
 const item = (l: Pick<CartLine, "slug" | "sku" | "name" | "option" | "price">, qty: number) => ({
@@ -71,7 +81,7 @@ export function trackProductView(slug: string) {
       url: `${SITE}/product/${slug}`,
       imageUrl: meta("og:image"),
     },
-  });
+  }, { slug });
 }
 
 export function trackAddToCart(line: Omit<CartLine, "qty">, qty: number, cartAfter: CartLine[]) {
@@ -83,7 +93,7 @@ export function trackAddToCart(line: Omit<CartLine, "qty">, qty: number, cartAft
     currency: "USD",
     addedItem: item(line, qty),
     lineItems: cartAfter.map((l) => item(l, l.qty)),
-  });
+  }, { cartID: cartId(), lines: skus(cartAfter), added: line.sku, addedQty: qty });
 }
 
 /** Checkout start: the funnel count is recorded server-side by /api/checkout; this is the Omnisend event. */
@@ -94,5 +104,5 @@ export function trackCheckoutStarted(lines: CartLine[]) {
     value: value(lines),
     currency: "USD",
     lineItems: lines.map((l) => item(l, l.qty)),
-  });
+  }, { cartID: cartId(), lines: skus(lines) });
 }
