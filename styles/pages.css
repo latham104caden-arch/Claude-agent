@@ -135,6 +135,8 @@
 .partner-fine ul { display: grid; gap: 8px; padding-left: 20px; font-size: 14px; color: var(--text-muted); }
 .partner-fine a { color: var(--accent-ink); font-weight: 600; text-decoration: underline; }
 @media (max-width: 860px) { .partner-tiers { grid-template-columns: 1fr; gap: 26px; } }
+/* Desktop: tighter hand-off from the tier cards into the kit builder. */
+@media (min-width: 861px) { .partner-tiers-section { padding-bottom: 64px; } .partner-build-section { padding-top: 72px; } }
 
 /* Kit builder (components/partner/KitBuilder.tsx) */
 .kit { display: grid; grid-template-columns: 1.35fr 1fr; gap: 20px; align-items: start; }

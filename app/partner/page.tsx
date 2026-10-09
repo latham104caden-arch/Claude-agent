@@ -40,7 +40,7 @@ export default function PartnerPage() {
         </div>
       </PageHero>
 
-      <section className="section">
+      <section className="section partner-tiers-section">
         <div className="container">
           <SectionHead eyebrow="Kit pricing" title={<>The more you stock, <em>the more you save.</em></>} lead={ex && v ? `Every example is ${ex.name} ${v.option} at ${money(v.price)} a vial. Mix any compounds and sizes; every vial counts toward your kit.` : "Mix any compounds and sizes; every vial counts toward your kit."} />
           <div className="partner-tiers">
@@ -65,7 +65,7 @@ export default function PartnerPage() {
         </div>
       </section>
 
-      <section className="section section--alt" id="build">
+      <section className="section section--alt partner-build-section" id="build">
         <div className="container">
           <SectionHead eyebrow="Kit builder" title={<>Build your kit, <em>see your savings.</em></>} lead="Add compounds and quantities. Your regular price, partner price and saving update as you go." />
           <KitBuilder products={products} />
