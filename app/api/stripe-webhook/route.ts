@@ -38,8 +38,9 @@ export async function POST(req: Request) {
       if (session.payment_status === "paid") {
         // An approved partner kit's link works once: close it now that it's paid.
         if (session.metadata?.partner_token) await markApprovalPaid(session.metadata.partner_token, session.id).catch((err) => console.error("[stripe-webhook] partner link", err));
-        await alertTeamNewOrder(session).catch((err) => console.error("[stripe-webhook] team alert", err));
+        // The customer's confirmation goes first, so team alerts can never delay it.
         await sendOrderConfirmation(session).catch((err) => console.error("[stripe-webhook] confirmation", err));
+        await alertTeamNewOrder(session).catch((err) => console.error("[stripe-webhook] team alert", err));
         await reportOrder(session);
         await saveCustomer(session);
         await reportPlacedOrder(session);

@@ -54,6 +54,7 @@ export async function sendFromOrders(payload: Record<string, unknown>, idempoten
         headers: { authorization: `Bearer ${key}`, "content-type": "application/json", ...(idem ? { "Idempotency-Key": idem } : {}) },
         body: JSON.stringify({ ...payload, from }),
         cache: "no-store",
+        signal: AbortSignal.timeout(8000),
       });
       const error = res.ok ? "" : (await res.text().catch(() => "")).slice(0, 400);
       if (!res.ok) console.error("[email] Resend", from, res.status, error);
@@ -63,7 +64,9 @@ export async function sendFromOrders(payload: Record<string, unknown>, idempoten
     }
   };
   const first = await attempt(ORDERS_FROM(), idempotencyKey);
-  if (first.ok || first.status >= 500 || first.status === 0 || LOGIN_FROM() === ORDERS_FROM()) return first;
+  // 409: the same Idempotency-Key is already in flight (the webhook and thank-you page racing), so
+  // that send is handling it; falling back to the sign-in sender would email the customer twice.
+  if (first.ok || first.status >= 500 || first.status === 0 || first.status === 409 || LOGIN_FROM() === ORDERS_FROM()) return first;
   const second = await attempt(LOGIN_FROM(), idempotencyKey ? `${idempotencyKey}/fallback` : undefined);
   return second.ok ? second : { ...second, error: `orders@ sender: ${first.status} ${first.error} | fallback: ${second.status} ${second.error}` };
 }

@@ -108,7 +108,7 @@ export async function sendToAll(msg: { title: string; body: string; url?: string
       const sub = await read(blob.url);
       if (!sub) { failed++; continue; }
       try {
-        await webpush.sendNotification(sub, payload, { TTL: 60 * 60 * 24 });
+        await webpush.sendNotification(sub, payload, { TTL: 60 * 60 * 24, timeout: 5000 });
         sent++;
       } catch (err) {
         const code = (err as { statusCode?: number }).statusCode;
