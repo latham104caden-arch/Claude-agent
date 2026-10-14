@@ -1,8 +1,9 @@
 import type { Product } from "./types";
 
 /**
- * GLP-class listings are never marketed: kept out of the Omnisend catalog
- * (lib/omnisend-catalog.ts) and out of email discount codes (MAIL25).
+ * Every listing is marketed: nothing is kept out of the Omnisend catalog
+ * (lib/omnisend-catalog.ts), email discount codes (MAIL25), BOGO or partner
+ * pricing on these grounds. Kept as a single hook so an exclusion can be
+ * reintroduced here without touching the call sites.
  */
-
-export const isMarketed = (p: Pick<Product, "slug" | "name">) => !NOT_MARKETED.test(p.slug) && !NOT_MARKETED.test(p.name);
+export const isMarketed = (_p: Pick<Product, "slug" | "name">) => true;
