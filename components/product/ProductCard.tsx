@@ -5,14 +5,20 @@ import { Vial } from "../Vial";
 import { CardAction } from "./CardAction";
 import { Icon } from "../Icon";
 import { giftOffer } from "../../lib/gift";
+import { BOGO, bogoLive } from "../../lib/bogo";
+import { isMarketed } from "../../lib/marketing";
+import { BogoTag } from "./BogoTag";
 
 export function ProductCard({ p, delay = 0 }: { p: ProductSummary; delay?: number }) {
   // The current free-gift product (lib/gift.ts) gets the teal card and a "Get one free" tag.
   const gift = giftOffer();
   const isGift = gift?.product.slug === p.slug;
+  // During the Spooky Season BOGO (lib/bogo.ts), every vial that counts toward it gets the purple card.
+  const isBogo = !isGift && bogoLive() && p.category !== "supplies" && isMarketed(p);
   return (
     <article className={"pcard" + (isGift ? " pcard--gift" : "")} data-reveal="" data-reveal-delay={String(delay)}>
       {isGift ? <span className="pcard-gift-tag"><Icon name="gift" />Get one free</span> : null}
+      {isBogo ? <BogoTag endsAt={BOGO.endsAt} /> : null}
       <div className="pcard-art">
         <Vial name={p.name} option={p.firstOption} accent={p.accent} />
         <div className="pcard-badges">

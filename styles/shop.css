@@ -363,3 +363,11 @@
   .bundle-art { min-height: 240px; }
 }
 @media (prefers-reduced-motion: reduce) { .bundle-vial { animation: none; } }
+
+/* Spooky Season BOGO cards (components/product/BogoTag.tsx): purple while the tag is there. */
+.pcard:has(.pcard-bogo-tag) { background: linear-gradient(160deg, var(--purple-deep) 0%, var(--purple) 55%, var(--purple-bright) 100%); border-color: var(--purple-bright); box-shadow: var(--shadow); }
+.pcard:has(.pcard-bogo-tag) .pcard-sub, .pcard:has(.pcard-bogo-tag) .pcard-price small, .pcard:has(.pcard-bogo-tag) .pcard-price s { color: var(--on-ink-muted); }
+.pcard:has(.pcard-bogo-tag) .pcard-name, .pcard:has(.pcard-bogo-tag) .pcard-name a, .pcard:has(.pcard-bogo-tag) .pcard-price { color: var(--on-ink); }
+.pcard-bogo-tag { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); width: max-content; z-index: 3; display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-pill); background: var(--pumpkin); color: var(--pumpkin-ink); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; box-shadow: var(--shadow); }
+.pcard-bogo-tag svg { flex: none; width: 15px; height: 15px; }
+@media (max-width: 640px) { .pcard-bogo-tag { padding: 4px 9px; gap: 4px; font-size: 10px; letter-spacing: 0.04em; } .pcard-bogo-tag svg { width: 13px; height: 13px; } }
