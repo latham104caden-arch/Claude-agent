@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "../Icon";
 
-type Props = { items: string[]; deal?: { items: string[]; endsAt: string } };
+type Props = { items: string[]; deal?: { items: string[]; endsAt: string; tone?: "spooky"; lead?: number } };
 
 /** The scrolling bar itself. The list is doubled so the loop is seamless. */
 export function AnnounceBar({ items, deal }: Props) {
@@ -18,14 +18,16 @@ export function AnnounceBar({ items, deal }: Props) {
   }, [deal]);
 
   const list = live && deal ? deal.items : items;
-  const dealCount = live && deal ? 2 : 0;
+  const dealCount = live && deal ? deal.lead ?? 2 : 0;
+  const spooky = live && deal?.tone === "spooky";
+  const dealIcon = spooky ? "ghost" : "gift";
   return (
-    <div className={"announce" + (live ? " announce--deal" : "")} role="region" aria-label="Store highlights">
+    <div className={"announce" + (live ? (spooky ? " announce--deal announce--spooky" : " announce--deal") : "")} role="region" aria-label="Store highlights">
       <p className="sr-only">{list.join(" · ")}</p>
       <div className="announce-track" aria-hidden="true">
         {[...list, ...list].map((t, i) => (
           <span className={"announce-item" + (i % list.length < dealCount ? " announce-item--deal" : "")} key={i}>
-            <Icon name={i % list.length < dealCount ? "gift" : "check"} strokeWidth={i % list.length < dealCount ? 2 : 2.6} />{t}
+            <Icon name={i % list.length < dealCount ? dealIcon : "check"} strokeWidth={i % list.length < dealCount ? 2 : 2.6} />{t}
           </span>
         ))}
       </div>

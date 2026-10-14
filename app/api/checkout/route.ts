@@ -8,6 +8,7 @@ import { MAIL_CODE, resolveDiscount } from "../../../lib/discounts";
 import { SALE } from "../../../lib/sale";
 import { record } from "../../../lib/funnel";
 import { giftFor } from "../../../lib/gift";
+import { BOGO } from "../../../lib/bogo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -71,6 +72,11 @@ export async function POST(req: Request) {
     const coupon = await stripe.coupons.create({ amount_off: cents(d.amount), currency: "usd", duration: "once", max_redemptions: 1, name: `${d.code} 25% off` });
     discounts.push({ coupon: coupon.id });
     metadata[MAIL_CODE.metaKey] = d.code;
+  } else if (d?.kind === "bogo") {
+    // The free vials' prices as a fixed amount off (the cheapest eligible vials, lib/bogo.ts).
+    const coupon = await stripe.coupons.create({ amount_off: cents(d.amount), currency: "usd", duration: "once", max_redemptions: 1, name: `${BOGO.name}: ${d.free} free vial${d.free === 1 ? "" : "s"}` });
+    discounts.push({ coupon: coupon.id });
+    metadata.bogo_deal = `${d.free} free`;
   } else if (d?.kind === "creator") {
     const coupon = await stripe.coupons.create({ percent_off: d.percent, duration: "once", max_redemptions: 1, name: d.code });
     discounts.push({ coupon: coupon.id });

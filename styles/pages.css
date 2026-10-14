@@ -193,3 +193,20 @@
   .kit-lines li { grid-template-columns: 1fr auto; }
   .kit-line-total { grid-column: 1; text-align: left; }
 }
+
+/* Spooky Season BOGO claim at checkout (components/checkout/CheckoutForm.tsx) */
+.bogo-claim { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; margin-bottom: 18px; padding: 14px 16px; border-radius: var(--radius); color: var(--on-ink);
+  background: linear-gradient(120deg, var(--purple-deep) 0%, var(--purple) 60%, var(--purple-bright) 100%); }
+.bogo-claim-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); color: var(--purple-glow); }
+.bogo-claim-icon svg { width: 22px; height: 22px; }
+.bogo-claim-copy { display: grid; gap: 2px; font-size: 14px; line-height: 1.45; }
+.bogo-claim-copy b { font-family: var(--font-display); font-style: italic; font-size: 19px; font-weight: 500; }
+.bogo-claim-btn { background: var(--pumpkin); color: var(--pumpkin-ink); font-weight: 700; border: 0; white-space: nowrap; }
+.bogo-claim-btn:hover:not(:disabled) { background: var(--pumpkin-bright); }
+.bogo-claim-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.bogo-claim .link-btn { color: var(--on-ink); }
+.bogo-claim.is-on { box-shadow: 0 0 0 2px var(--pumpkin) inset; }
+@media (max-width: 560px) {
+  .bogo-claim { grid-template-columns: auto 1fr; }
+  .bogo-claim > :last-child { grid-column: 1 / -1; justify-self: stretch; }
+}

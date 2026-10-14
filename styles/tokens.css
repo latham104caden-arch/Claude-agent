@@ -64,6 +64,15 @@
   --teal: #3F6E6C;          /* label shadow side */
   --teal-bright: #559291;   /* label lit side */
   --teal-ink: #2F5A58;      /* teal text on white (AA) */
+  /* Spooky Season deal (lib/bogo.ts): a blue-leaning violet that sits with the slate blues, plus a pumpkin accent. */
+  --purple-deep: #1E1733;   /* darkest end of the deal gradient */
+  --purple: #33275A;        /* deal panels */
+  --purple-bright: #5B4A94; /* lit side of the gradient */
+  --purple-ink: #46377A;    /* purple text on white (AA) */
+  --purple-glow: #A897E0;   /* ghosts and soft highlights on dark purple */
+  --pumpkin: #F0A04B;       /* deal pill / button */
+  --pumpkin-bright: #FFC27A;
+  --pumpkin-ink: #2A1606;   /* text on the pumpkin pill */
 
   /* Vial label print (matches the slate studio label) */
   --label-ink: #FFFFFF;       /* product name, white on slate */

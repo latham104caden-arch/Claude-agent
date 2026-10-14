@@ -10,6 +10,8 @@ import { ProductCard } from "../product/ProductCard";
 import { WavingFlag } from "./WavingFlag";
 import { GiftBanner } from "./GiftBanner";
 import { GIFT, freeShippingAt, giftOffer } from "../../lib/gift";
+import { SpookyBanner } from "./SpookyBanner";
+import { BOGO, bogoLive } from "../../lib/bogo";
 import { money } from "../../lib/format";
 
 /**
@@ -251,6 +253,15 @@ export function WhyUs() {
 
 /** Limited-time free-gift box between the ticker and the products (lib/gift.ts). Renders nothing while the deal is off. */
 export function GiftOffer() {
+  if (bogoLive()) {
+    return (
+      <section className="gift-section spooky-section" aria-label="Limited-time offer">
+        <div className="container">
+          <SpookyBanner name={BOGO.name} tiers={BOGO.tiers.map((t) => ({ buy: t.buy, get: t.get }))} endsAt={BOGO.endsAt} />
+        </div>
+      </section>
+    );
+  }
   const gift = giftOffer();
   if (!gift) return null;
   return (

@@ -9,6 +9,7 @@ import { useCart } from "./CartProvider";
 import { PARTNER, PARTNER_TIERS, partnerQuote } from "../../lib/partner";
 import { QtyStepper } from "./QtyStepper";
 import { freeShippingAt, giftFor } from "../../lib/gift";
+import { BOGO, bogoLive, bogoQuote, tierLabel } from "../../lib/bogo";
 
 export function CartDrawer() {
   const { lines, subtotal, open, setOpen, setQty, remove } = useCart();
@@ -23,6 +24,7 @@ export function CartDrawer() {
   }, [open, setOpen]);
 
   const kit = partnerQuote(lines);
+  const deal = bogoLive() ? bogoQuote(lines) : null;
   const near = kit.closest ? lines.find((l) => l.sku === kit.closest!.sku) : null;
   const shipFreeAt = freeShippingAt();
   const toFree = Math.max(0, shipFreeAt - subtotal);
@@ -52,6 +54,11 @@ export function CartDrawer() {
               <p className="drawer-bulk">{gift.unlocked
                 ? <><b>Free gift unlocked:</b> {gift.product.name} ({gift.variant.option}) is added at checkout.</>
                 : <>Add <b>{money(gift.toGo)}</b> more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= shipFreeAt ? " and free shipping" : ""}.</>}</p>
+            ) : null}
+            {deal ? (
+              <p className="drawer-bulk drawer-bogo"><Icon name="ghost" />{deal.tier
+                ? <><b>{tierLabel(deal.tier)}:</b> {deal.free.length} vial{deal.free.length === 1 ? "" : "s"} free ({money(deal.amount)}). Tap <b>Get BOGO</b> at checkout.{deal.next ? ` Add ${deal.toNext} more for ${deal.next.get} free.` : ""}</>
+                : <><b>{BOGO.name}:</b> add {deal.toNext} more vial{deal.toNext === 1 ? "" : "s"} and get 1 free.</>}</p>
             ) : null}
             {kit.qualifying
               ? <p className="drawer-bulk"><b>Partner pricing:</b> {kit.qualifyingVials} of your vials qualify, so you&apos;d save {money(kit.savings)}. <Link href={PARTNER.path} onClick={() => setOpen(false)}>Request it</Link></p>

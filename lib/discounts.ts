@@ -2,6 +2,7 @@ import { validateCode } from "@adz/next";
 import { REWARD_VALUE, isRewardCode, rewardPromotionFor } from "./rewards";
 import { hasPaidOrder, hasUsedCode } from "./account";
 import { isMarketed } from "./marketing";
+import { BOGO, bogoLive, bogoQuote, tierLabel } from "./bogo";
 import type { Product } from "./types";
 import { SALE, saleState } from "./sale";
 
@@ -24,7 +25,8 @@ export type Discount =
   | { kind: "creator"; code: string; label: string; amount: number; percent: number }
   | { kind: "first"; code: string; label: string; amount: number; percent: number }
   | { kind: "sale"; code: string; label: string; amount: number; percent: number }
-  | { kind: "mail"; code: string; label: string; amount: number; percent: number };
+  | { kind: "mail"; code: string; label: string; amount: number; percent: number }
+  | { kind: "bogo"; code: string; label: string; amount: number; free: number };
 
 const round = (n: number) => Math.round(n * 100) / 100;
 
@@ -49,6 +51,13 @@ export async function resolveDiscount(raw: string, opts: { subtotal: number; lin
     const state = saleState();
     if (state !== "active") return { error: state === "upcoming" ? `${SALE.code} isn't live yet.` : `The ${SALE.name} has ended, so ${SALE.code} no longer works.` };
     return { kind: "sale", code, label: `${SALE.percent}% off · ${SALE.name}`, amount: round((opts.subtotal * SALE.percent) / 100), percent: SALE.percent };
+  }
+
+  if (code === BOGO.code) {
+    if (!bogoLive()) return { error: `The ${BOGO.name} has ended.` };
+    const q = bogoQuote(opts.lines.map((l) => ({ slug: l.product.slug, name: l.product.name, price: l.price, qty: l.qty })));
+    if (!q.tier) return { error: `Add ${q.toNext} more vial${q.toNext === 1 ? "" : "s"} to use the deal: buy 2, get 1 free.` };
+    return { kind: "bogo", code, label: `${tierLabel(q.tier)} · ${q.free.length} vial${q.free.length === 1 ? "" : "s"} free`, amount: q.amount, free: q.free.length };
   }
 
   if (code === MAIL_CODE.code) {

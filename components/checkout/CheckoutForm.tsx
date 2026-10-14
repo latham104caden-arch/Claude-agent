@@ -8,6 +8,7 @@ import { Icon } from "../Icon";
 import { PaymentForm } from "./PaymentForm";
 import { Summary, type AppliedDiscount } from "./Summary";
 import { sessionId, trackCheckoutStarted } from "../../lib/track-client";
+import { BOGO, bogoLive, bogoQuote, tierLabel } from "../../lib/bogo";
 
 /**
  * Checkout: research attestation and an optional creator code, then Stripe's
@@ -57,6 +58,23 @@ export function CheckoutForm() {
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, cartKey]);
+
+  // Spooky Season BOGO (lib/bogo.ts): claimed with the "Get BOGO" button; it takes the order's one discount.
+  const deal = bogoLive() ? bogoQuote(lines.map((l) => ({ slug: l.slug, name: l.name, price: l.price, qty: l.qty }))) : null;
+  const bogoOn = applied?.code === BOGO.code;
+  const getBogo = async () => {
+    if (applying) return;
+    setApplying(true);
+    setCodeMsg("");
+    try {
+      const { ok, data } = await preview(BOGO.code);
+      if (ok && data.discount) setApplied(data.discount);
+      else setCodeMsg(data.message || "The deal doesn't apply to this cart yet.");
+    } catch {
+      setCodeMsg("Couldn't apply the deal. Check your connection and try again.");
+    }
+    setApplying(false);
+  };
 
   const apply = async () => {
     const typed = code.trim();
@@ -120,6 +138,22 @@ export function CheckoutForm() {
   return (
     <form className="checkout-grid" onSubmit={submit}>
       <div>
+        {deal ? (
+          <div className={"bogo-claim" + (bogoOn ? " is-on" : "")}>
+            <span className="bogo-claim-icon" aria-hidden="true"><Icon name="ghost" /></span>
+            <div className="bogo-claim-copy">
+              <b>{BOGO.name}</b>
+              <span>{bogoOn
+                ? <>{applied!.label}: you save {money(applied!.amount)}.</>
+                : deal.tier
+                  ? <>{tierLabel(deal.tier)}: {deal.free.length} of your {deal.vials} vials free, worth {money(deal.amount)}.{deal.next ? ` Add ${deal.toNext} more for ${deal.next.get} free.` : ""}</>
+                  : <>Buy 2 get 1 · buy 3 get 2 · buy 5 get 3 free. Add {deal.toNext} more vial{deal.toNext === 1 ? "" : "s"} to unlock it.</>}</span>
+            </div>
+            {bogoOn
+              ? <button type="button" className="link-btn" onClick={() => setApplied(null)}>Remove</button>
+              : <button type="button" className="btn bogo-claim-btn" onClick={getBogo} disabled={!deal.tier || applying}>{applying ? "Applying…" : "Get BOGO"}</button>}
+          </div>
+        ) : null}
         <fieldset>
           <legend>Discount code</legend>
           <div className="form-grid">
@@ -131,7 +165,7 @@ export function CheckoutForm() {
               </div>
             </div>
           </div>
-          {applied ? (
+          {applied && !bogoOn ? (
             <div className="code-applied" role="status">
               <Icon name="check" strokeWidth={2.4} />
               <span><b className="mono">{applied.code}</b> applied · {applied.label}{applied.fromLink ? " (from your creator link)" : ""}</span>

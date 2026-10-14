@@ -3,6 +3,7 @@ import { COA_COUNT, TESTED_COUNT } from "../../data/coas";
 import { giftOffer } from "../../lib/gift";
 import { money } from "../../lib/format";
 import { AnnounceBar } from "./AnnounceBar";
+import { BOGO, bogoLive } from "../../lib/bogo";
 
 const BASE = [
   `${COA_COUNT} COAs published`,
@@ -18,13 +19,20 @@ const endDay = (iso: string) =>
   new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: "America/Chicago" }).format(new Date(Date.parse(iso) - 1));
 
 /**
- * Sitewide scrolling announcement bar. While the free-gift deal (lib/gift.ts)
- * runs, the bar turns teal and leads with the deal; it switches back to the
+ * Sitewide scrolling announcement bar. While the Spooky Season BOGO
+ * (lib/bogo.ts) runs it turns purple and leads with that deal; while the
+ * free-gift deal (lib/gift.ts) runs, it turns teal and leads with the deal; it switches back to the
  * normal bar by itself when the deal ends.
  */
 export function Announcement() {
   const gift = giftOffer();
   const normal = [...BASE, SHIPPING, RUO];
+  if (bogoLive()) {
+    const tiers = BOGO.tiers.map((t) => `Buy ${t.buy} get ${t.get} free`);
+    const dealItems = [`${BOGO.name}: ${tiers.join(" · ")}`, "Tap Get BOGO at checkout", "Limited time · ends Halloween night"];
+    const dealBase = BASE.filter((t) => !t.startsWith("Lyophilized"));
+    return <AnnounceBar items={normal} deal={{ items: [...dealItems, ...dealBase, RUO], endsAt: BOGO.endsAt, tone: "spooky", lead: dealItems.length }} />;
+  }
   if (!gift) return <AnnounceBar items={normal} />;
   const min = money(gift.minimum).replace(/\.00$/, "");
   const dealItems = [
