@@ -210,3 +210,13 @@
   .bogo-claim { grid-template-columns: auto 1fr; }
   .bogo-claim > :last-child { grid-column: 1 / -1; justify-self: stretch; }
 }
+
+.code-toggle { margin: -6px 0 22px; font-size: 14px; }
+@media (max-width: 640px) {
+  .checkout-grid fieldset { margin-bottom: 20px; }
+  .checkout-grid legend { font-size: 22px; margin-bottom: 10px; }
+  .bogo-claim { padding: 12px; gap: 10px; margin-bottom: 14px; }
+  .bogo-claim-icon { width: 34px; height: 34px; }
+  .bogo-claim-copy { font-size: 13px; }
+  .bogo-claim-copy b { font-size: 17px; }
+}

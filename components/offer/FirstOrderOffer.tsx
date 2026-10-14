@@ -21,7 +21,8 @@ import { Icon } from "../Icon";
 const CODE = "RR25";
 const KEY = "rr-offer-v1";
 const GATE_KEY = "rr-gate-v1";
-const HIDDEN_ON = ["/checkout"];
+// Kept off cart and checkout pages, where it would sit on top of the order summary.
+const HIDDEN_ON = ["/checkout", "/cart", "/partner/checkout"];
 const VAPID = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
 
 type Step = "intro" | "install" | "alerts" | "code" | "unsupported";

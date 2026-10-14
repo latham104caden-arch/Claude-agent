@@ -3,7 +3,6 @@
 import { SITE } from "../../lib/site";
 import { money } from "../../lib/format";
 import { useCart } from "../cart/CartProvider";
-import { PARTNER, partnerQuote } from "../../lib/partner";
 import { SALE } from "../../lib/sale";
 import { freeShippingAt, giftFor } from "../../lib/gift";
 
@@ -11,9 +10,7 @@ import { freeShippingAt, giftFor } from "../../lib/gift";
 export type AppliedDiscount = { code: string; label: string; amount: number };
 
 export function Summary({ children, discount }: { children?: React.ReactNode; discount?: AppliedDiscount | null }) {
-  const { subtotal, lines } = useCart();
-  // Partner pricing isn't applied at checkout; carts with 10+ of one vial get a pointer to request it.
-  const kit = partnerQuote(lines);
+  const { subtotal } = useCart();
   // Free-shipping threshold is judged on the pre-discount subtotal (same as the server).
   const codeWins = !!discount;
   // The sale code lowers the free-shipping threshold (same rule as the server).
@@ -31,7 +28,6 @@ export function Summary({ children, discount }: { children?: React.ReactNode; di
       <div className="summary-row total"><span>Total</span><span>{money(subtotal - off + shipping)}</span></div>
       {shipping ? <p className="drawer-note">Free shipping on orders {money(shipFreeAt)}+.</p> : null}
       {gift && !gift.unlocked ? <p className="drawer-note">Add {money(gift.toGo)} more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= freeShippingAt() ? " and free shipping" : ""}.</p> : null}
-      {kit.qualifying ? <p className="drawer-note">{kit.qualifyingVials} of these vials qualify for partner pricing. <a href={PARTNER.path}>Request it</a> and save {money(kit.savings)} before you pay.</p> : null}
       {children}
     </aside>
   );

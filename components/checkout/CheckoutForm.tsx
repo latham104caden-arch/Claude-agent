@@ -27,6 +27,8 @@ export function CheckoutForm() {
   const [applied, setApplied] = useState<(AppliedDiscount & { fromLink?: boolean }) | null>(null);
   const [applying, setApplying] = useState(false);
   const [codeMsg, setCodeMsg] = useState("");
+  // The code box stays folded behind "Have a discount code?" until it's needed.
+  const [showCode, setShowCode] = useState(false);
   // The entry gate already asked for 21+ (rr-gate-v1). If it's on record, checkout only asks for research use.
   const [gateAt, setGateAt] = useState<string | null>(null);
   useEffect(() => {
@@ -154,26 +156,30 @@ export function CheckoutForm() {
               : <button type="button" className="btn bogo-claim-btn" onClick={getBogo} disabled={!deal.tier || applying}>{applying ? "Applying…" : "Get BOGO"}</button>}
           </div>
         ) : null}
-        <fieldset>
-          <legend>Discount code</legend>
-          <div className="form-grid">
-            <div className="field span-2">
-              <label htmlFor="co-code">Code (optional)</label>
-              <div className="code-apply">
-                <input id="co-code" className="input" value={code} onChange={(e) => { setCode(e.target.value); setCodeMsg(""); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } }} autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={64} placeholder="Enter a code" />
-                <button type="button" className="btn btn--dark" onClick={apply} disabled={!code.trim() || applying}>{applying ? "Checking…" : "Apply"}</button>
+        {showCode || (applied && !bogoOn) || codeMsg ? (
+          <fieldset>
+            <legend>Discount code</legend>
+            <div className="form-grid">
+              <div className="field span-2">
+                <label htmlFor="co-code">Code (optional)</label>
+                <div className="code-apply">
+                  <input id="co-code" className="input" value={code} onChange={(e) => { setCode(e.target.value); setCodeMsg(""); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } }} autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={64} placeholder="Enter a code" />
+                  <button type="button" className="btn btn--dark" onClick={apply} disabled={!code.trim() || applying}>{applying ? "Checking…" : "Apply"}</button>
+                </div>
               </div>
             </div>
-          </div>
-          {applied && !bogoOn ? (
-            <div className="code-applied" role="status">
-              <Icon name="check" strokeWidth={2.4} />
-              <span><b className="mono">{applied.code}</b> applied · {applied.label}{applied.fromLink ? " (from your creator link)" : ""}</span>
-              <button type="button" className="link-btn" onClick={() => setApplied(null)}>Remove</button>
-            </div>
-          ) : null}
-          {codeMsg ? <p className="drawer-note" role="alert" style={{ color: "var(--danger)" }}>{codeMsg}</p> : <p className="drawer-note">Creator code, RR25 on a first order, or a $100 reward code from your account. One code per order.</p>}
-        </fieldset>
+            {applied && !bogoOn ? (
+              <div className="code-applied" role="status">
+                <Icon name="check" strokeWidth={2.4} />
+                <span><b className="mono">{applied.code}</b> applied · {applied.label}{applied.fromLink ? " (from your creator link)" : ""}</span>
+                <button type="button" className="link-btn" onClick={() => setApplied(null)}>Remove</button>
+              </div>
+            ) : null}
+            {codeMsg ? <p className="drawer-note" role="alert" style={{ color: "var(--danger)" }}>{codeMsg}</p> : <p className="drawer-note">Creator code, RR25 on a first order, or a $100 reward code from your account. One code per order.</p>}
+          </fieldset>
+        ) : (
+          <p className="code-toggle"><button type="button" className="link-btn" onClick={() => setShowCode(true)}>Have a discount code?</button></p>
+        )}
         <fieldset>
           <legend>Shipping and payment</legend>
           <p className="muted">Your address and card are entered on the next step, in a secure form from Stripe. US shipping only.</p>

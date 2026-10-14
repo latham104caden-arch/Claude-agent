@@ -6,10 +6,9 @@ import { money } from "../../lib/format";
 import { Icon } from "../Icon";
 import { Vial } from "../Vial";
 import { useCart } from "./CartProvider";
-import { PARTNER, PARTNER_TIERS, partnerQuote } from "../../lib/partner";
 import { QtyStepper } from "./QtyStepper";
 import { freeShippingAt, giftFor } from "../../lib/gift";
-import { BOGO, bogoLive, bogoQuote, tierLabel } from "../../lib/bogo";
+import { bogoLive, bogoQuote } from "../../lib/bogo";
 
 export function CartDrawer() {
   const { lines, subtotal, open, setOpen, setQty, remove } = useCart();
@@ -23,9 +22,7 @@ export function CartDrawer() {
     return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
   }, [open, setOpen]);
 
-  const kit = partnerQuote(lines);
   const deal = bogoLive() ? bogoQuote(lines) : null;
-  const near = kit.closest ? lines.find((l) => l.sku === kit.closest!.sku) : null;
   const shipFreeAt = freeShippingAt();
   const toFree = Math.max(0, shipFreeAt - subtotal);
   const pct = Math.min(100, (subtotal / shipFreeAt) * 100);
@@ -44,25 +41,18 @@ export function CartDrawer() {
 
         {lines.length > 0 ? (
           <div className="drawer-ship">
-            {toFree > 0 ? (
-              <>You&apos;re <b>{money(toFree)}</b> away from free shipping.</>
-            ) : (
-              <><b>You&apos;ve unlocked free shipping.</b></>
-            )}
+            <p className="drawer-ship-line">{toFree > 0 ? <>You&apos;re <b>{money(toFree)}</b> away from free shipping</> : <b>Free shipping unlocked</b>}</p>
             <div className="meter"><i style={{ width: `${pct}%` }} /></div>
             {gift ? (
-              <p className="drawer-bulk">{gift.unlocked
-                ? <><b>Free gift unlocked:</b> {gift.product.name} ({gift.variant.option}) is added at checkout.</>
-                : <>Add <b>{money(gift.toGo)}</b> more for a free {gift.product.name} ({gift.variant.option}){gift.minimum >= shipFreeAt ? " and free shipping" : ""}.</>}</p>
+              <p className="drawer-deal"><Icon name="gift" /><span>{gift.unlocked
+                ? <><b>Free {gift.product.name}</b> added at checkout</>
+                : <>Add <b>{money(gift.toGo)}</b> for a free {gift.product.name}</>}</span></p>
             ) : null}
             {deal ? (
-              <p className="drawer-bulk drawer-bogo"><Icon name="ghost" />{deal.tier
-                ? <><b>{tierLabel(deal.tier)}:</b> {deal.free.length} vial{deal.free.length === 1 ? "" : "s"} free ({money(deal.amount)}). Tap <b>Get BOGO</b> at checkout.{deal.next ? ` Add ${deal.toNext} more for ${deal.next.get} free.` : ""}</>
-                : <><b>{BOGO.name}:</b> add {deal.toNext} more vial{deal.toNext === 1 ? "" : "s"} and get 1 free.</>}</p>
+              <p className="drawer-deal drawer-deal--bogo"><Icon name="ghost" /><span>{deal.tier
+                ? <><b>{deal.free.length} free with BOGO</b> (−{money(deal.amount)}){deal.next ? <> · add {deal.toNext} for {deal.next.get} free</> : null}</>
+                : <><b>BOGO:</b> add {deal.toNext} more vial{deal.toNext === 1 ? "" : "s"}, get 1 free</>}</span></p>
             ) : null}
-            {kit.qualifying
-              ? <p className="drawer-bulk"><b>Partner pricing:</b> {kit.qualifyingVials} of your vials qualify, so you&apos;d save {money(kit.savings)}. <Link href={PARTNER.path} onClick={() => setOpen(false)}>Request it</Link></p>
-              : near && kit.closest!.qty >= 5 ? <p className="drawer-bulk">Add <b>{kit.closest!.toNext}</b> more {near.name} ({near.option}) for {PARTNER_TIERS[0].percent}% off with partner pricing. <Link href={PARTNER.path} onClick={() => setOpen(false)}>How it works</Link></p> : null}
           </div>
         ) : null}
 
@@ -95,10 +85,12 @@ export function CartDrawer() {
         {lines.length > 0 ? (
           <div className="drawer-foot">
             <div className="drawer-total"><span>Subtotal</span><span>{money(subtotal)}</span></div>
-            <Link href="/checkout" className="btn btn--primary btn--block" onClick={() => setOpen(false)}>
-              Checkout <Icon name="arrow" />
-            </Link>
-            <Link href="/cart" className="btn btn--ghost btn--block" onClick={() => setOpen(false)}>View Cart</Link>
+            <div className="drawer-actions">
+              <Link href="/checkout" className="btn btn--primary btn--block" onClick={() => setOpen(false)}>
+                Checkout <Icon name="arrow" />
+              </Link>
+              <Link href="/cart" className="btn btn--ghost btn--block" onClick={() => setOpen(false)}>View Cart</Link>
+            </div>
             <p className="drawer-note">Shipping and taxes calculated at checkout. For research use only.</p>
           </div>
         ) : null}
