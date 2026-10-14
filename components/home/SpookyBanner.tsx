@@ -67,7 +67,7 @@ export function SpookyBanner({ name, tiers, endsAt }: Props) {
           ))}
         </span>
       </div>
-      <p className="spooky-fine">The cheapest vials in your cart are the free ones. One deal per order; doesn&apos;t combine with codes. Reconstitution solution doesn&apos;t count. For research use only.</p>
+      <p className="spooky-fine">The cheapest vials in your cart are the free ones. One deal per order; doesn&apos;t combine with codes. For research use only.</p>
     </div>
   );
 }

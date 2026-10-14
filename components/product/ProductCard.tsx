@@ -13,8 +13,8 @@ export function ProductCard({ p, delay = 0 }: { p: ProductSummary; delay?: numbe
   // The current free-gift product (lib/gift.ts) gets the teal card and a "Get one free" tag.
   const gift = giftOffer();
   const isGift = gift?.product.slug === p.slug;
-  // During the Spooky Season BOGO (lib/bogo.ts), every vial that counts toward it gets the purple card.
-  const isBogo = !isGift && bogoLive() && p.category !== "supplies" && isMarketed(p);
+  // During the Spooky Season BOGO (lib/bogo.ts), every product that counts toward it gets the purple card.
+  const isBogo = !isGift && bogoLive() && isMarketed(p);
   return (
     <article className={"pcard" + (isGift ? " pcard--gift" : "")} data-reveal="" data-reveal-delay={String(delay)}>
       {isGift ? <span className="pcard-gift-tag"><Icon name="gift" />Get one free</span> : null}

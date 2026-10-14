@@ -5,13 +5,13 @@
  * vials = 1 free, 5 vials = 2 free, 8+ vials = 3 free.
  *
  * Not automatic: the shopper taps "Get BOGO" at checkout, and it takes the
- * order's one discount slot (no stacking with codes). Supplies and
- * non-marketed listings (lib/marketing.ts) don't count and are never free.
+ * order's one discount slot (no stacking with codes). Every product counts,
+ * reconstitution solution included, except non-marketed listings
+ * (lib/marketing.ts), which don't count and are never free.
  *
  * TO TURN IT OFF early: set `endsAt` to a past time (or `on: false`).
  */
 import { isMarketed } from "./marketing";
-import { NON_COMPOUND_SLUGS } from "./partner";
 
 export const BOGO = {
   on: true,
@@ -45,7 +45,7 @@ const round = (n: number) => Math.round(n * 100) / 100;
 /** The deal on a set of cart lines: tier reached, the free (cheapest) vials, their total, and the next tier. */
 export function bogoQuote(lines: Line[]) {
   const units = lines
-    .filter((l) => !NON_COMPOUND_SLUGS.has(l.slug) && isMarketed({ slug: l.slug, name: l.name ?? "" }))
+    .filter((l) => isMarketed({ slug: l.slug, name: l.name ?? "" }))
     .flatMap((l) => Array.from({ length: Math.max(0, Math.floor(l.qty)) }, () => ({ slug: l.slug, name: l.name ?? l.slug, price: l.price })));
   const vials = units.length;
   const tier = [...BOGO.tiers].reverse().find((t) => vials >= t.buy + t.get) ?? null;
