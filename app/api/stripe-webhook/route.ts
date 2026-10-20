@@ -7,6 +7,7 @@ import { syncRewards } from "../../../lib/rewards";
 import { sendOrderConfirmation } from "../../../lib/email";
 import { alertTeamNewOrder } from "../../../lib/alerts";
 import { markApprovalPaid } from "../../../lib/partner-approvals";
+import { sendToShipStation } from "../../../lib/shipstation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,6 +41,8 @@ export async function POST(req: Request) {
         if (session.metadata?.partner_token) await markApprovalPaid(session.metadata.partner_token, session.id).catch((err) => console.error("[stripe-webhook] partner link", err));
         await alertTeamNewOrder(session).catch((err) => console.error("[stripe-webhook] team alert", err));
         await sendOrderConfirmation(session).catch((err) => console.error("[stripe-webhook] confirmation", err));
+        // To the 3PL. A failure throws (500) so Stripe retries; ShipStation upserts on the session ID.
+        await sendToShipStation(session);
         await reportOrder(session);
         await saveCustomer(session);
         await reportPlacedOrder(session);
