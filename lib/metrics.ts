@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { getStripe } from "./stripe";
 import { ADMIN_TZ } from "./admin";
+import { currentSku } from "./sku";
 
 /**
  * Team dashboard numbers, read straight from Stripe (the payment system of
@@ -156,7 +157,9 @@ export async function linesFor(orderIds: string[]): Promise<Map<string, LineRow[
       const li = await stripe.checkout.sessions.listLineItems(oid, { limit: 100, expand: ["data.price.product"] });
       const rows = li.data.map((l) => {
         const p = l.price?.product;
-        const sku = p && typeof p === "object" && "metadata" in p ? p.metadata?.sku ?? null : null;
+        // Old and renamed SKUs of the same variant count as one product.
+        const raw = p && typeof p === "object" && "metadata" in p ? p.metadata?.sku ?? null : null;
+        const sku = raw ? currentSku(raw) : null;
         return { sku, name: l.description ?? "Item", qty: l.quantity ?? 1, amount: l.amount_subtotal ?? 0 };
       });
       if (lineCache.size > 20_000) lineCache.clear();

@@ -4,6 +4,7 @@ import { sendEvent } from "../../../../lib/omnisend";
 import { priceCart } from "../../../../lib/orders";
 import { productImage } from "../../../../lib/seo";
 import { SITE } from "../../../../lib/site";
+import { currentSku } from "../../../../lib/sku";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
     productSKU: l.variant.sku, productPrice: l.variant.price, productQuantity: qty,
     productURL: `${SITE.url}/product/${l.product.slug}`, productImageURL: productImage(l.product),
   });
-  const added = typeof b.added === "string" ? cart.lines.find((l) => l.variant.sku === b.added) : undefined;
+  const added = typeof b.added === "string" ? cart.lines.find((l) => l.variant.sku === currentSku(b.added as string)) : undefined;
   const addedQty = Math.min(99, Math.max(1, Math.floor(Number(b.addedQty) || 1)));
   await sendEvent(event, email, {
     abandonedCheckoutURL: `${SITE.url}/cart`,

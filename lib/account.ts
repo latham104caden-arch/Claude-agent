@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { getCatalog } from "./catalog";
 import { getStripe } from "./stripe";
 import type { CartLine } from "./types";
+import { currentSku } from "./sku";
 
 export type OrderItem = { name: string; qty: number; amount: number; sku: string | null };
 export type Order = {
@@ -54,7 +55,7 @@ export async function ordersFor(email: string, limit = 10): Promise<Order[] | nu
       return { name: l.description ?? "Item", qty: l.quantity ?? 1, amount: (l.amount_total ?? 0) / 100, sku };
     });
     const reorder = items.flatMap((i) => {
-      const line = i.sku ? bySku.get(i.sku) : undefined;
+      const line = i.sku ? bySku.get(currentSku(i.sku)) : undefined;
       return line ? [{ ...line, qty: i.qty }] : [];
     });
     return {

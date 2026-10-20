@@ -2,6 +2,7 @@ import { getCatalog } from "./catalog";
 import { SITE } from "./site";
 import { freeShippingAt } from "./gift";
 import type { Product, Variant } from "./types";
+import { currentSku } from "./sku";
 
 export type PricedLine = { product: Product; variant: Variant; qty: number };
 
@@ -17,7 +18,8 @@ export function priceCart(input: unknown): { ok: true; lines: PricedLine[]; subt
 
   const lines: PricedLine[] = [];
   for (const raw of input) {
-    const sku = typeof raw?.sku === "string" ? raw.sku : "";
+    // Old SKUs (saved carts, open partner links) resolve to today's code.
+    const sku = typeof raw?.sku === "string" ? currentSku(raw.sku) : "";
     const qty = Number(raw?.qty);
     const hit = bySku.get(sku);
     if (!hit) return { ok: false, message: "An item in your cart is no longer available. Please remove it and try again." };

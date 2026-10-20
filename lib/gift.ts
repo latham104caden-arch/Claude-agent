@@ -1,12 +1,13 @@
 import { getCatalog } from "./catalog";
 import { SITE } from "./site";
 import type { Product, Variant } from "./types";
+import { currentSku } from "./sku";
 
 /**
  * Free gift with purchase: "Spend $200, get a free ___ + free shipping".
  *
- * TO TURN IT ON: set `sku` to the variant you're giving away (the SKU is in
- * data/products.ts and on the product page, e.g. "RR-BPC-157-10MG").
+ * TO TURN IT ON: set `sku` to the variant you're giving away (the SKU shown
+ * on the product page).
  * TO TURN IT OFF: set `sku` back to "".
  * Nothing shows anywhere while it's off, or if that SKU is missing or sold out.
  *
@@ -40,7 +41,7 @@ export type GiftOffer = { product: Product; variant: Variant; minimum: number; v
 export function giftOffer(now = Date.now()): GiftOffer | null {
   if (!GIFT.sku || !giftLive(now)) return null;
   for (const product of getCatalog()) {
-    const variant = product.variants.find((v) => v.sku === GIFT.sku);
+    const variant = product.variants.find((v) => v.sku === currentSku(GIFT.sku));
     if (variant) return variant.inStock ? { product, variant, minimum: GIFT.minimum, value: variant.price, endsAt: GIFT.endsAt } : null;
   }
   return null;

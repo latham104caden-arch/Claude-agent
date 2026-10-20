@@ -7,6 +7,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { CartLine } from "../../lib/types";
+import { currentSku } from "../../lib/sku";
 import { trackAddToCart } from "../../lib/track-client";
 
 const KEY = "rr-cart-v1";
@@ -34,7 +35,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setLines(JSON.parse(raw));
+      // Carts saved before a SKU rename move to the new codes.
+      if (raw) setLines((JSON.parse(raw) as CartLine[]).map((l) => ({ ...l, sku: currentSku(l.sku) })));
     } catch {}
     setReady(true);
   }, []);

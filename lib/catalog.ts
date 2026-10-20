@@ -4,11 +4,17 @@
  * database later) can change in one place.
  */
 import { CATEGORIES, PRODUCTS } from "../data/products";
+import { SKU_RENAMES } from "../data/sku-renames";
 import { enforceRuo } from "./ruo";
 import { priceRange } from "./format";
+import { currentSku, renameProblems } from "./sku";
 import type { Category, CategorySlug, Product } from "./types";
 
-const CATALOG: Product[] = enforceRuo(PRODUCTS);
+// Warehouse SKUs (data/sku-renames.ts). A bad map would mis-pick at the 3PL, so it stops the build.
+const skuProblems = renameProblems(SKU_RENAMES, PRODUCTS.flatMap((p) => p.variants.map((v) => v.sku)));
+if (skuProblems.length) throw new Error(`data/sku-renames.ts: ${skuProblems.join("; ")}`);
+
+const CATALOG: Product[] = enforceRuo(PRODUCTS).map((p) => ({ ...p, variants: p.variants.map((v) => ({ ...v, sku: currentSku(v.sku) })) }));
 
 export function getCatalog(): Product[] {
   return CATALOG;

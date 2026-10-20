@@ -3,6 +3,7 @@ import { getCatalog } from "./catalog";
 import { productImage } from "./seo";
 import { codeOf } from "./metrics";
 import { sendEvent, splitName, upsertContact } from "./omnisend";
+import { currentSku } from "./sku";
 
 const SITE = "https://revisedresearch.com";
 
@@ -38,7 +39,7 @@ export function omnisendLineItems(s: Stripe.Checkout.Session) {
   return (s.line_items?.data ?? []).flatMap((li) => {
     const prod = li.price?.product;
     const sku = prod && typeof prod === "object" && "metadata" in prod ? prod.metadata?.sku : undefined;
-    const hit = sku ? bySku.get(sku) : undefined;
+    const hit = sku ? bySku.get(currentSku(sku)) : undefined;
     if (!hit) return [];
     const qty = li.quantity ?? 1;
     const price = (li.price?.unit_amount ?? Math.round(hit.v.price * 100)) / 100;

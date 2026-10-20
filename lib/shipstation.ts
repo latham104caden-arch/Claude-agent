@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import { getCatalog } from "./catalog";
+import { currentSku } from "./sku";
 
 /**
  * Paid orders → ShipStation, where Ikonik (our 3PL, owner-approved 2026-10-20)
@@ -50,14 +51,15 @@ export function shipStationOrder(s: Stripe.Checkout.Session) {
   const items: Item[] = (s.line_items?.data ?? []).map((li) => {
     const product = li.price?.product;
     const sku = product && typeof product === "object" && "metadata" in product ? product.metadata?.sku : undefined;
-    return { lineItemKey: li.id, ...(sku ? { sku } : {}), name: li.description ?? "Item", quantity: li.quantity ?? 1, unitPrice: usd(li.price?.unit_amount) };
+    // A checkout started before a SKU rename still ships under the current SKU.
+    return { lineItemKey: li.id, ...(sku ? { sku: currentSku(sku) } : {}), name: li.description ?? "Item", quantity: li.quantity ?? 1, unitPrice: usd(li.price?.unit_amount) };
   });
 
   const m = s.metadata ?? {};
   // If Stripe refused the free-gift line at checkout, the gift rides only in metadata: still pack it.
   if (m.gift_sku && m.gift_line === "missing") {
-    const hit = getCatalog().flatMap((p) => p.variants.map((v) => ({ p, v }))).find(({ v }) => v.sku === m.gift_sku);
-    items.push({ sku: m.gift_sku, name: `FREE GIFT: ${hit ? `${hit.p.name} (${hit.v.option})` : m.gift_sku}`, quantity: 1, unitPrice: 0 });
+    const hit = getCatalog().flatMap((p) => p.variants.map((v) => ({ p, v }))).find(({ v }) => v.sku === currentSku(m.gift_sku));
+    items.push({ sku: currentSku(m.gift_sku), name: `FREE GIFT: ${hit ? `${hit.p.name} (${hit.v.option})` : m.gift_sku}`, quantity: 1, unitPrice: 0 });
   }
 
   const discount = s.total_details?.amount_discount ?? 0;
