@@ -12,6 +12,7 @@ import { SalesChart } from "../../components/admin/SalesChart";
 import { OrderAlerts } from "../../components/admin/OrderAlerts";
 import { SyncCustomers } from "../../components/admin/SyncCustomers";
 import { SyncProducts } from "../../components/admin/SyncProducts";
+import { ShipStationBackfill } from "../../components/admin/ShipStationBackfill";
 import { ContactProperties } from "../../components/admin/ContactProperties";
 import { PartnerRequests } from "../../components/admin/PartnerRequests";
 import { recentPartnerRequests } from "../../lib/partner-requests";
@@ -181,6 +182,7 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
       </div>
 
       <PartnerRequests rows={partnerRequests} />
+      <ShipStationBackfill />
       <OrderAlerts devices={devices} />
       <SyncCustomers />
       <SyncProducts />

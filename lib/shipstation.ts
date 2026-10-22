@@ -98,13 +98,35 @@ export async function sendToShipStation(s: Stripe.Checkout.Session): Promise<{ o
   if (!shipStationReady() || s.payment_status !== "paid") return null;
   // Stripe test-mode orders never reach the warehouse unless the team turns this on to try the hookup.
   if (!s.livemode && process.env.SHIPSTATION_TEST_ORDERS !== "true") return null;
-  const auth = Buffer.from(`${process.env.SHIPSTATION_API_KEY}:${process.env.SHIPSTATION_API_SECRET}`).toString("base64");
-  const res = await fetch(`${API}/orders/createorder`, {
-    method: "POST",
-    headers: { authorization: `Basic ${auth}`, "content-type": "application/json" },
-    body: JSON.stringify(shipStationOrder(s)),
-  });
-  if (!res.ok) throw new Error(`ShipStation ${res.status}: ${(await res.text().catch(() => "")).slice(0, 300)}`);
-  const data = (await res.json().catch(() => ({}))) as { orderId?: number };
+  const data = (await call("POST", "/orders/createorder", shipStationOrder(s))) as { orderId?: number };
   return { orderId: data.orderId ?? 0 };
+}
+
+export type ShipStationMatch = { orderId: number; orderStatus: string; storeId: number | null };
+
+/** The ShipStation order for this Stripe session, if one exists (matched on orderKey, never on number alone). */
+export async function findInShipStation(sessionId: string): Promise<ShipStationMatch | null> {
+  const number = sessionId.slice(-8).toUpperCase();
+  const data = (await call("GET", `/orders?orderNumber=${encodeURIComponent(number)}&pageSize=100`)) as {
+    orders?: { orderId: number; orderKey: string; orderStatus: string; advancedOptions?: { storeId?: number } }[];
+  };
+  const hit = data.orders?.find((o) => o.orderKey === sessionId);
+  return hit ? { orderId: hit.orderId, orderStatus: hit.orderStatus, storeId: hit.advancedOptions?.storeId ?? null } : null;
+}
+
+/** One API request. ShipStation allows 40 a minute; on a 429 it waits out the window once, then retries. */
+async function call(method: "GET" | "POST", path: string, body?: unknown, retried = false): Promise<unknown> {
+  const auth = Buffer.from(`${process.env.SHIPSTATION_API_KEY}:${process.env.SHIPSTATION_API_SECRET}`).toString("base64");
+  const res = await fetch(`${API}${path}`, {
+    method,
+    headers: { authorization: `Basic ${auth}`, ...(body ? { "content-type": "application/json" } : {}) },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  if (res.status === 429 && !retried) {
+    const wait = Math.min(60, Math.max(1, Number(res.headers.get("x-rate-limit-reset")) || 30));
+    await new Promise((r) => setTimeout(r, wait * 1000));
+    return call(method, path, body, true);
+  }
+  if (!res.ok) throw new Error(`ShipStation ${res.status}: ${(await res.text().catch(() => "")).slice(0, 300)}`);
+  return res.json().catch(() => ({}));
 }
