@@ -11,7 +11,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "check:ruo": "node scripts/check-ruo.mjs",
-    "check": "npm run typecheck && npm run check:ruo"
+    "check": "npm run typecheck && npm run check:ruo",
+    "stock": "node scripts/stock-report.mjs"
   },
   "dependencies": {
     "@adz/next": "file:vendor/adz-next-1.0.0.tgz",
